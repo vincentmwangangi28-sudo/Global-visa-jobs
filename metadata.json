@@ -1,0 +1,6 @@
+{
+  "name": "Global Visa Jobs",
+  "description": "Global Visa Jobs — help with perfect outstanding data here",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
