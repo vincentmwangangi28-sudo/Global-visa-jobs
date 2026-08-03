@@ -703,6 +703,86 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     fun clearMarketForecast() {
         _marketForecast.value = null
     }
+
+    // Visa Interview Prep States
+    private val _interviewPrepQuestions = MutableStateFlow<List<com.example.network.VisaInterviewQuestion>>(emptyList())
+    val interviewPrepQuestions: StateFlow<List<com.example.network.VisaInterviewQuestion>> = _interviewPrepQuestions.asStateFlow()
+
+    private val _isGeneratingInterviewPrep = MutableStateFlow(false)
+    val isGeneratingInterviewPrep: StateFlow<Boolean> = _isGeneratingInterviewPrep.asStateFlow()
+
+    fun generateVisaInterviewPrep(targetRole: String, targetCountry: String, visaType: String) {
+        viewModelScope.launch {
+            _isGeneratingInterviewPrep.value = true
+            try {
+                val questions = GeminiApiClient.generateVisaInterviewPrep(targetRole, targetCountry, visaType)
+                _interviewPrepQuestions.value = questions
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Error in interview prep", e)
+            } finally {
+                _isGeneratingInterviewPrep.value = false
+            }
+        }
+    }
+
+    // Recruiter Cold Outreach Email States
+    private val _recruiterColdEmailResult = MutableStateFlow<com.example.network.RecruiterOutreachResult?>(null)
+    val recruiterColdEmailResult: StateFlow<com.example.network.RecruiterOutreachResult?> = _recruiterColdEmailResult.asStateFlow()
+
+    private val _isGeneratingColdEmail = MutableStateFlow(false)
+    val isGeneratingColdEmail: StateFlow<Boolean> = _isGeneratingColdEmail.asStateFlow()
+
+    fun generateRecruiterColdEmail(
+        candidateName: String,
+        candidateSkills: String,
+        targetCompany: String,
+        targetRole: String,
+        targetCountry: String,
+        tone: String = "Professional & Persuasive"
+    ) {
+        viewModelScope.launch {
+            _isGeneratingColdEmail.value = true
+            try {
+                val result = GeminiApiClient.generateRecruiterColdEmail(
+                    candidateName, candidateSkills, targetCompany, targetRole, targetCountry, tone
+                )
+                _recruiterColdEmailResult.value = result
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Error in cold email", e)
+            } finally {
+                _isGeneratingColdEmail.value = false
+            }
+        }
+    }
+
+    fun clearRecruiterColdEmail() {
+        _recruiterColdEmailResult.value = null
+    }
+
+    // Relocation & Net Salary Insight States
+    private val _relocationSalaryInsight = MutableStateFlow<com.example.network.RelocationSalaryInsightResult?>(null)
+    val relocationSalaryInsight: StateFlow<com.example.network.RelocationSalaryInsightResult?> = _relocationSalaryInsight.asStateFlow()
+
+    private val _isCalculatingRelocationSalary = MutableStateFlow(false)
+    val isCalculatingRelocationSalary: StateFlow<Boolean> = _isCalculatingRelocationSalary.asStateFlow()
+
+    fun calculateRelocationCostAndNetSalary(offeredSalaryText: String, targetCountry: String, familyMembersCount: Int = 1) {
+        viewModelScope.launch {
+            _isCalculatingRelocationSalary.value = true
+            try {
+                val result = GeminiApiClient.calculateRelocationCostAndNetSalary(offeredSalaryText, targetCountry, familyMembersCount)
+                _relocationSalaryInsight.value = result
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Error calculating relocation salary insight", e)
+            } finally {
+                _isCalculatingRelocationSalary.value = false
+            }
+        }
+    }
+
+    fun clearRelocationSalaryInsight() {
+        _relocationSalaryInsight.value = null
+    }
 }
 
 

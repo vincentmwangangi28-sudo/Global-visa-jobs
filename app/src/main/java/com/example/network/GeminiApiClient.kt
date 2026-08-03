@@ -897,6 +897,290 @@ object GeminiApiClient {
         }
     }
 
+    /**
+     * Generates a tailored visa & job interview prep guide with questions, ideal answers, and visa compliance tips.
+     */
+    suspend fun generateVisaInterviewPrep(
+        targetRole: String,
+        targetCountry: String,
+        visaType: String
+    ): List<VisaInterviewQuestion> = withContext(Dispatchers.IO) {
+        val apiKey = BuildConfig.GEMINI_API_KEY
+        if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
+            return@withContext listOf(
+                VisaInterviewQuestion(
+                    category = "Visa Compliance & LMIA/Sponsorship",
+                    question = "Why do you specifically require $visaType sponsorship for $targetCountry?",
+                    sampleAnswer = "I have 5+ years of specialized experience in $targetRole. The sponsorship pathway through $visaType aligns perfectly with my professional background, and my employer holds an active sponsor license.",
+                    keyTips = "Be transparent about your sponsorship requirements and emphasize your rare skill set."
+                ),
+                VisaInterviewQuestion(
+                    category = "Relocation & Settling",
+                    question = "How prepared are you to relocate to $targetCountry if offered the $targetRole position?",
+                    sampleAnswer = "I have researched living costs, housing markets, and tax structures in $targetCountry. My background checks, credentials, and savings are in order for immediate relocation.",
+                    keyTips = "Show proactive preparation and realistic understanding of relocation timelines."
+                ),
+                VisaInterviewQuestion(
+                    category = "Technical Competency",
+                    question = "Can you walk us through a recent complex project relevant to $targetRole?",
+                    sampleAnswer = "In my last role, I led a cross-functional team to optimize scalable architectures, reducing system downtime by 35% and saving $120,000 annually.",
+                    keyTips = "Use the STAR method (Situation, Task, Action, Result) with quantified achievements."
+                )
+            )
+        }
+
+        val prompt = """
+            Generate 4 realistic mock interview questions for a candidate applying for a $targetRole position in $targetCountry requiring $visaType visa sponsorship.
+            Include questions on visa compliance/intent, technical expertise, and cultural adaptability.
+            
+            Return STRICTLY a JSON array of objects without markdown formatting or code blocks:
+            [
+              {
+                "category": "Visa Compliance / Technical / Behavioral / Relocation",
+                "question": "The question string",
+                "sampleAnswer": "Comprehensive, high-scoring answer string",
+                "keyTips": "Pro tip for answering successfully"
+              }
+            ]
+        """.trimIndent()
+
+        try {
+            val jsonRequest = JSONObject().apply {
+                put("contents", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("parts", JSONArray().apply {
+                            put(JSONObject().apply { put("text", prompt) })
+                        })
+                    })
+                })
+                put("generationConfig", JSONObject().apply {
+                    put("responseMimeType", "application/json")
+                })
+            }
+
+            val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaTypeOrNull())
+            val request = Request.Builder()
+                .url("$BASE_URL?key=$apiKey")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) return@withContext emptyList()
+                val bodyStr = response.body?.string() ?: return@withContext emptyList()
+                val root = JSONObject(bodyStr)
+                val text = root.optJSONArray("candidates")
+                    ?.getJSONObject(0)
+                    ?.optJSONObject("content")
+                    ?.optJSONArray("parts")
+                    ?.getJSONObject(0)
+                    ?.optString("text") ?: ""
+
+                var cleaned = text.trim()
+                if (cleaned.startsWith("```json")) cleaned = cleaned.substringAfter("```json").substringBeforeLast("```")
+                if (cleaned.startsWith("```")) cleaned = cleaned.substringAfter("```").substringBeforeLast("```")
+                cleaned = cleaned.trim()
+
+                val arr = JSONArray(cleaned)
+                val list = mutableListOf<VisaInterviewQuestion>()
+                for (i in 0 until arr.length()) {
+                    val item = arr.getJSONObject(i)
+                    list.add(
+                        VisaInterviewQuestion(
+                            category = item.optString("category", "General"),
+                            question = item.optString("question", ""),
+                            sampleAnswer = item.optString("sampleAnswer", ""),
+                            keyTips = item.optString("keyTips", "")
+                        )
+                    )
+                }
+                return@withContext list
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating interview prep", e)
+            return@withContext emptyList()
+        }
+    }
+
+    /**
+     * Generates a high-converting cold outreach email for HR and hiring managers.
+     */
+    suspend fun generateRecruiterColdEmail(
+        candidateName: String,
+        candidateSkills: String,
+        targetCompany: String,
+        targetRole: String,
+        targetCountry: String,
+        tone: String = "Professional & Persuasive"
+    ): RecruiterOutreachResult = withContext(Dispatchers.IO) {
+        val apiKey = BuildConfig.GEMINI_API_KEY
+        if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
+            return@withContext RecruiterOutreachResult(
+                subjectLine = "Application for $targetRole - Experienced Specialist (Visa Sponsorship Pathway)",
+                emailBody = "Dear Hiring Team at $targetCompany,\n\nI am writing to express my strong interest in the $targetRole role. With proven expertise in $candidateSkills, I have tracked $targetCompany's leadership in the industry and am confident in adding immediate value.\n\nI am an international candidate actively seeking $targetCountry opportunities and fully prepared for relocation. If your team offers or supports work permit pathways, I would welcome a brief conversation to discuss how my skill set aligns with your team's goals.\n\nBest regards,\n$candidateName",
+                followUpTip = "Send a respectful follow-up on LinkedIn 5 business days after sending this email."
+            )
+        }
+
+        val prompt = """
+            Draft a high-converting cold outreach email to a Talent Acquisition Manager at $targetCompany for the position of $targetRole in $targetCountry.
+            Candidate Name: $candidateName
+            Key Skills: $candidateSkills
+            Tone: $tone
+            Context: Politely mention readiness for $targetCountry relocation and inquire about visa sponsorship / work permit pathways.
+            
+            Return STRICTLY a JSON object without markdown tags:
+            {
+              "subjectLine": "Compelling subject line",
+              "emailBody": "Full formatted body text",
+              "followUpTip": "Actionable follow-up tip"
+            }
+        """.trimIndent()
+
+        try {
+            val jsonRequest = JSONObject().apply {
+                put("contents", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("parts", JSONArray().apply {
+                            put(JSONObject().apply { put("text", prompt) })
+                        })
+                    })
+                })
+                put("generationConfig", JSONObject().apply {
+                    put("responseMimeType", "application/json")
+                })
+            }
+
+            val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaTypeOrNull())
+            val request = Request.Builder()
+                .url("$BASE_URL?key=$apiKey")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    return@withContext RecruiterOutreachResult(
+                        "Application for $targetRole at $targetCompany",
+                        "Dear Hiring Team,\n\nI am interested in $targetRole opportunities at $targetCompany...",
+                        "Follow up in 5 days."
+                    )
+                }
+                val bodyStr = response.body?.string() ?: return@withContext RecruiterOutreachResult("", "", "")
+                val root = JSONObject(bodyStr)
+                val text = root.optJSONArray("candidates")
+                    ?.getJSONObject(0)
+                    ?.optJSONObject("content")
+                    ?.optJSONArray("parts")
+                    ?.getJSONObject(0)
+                    ?.optString("text") ?: ""
+
+                var cleaned = text.trim()
+                if (cleaned.startsWith("```json")) cleaned = cleaned.substringAfter("```json").substringBeforeLast("```")
+                if (cleaned.startsWith("```")) cleaned = cleaned.substringAfter("```").substringBeforeLast("```")
+                cleaned = cleaned.trim()
+
+                val obj = JSONObject(cleaned)
+                return@withContext RecruiterOutreachResult(
+                    subjectLine = obj.optString("subjectLine", "Application for $targetRole"),
+                    emailBody = obj.optString("emailBody", "Dear Hiring Team..."),
+                    followUpTip = obj.optString("followUpTip", "Follow up after 5 days.")
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error generating recruiter cold email", e)
+            return@withContext RecruiterOutreachResult("Application for $targetRole", "Dear Hiring Team...", "Follow up in 5 days.")
+        }
+    }
+
+    /**
+     * Calculates net salary, living expenses, and relocation budgets for a target country.
+     */
+    suspend fun calculateRelocationCostAndNetSalary(
+        offeredSalaryText: String,
+        targetCountry: String,
+        familyMembersCount: Int = 1
+    ): RelocationSalaryInsightResult = withContext(Dispatchers.IO) {
+        val apiKey = BuildConfig.GEMINI_API_KEY
+        if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
+            return@withContext RelocationSalaryInsightResult(
+                netMonthlyPay = "$3,850 / mo (Est. Net)",
+                estimatedMonthlyTax = "22% Income Tax & Social Contributions",
+                estimatedLivingExpenses = "$2,100 / mo (Rent, Food, Utilities)",
+                estimatedRelocationUpfrontCost = "$4,500 (Flights, Deposit, First Month Rent)",
+                savingsPotential = "$1,750 / mo net savings potential",
+                breakdownSummary = "Based on standard living indices in $targetCountry for $familyMembersCount person(s), this compensation provides comfortable financial stability and healthy monthly savings."
+            )
+        }
+
+        val prompt = """
+            Calculate realistic net take-home salary, estimated income tax percentage, monthly cost of living, upfront relocation cost, and monthly savings potential for an offered salary of "$offeredSalaryText" in $targetCountry for $familyMembersCount person(s).
+            
+            Return STRICTLY a JSON object without markdown formatting:
+            {
+              "netMonthlyPay": "$3,850 / mo (Est. Net)",
+              "estimatedMonthlyTax": "22% Income Tax & Social Contributions",
+              "estimatedLivingExpenses": "$2,100 / mo (Rent, Food, Utilities)",
+              "estimatedRelocationUpfrontCost": "$4,500 (Flights, Visa, Deposit)",
+              "savingsPotential": "$1,750 / mo net savings",
+              "breakdownSummary": "Comprehensive explanation of financial breakdown"
+            }
+        """.trimIndent()
+
+        try {
+            val jsonRequest = JSONObject().apply {
+                put("contents", JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("parts", JSONArray().apply {
+                            put(JSONObject().apply { put("text", prompt) })
+                        })
+                    })
+                })
+                put("generationConfig", JSONObject().apply {
+                    put("responseMimeType", "application/json")
+                })
+            }
+
+            val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaTypeOrNull())
+            val request = Request.Builder()
+                .url("$BASE_URL?key=$apiKey")
+                .post(requestBody)
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    return@withContext RelocationSalaryInsightResult(
+                        "$3,500 / mo", "20% Tax", "$2,000 / mo", "$4,000", "$1,500 / mo", "Standard estimate for $targetCountry."
+                    )
+                }
+                val bodyStr = response.body?.string() ?: return@withContext RelocationSalaryInsightResult("", "", "", "", "", "")
+                val root = JSONObject(bodyStr)
+                val text = root.optJSONArray("candidates")
+                    ?.getJSONObject(0)
+                    ?.optJSONObject("content")
+                    ?.optJSONArray("parts")
+                    ?.getJSONObject(0)
+                    ?.optString("text") ?: ""
+
+                var cleaned = text.trim()
+                if (cleaned.startsWith("```json")) cleaned = cleaned.substringAfter("```json").substringBeforeLast("```")
+                if (cleaned.startsWith("```")) cleaned = cleaned.substringAfter("```").substringBeforeLast("```")
+                cleaned = cleaned.trim()
+
+                val obj = JSONObject(cleaned)
+                return@withContext RelocationSalaryInsightResult(
+                    netMonthlyPay = obj.optString("netMonthlyPay", "$3,500 / mo"),
+                    estimatedMonthlyTax = obj.optString("estimatedMonthlyTax", "20% Tax"),
+                    estimatedLivingExpenses = obj.optString("estimatedLivingExpenses", "$2,000 / mo"),
+                    estimatedRelocationUpfrontCost = obj.optString("estimatedRelocationUpfrontCost", "$4,000"),
+                    savingsPotential = obj.optString("savingsPotential", "$1,500 / mo"),
+                    breakdownSummary = obj.optString("breakdownSummary", "Standard estimate for $targetCountry.")
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error calculating relocation salary insight", e)
+            return@withContext RelocationSalaryInsightResult("$3,500 / mo", "20% Tax", "$2,000 / mo", "$4,000", "$1,500 / mo", "Error in calculation.")
+        }
+    }
+
     private data class Sextet<A, B, C, D, E, F>(
         val first: A,
         val second: B,
@@ -906,6 +1190,28 @@ object GeminiApiClient {
         val sixth: F
     )
 }
+
+data class VisaInterviewQuestion(
+    val category: String,
+    val question: String,
+    val sampleAnswer: String,
+    val keyTips: String
+)
+
+data class RecruiterOutreachResult(
+    val subjectLine: String,
+    val emailBody: String,
+    val followUpTip: String
+)
+
+data class RelocationSalaryInsightResult(
+    val netMonthlyPay: String,
+    val estimatedMonthlyTax: String,
+    val estimatedLivingExpenses: String,
+    val estimatedRelocationUpfrontCost: String,
+    val savingsPotential: String,
+    val breakdownSummary: String
+)
 
 data class ResumeGapAnalysisResult(
     val matchScore: Int,

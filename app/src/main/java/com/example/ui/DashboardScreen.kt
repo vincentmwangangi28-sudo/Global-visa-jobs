@@ -2606,7 +2606,8 @@ fun MatchTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
             selectedTabIndex = when (activeSubTab) {
                 "Profile" -> 0
                 "AI Resume" -> 1
-                else -> 2
+                "AI Matcher" -> 2
+                else -> 3
             },
             containerColor = NavyDark,
             contentColor = EmeraldGreen,
@@ -2615,17 +2616,22 @@ fun MatchTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
             Tab(
                 selected = activeSubTab == "Profile",
                 onClick = { activeSubTab = "Profile" },
-                text = { Text("Candidate Profile", color = if (activeSubTab == "Profile") EmeraldGreen else SlateMuted) }
+                text = { Text("Profile", color = if (activeSubTab == "Profile") EmeraldGreen else SlateMuted, fontSize = 12.sp) }
             )
             Tab(
                 selected = activeSubTab == "AI Resume",
                 onClick = { activeSubTab = "AI Resume" },
-                text = { Text("ATS Resume Drafts", color = if (activeSubTab == "AI Resume") EmeraldGreen else SlateMuted) }
+                text = { Text("ATS Resume", color = if (activeSubTab == "AI Resume") EmeraldGreen else SlateMuted, fontSize = 12.sp) }
             )
             Tab(
                 selected = activeSubTab == "AI Matcher",
                 onClick = { activeSubTab = "AI Matcher" },
-                text = { Text("AI Job Matcher", color = if (activeSubTab == "AI Matcher") EmeraldGreen else SlateMuted) }
+                text = { Text("AI Matcher", color = if (activeSubTab == "AI Matcher") EmeraldGreen else SlateMuted, fontSize = 12.sp) }
+            )
+            Tab(
+                selected = activeSubTab == "Career Tools",
+                onClick = { activeSubTab = "Career Tools" },
+                text = { Text("Career Tools", color = if (activeSubTab == "Career Tools") EmeraldGreen else SlateMuted, fontSize = 12.sp) }
             )
         }
 
@@ -2633,7 +2639,22 @@ fun MatchTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
             "Profile" -> ProfileSubScreen(profile, viewModel)
             "AI Resume" -> ResumeSubScreen(profile, isGenResume, resumeRes, viewModel, isWideScreen)
             "AI Matcher" -> AiMatcherSubScreen(profile, viewModel)
+            "Career Tools" -> CareerToolsSubScreen(viewModel)
         }
+    }
+}
+
+@Composable
+fun CareerToolsSubScreen(viewModel: JobViewModel) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        VisaInterviewPrepCard(viewModel)
+        RecruiterColdEmailCard(viewModel)
     }
 }
 
@@ -7849,7 +7870,7 @@ fun SalariesTab(viewModel: JobViewModel) {
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                listOf("Market Trends", "Salary Checker").forEach { tab ->
+                listOf("Market Trends", "Salary Checker", "Net Salary & Relocation").forEach { tab ->
                     val isSelected = activeSubTab == tab
                     Box(
                         modifier = Modifier
@@ -7864,7 +7885,8 @@ fun SalariesTab(viewModel: JobViewModel) {
                             text = tab,
                             color = if (isSelected) Color.White else SlateMuted,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
+                            fontSize = 11.sp,
+                            maxLines = 1
                         )
                     }
                 }
@@ -8468,7 +8490,7 @@ fun SalariesTab(viewModel: JobViewModel) {
                     }
                 }
             }
-        } else {
+        } else if (activeSubTab == "Salary Checker") {
             // Salary Checker - Original View
             item {
                 Card(
@@ -8899,6 +8921,10 @@ fun SalariesTab(viewModel: JobViewModel) {
                         }
                     }
                 }
+            }
+        } else if (activeSubTab == "Net Salary & Relocation") {
+            item {
+                RelocationSalaryCalculatorCard(viewModel)
             }
         }
     }
@@ -9956,4 +9982,639 @@ fun SimulatedEmailDialog(
         }
     }
 }
+
+@Composable
+fun RelocationSalaryCalculatorCard(viewModel: JobViewModel) {
+    val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
+    
+    var salaryInput by remember { mutableStateOf("$85,000 USD / year") }
+    var targetCountry by remember { mutableStateOf("Canada") }
+    var familyMembersCount by remember { mutableIntStateOf(1) }
+    
+    val insight by viewModel.relocationSalaryInsight.collectAsStateWithLifecycle()
+    val isCalculating by viewModel.isCalculatingRelocationSalary.collectAsStateWithLifecycle()
+
+    val countries = listOf("Canada", "Germany", "United Kingdom", "United States", "Australia")
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NavyMedium),
+        border = BorderStroke(1.dp, NavyLight),
+        modifier = Modifier.fillMaxWidth().testTag("relocation_calculator_card")
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Place,
+                    contentDescription = "Relocation Calculator",
+                    tint = EmeraldGreen,
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = "Net Take-Home & Relocation Cost Calculator",
+                        color = WhiteActive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
+                    Text(
+                        text = "Calculate exact monthly take-home salary after income taxes, relocation setup fees, and local cost of living.",
+                        color = SlateMuted,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            OutlinedTextField(
+                value = salaryInput,
+                onValueChange = { salaryInput = it },
+                label = { Text("Offered Gross Annual Salary (e.g. £55,000 or $90,000)", color = SlateMuted) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().testTag("relocation_salary_input"),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = EmeraldGreen,
+                    unfocusedBorderColor = NavyLight,
+                    focusedContainerColor = NavyDark,
+                    unfocusedContainerColor = NavyDark,
+                    focusedTextColor = WhiteActive,
+                    unfocusedTextColor = WhiteActive
+                )
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text("Target Immigration Country:", color = SlateMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                items(countries) { country ->
+                    val isSel = targetCountry == country
+                    FilterChip(
+                        selected = isSel,
+                        onClick = { targetCountry = country },
+                        label = { Text(country, fontSize = 11.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = EmeraldGreen,
+                            selectedLabelColor = Color.White,
+                            containerColor = NavyDark,
+                            labelColor = SlateMuted
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Family Members Relocating:", color = SlateMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = { if (familyMembersCount > 1) familyMembersCount-- },
+                        modifier = Modifier.size(28.dp).background(NavyDark, RoundedCornerShape(6.dp))
+                    ) {
+                        Text("-", color = WhiteActive, fontWeight = FontWeight.Bold)
+                    }
+                    Text(
+                        text = "$familyMembersCount",
+                        color = EmeraldGreen,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(horizontal = 12.dp)
+                    )
+                    IconButton(
+                        onClick = { if (familyMembersCount < 6) familyMembersCount++ },
+                        modifier = Modifier.size(28.dp).background(NavyDark, RoundedCornerShape(6.dp))
+                    ) {
+                        Text("+", color = WhiteActive, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Button(
+                onClick = { viewModel.calculateRelocationCostAndNetSalary(salaryInput, targetCountry, familyMembersCount) },
+                enabled = !isCalculating,
+                modifier = Modifier.fillMaxWidth().height(44.dp).testTag("calculate_relocation_btn"),
+                colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                if (isCalculating) {
+                    CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Calculating Net Take-Home...", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                } else {
+                    Icon(Icons.Default.Refresh, contentDescription = "Calculate", tint = NavyDark, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Calculate Financial Breakdown", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                }
+            }
+
+            if (insight != null) {
+                val res = insight!!
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = NavyLight)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text("Net Income & Relocation Summary", color = EmeraldGreen, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = NavyDark),
+                        border = BorderStroke(1.dp, NavyLight)
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Text("Est. Net Monthly Pay", color = SlateMuted, fontSize = 10.sp)
+                            Text(res.netMonthlyPay, color = EmeraldGreen, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        }
+                    }
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = NavyDark),
+                        border = BorderStroke(1.dp, NavyLight)
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Text("Effective Tax", color = SlateMuted, fontSize = 10.sp)
+                            Text(res.estimatedMonthlyTax, color = WhiteActive, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = NavyDark),
+                        border = BorderStroke(1.dp, NavyLight)
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Text("Relocation Upfront", color = SlateMuted, fontSize = 10.sp)
+                            Text(res.estimatedRelocationUpfrontCost, color = AmberGold, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        }
+                    }
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(containerColor = NavyDark),
+                        border = BorderStroke(1.dp, NavyLight)
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Text("Est. Living Expenses", color = SlateMuted, fontSize = 10.sp)
+                            Text(res.estimatedLivingExpenses, color = CoralRed, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(NavyDark)
+                        .padding(10.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Savings Potential: ", color = SlateMuted, fontSize = 11.sp)
+                            Text(res.savingsPotential, color = TealCyan, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text("Financial Breakdown & Strategy:", color = SlateMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text(res.breakdownSummary, color = WhiteActive, fontSize = 11.sp, lineHeight = 15.sp)
+            }
+        }
+    }
+}
+
+@Composable
+fun VisaInterviewPrepCard(viewModel: JobViewModel) {
+    val questions by viewModel.interviewPrepQuestions.collectAsStateWithLifecycle()
+    val isGenerating by viewModel.isGeneratingInterviewPrep.collectAsStateWithLifecycle()
+
+    var targetRole by remember { mutableStateOf("Software Engineer") }
+    var targetCountry by remember { mutableStateOf("Germany") }
+    var visaType by remember { mutableStateOf("EU Blue Card") }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NavyMedium),
+        border = BorderStroke(1.dp, NavyLight),
+        modifier = Modifier.fillMaxWidth().testTag("visa_interview_prep_card")
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = "Visa Interview Prep",
+                    tint = TealCyan,
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = "Visa & Employer Interview Q&A Simulator",
+                        color = WhiteActive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
+                    Text(
+                        text = "Generate realistic embassy & employer interview questions with AI model answers.",
+                        color = SlateMuted,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = targetRole,
+                        onValueChange = { targetRole = it },
+                        label = { Text("Target Role", color = SlateMuted) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                            focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                            focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                        )
+                    )
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = targetCountry,
+                        onValueChange = { targetCountry = it },
+                        label = { Text("Country", color = SlateMuted) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                            focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                            focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = visaType,
+                onValueChange = { visaType = it },
+                label = { Text("Visa Subclass / Pathway (e.g. UK Skilled Worker)", color = SlateMuted) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                    focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                    focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = { viewModel.generateVisaInterviewPrep(targetRole, targetCountry, visaType) },
+                enabled = !isGenerating,
+                modifier = Modifier.fillMaxWidth().height(44.dp).testTag("generate_interview_prep_btn"),
+                colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                if (isGenerating) {
+                    CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Generating Interview Simulator...", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                } else {
+                    Icon(Icons.Default.Star, contentDescription = "Simulate", tint = NavyDark, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Generate Custom Interview Q&A Set", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                }
+            }
+
+            if (questions.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = NavyLight)
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text("Practice Questions & Sample Answers (${questions.size})", color = TealCyan, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    questions.forEachIndexed { idx, q ->
+                        var isExpanded by remember { mutableStateOf(idx == 0) }
+
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = NavyDark),
+                            border = BorderStroke(1.dp, NavyLight),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth().clickable { isExpanded = !isExpanded }
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .background(TealCyan.copy(alpha = 0.2f))
+                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    ) {
+                                        Text(q.category, color = TealCyan, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                    }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "${idx + 1}. ${q.question}",
+                                        color = WhiteActive,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Toggle",
+                                        tint = SlateMuted
+                                    )
+                                }
+
+                                if (isExpanded) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text("Ideal Sample Answer:", color = EmeraldGreen, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(q.sampleAnswer, color = WhiteActive, fontSize = 11.sp, lineHeight = 15.sp)
+
+                                    if (q.keyTips.isNotBlank()) {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text("Key Tips & Guidance:", color = AmberGold, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                        Text(q.keyTips, color = SlateMuted, fontSize = 10.sp, lineHeight = 14.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RecruiterColdEmailCard(viewModel: JobViewModel) {
+    val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
+
+    var candidateName by remember { mutableStateOf("") }
+    var candidateSkills by remember { mutableStateOf("") }
+    var targetCompany by remember { mutableStateOf("") }
+    var targetRole by remember { mutableStateOf("") }
+    var targetCountry by remember { mutableStateOf("United Kingdom") }
+    var selectedTone by remember { mutableStateOf("Professional & Persuasive") }
+
+    val emailResult by viewModel.recruiterColdEmailResult.collectAsStateWithLifecycle()
+    val isGenerating by viewModel.isGeneratingColdEmail.collectAsStateWithLifecycle()
+
+    val tones = listOf("Professional & Persuasive", "Direct & Concise", "Enthusiastic & High-Energy")
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NavyMedium),
+        border = BorderStroke(1.dp, NavyLight),
+        modifier = Modifier.fillMaxWidth().testTag("recruiter_cold_email_card")
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = "Recruiter Email Generator",
+                    tint = EmeraldGreen,
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = "Recruiter Cold Outreach Email Draft Generator",
+                        color = WhiteActive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
+                    Text(
+                        text = "Draft high-converting direct outreach emails to corporate recruiters and hiring managers.",
+                        color = SlateMuted,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = candidateName,
+                        onValueChange = { candidateName = it },
+                        label = { Text("Your Name", color = SlateMuted) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                            focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                            focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                        )
+                    )
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = targetCompany,
+                        onValueChange = { targetCompany = it },
+                        label = { Text("Target Company", color = SlateMuted) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                            focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                            focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = targetRole,
+                        onValueChange = { targetRole = it },
+                        label = { Text("Target Role", color = SlateMuted) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                            focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                            focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                        )
+                    )
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = targetCountry,
+                        onValueChange = { targetCountry = it },
+                        label = { Text("Country", color = SlateMuted) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                            focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                            focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = candidateSkills,
+                onValueChange = { candidateSkills = it },
+                label = { Text("Your Key Qualifications & Skills Summary", color = SlateMuted) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = EmeraldGreen, unfocusedBorderColor = NavyLight,
+                    focusedContainerColor = NavyDark, unfocusedContainerColor = NavyDark,
+                    focusedTextColor = WhiteActive, unfocusedTextColor = WhiteActive
+                )
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text("Desired Outreach Tone:", color = SlateMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                items(tones) { t ->
+                    val isSel = selectedTone == t
+                    FilterChip(
+                        selected = isSel,
+                        onClick = { selectedTone = t },
+                        label = { Text(t, fontSize = 10.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = EmeraldGreen,
+                            selectedLabelColor = Color.White,
+                            containerColor = NavyDark,
+                            labelColor = SlateMuted
+                        )
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = {
+                    viewModel.generateRecruiterColdEmail(
+                        candidateName = candidateName.ifEmpty { "Applicant" },
+                        candidateSkills = candidateSkills.ifEmpty { "Software Development, Systems Architecture" },
+                        targetCompany = targetCompany.ifEmpty { "Global Tech Ltd" },
+                        targetRole = targetRole.ifEmpty { "Software Engineer" },
+                        targetCountry = targetCountry.ifEmpty { "United Kingdom" },
+                        tone = selectedTone
+                    )
+                },
+                enabled = !isGenerating,
+                modifier = Modifier.fillMaxWidth().height(44.dp).testTag("generate_cold_email_btn"),
+                colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                if (isGenerating) {
+                    CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Drafting Custom Email...", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                } else {
+                    Icon(Icons.Default.Share, contentDescription = "Draft", tint = NavyDark, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Draft Outreach Email", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                }
+            }
+
+            if (emailResult != null) {
+                val res = emailResult!!
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = NavyLight)
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Drafted Subject Line", color = EmeraldGreen, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.weight(1f))
+                    IconButton(
+                        onClick = {
+                            clipboard.setText(AnnotatedString(res.subjectLine))
+                            Toast.makeText(context, "Subject copied to clipboard!", Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Default.Share, contentDescription = "Copy Subject", tint = SlateMuted, modifier = Modifier.size(14.dp))
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(NavyDark)
+                        .padding(10.dp)
+                ) {
+                    Text(res.subjectLine, color = WhiteActive, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Email Body", color = EmeraldGreen, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.weight(1f))
+                    IconButton(
+                        onClick = {
+                            clipboard.setText(AnnotatedString(res.emailBody))
+                            Toast.makeText(context, "Email body copied!", Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Default.Share, contentDescription = "Copy Body", tint = SlateMuted, modifier = Modifier.size(14.dp))
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(NavyDark)
+                        .padding(10.dp)
+                ) {
+                    Text(res.emailBody, color = WhiteActive, fontSize = 11.sp, lineHeight = 15.sp)
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(NavyLight.copy(alpha = 0.2f))
+                        .padding(10.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text("💡 Outreach Strategy & Follow-Up Tip:", color = AmberGold, fontWeight = FontWeight.Bold, fontSize = 10.sp)
+                        Text(res.followUpTip, color = SlateMuted, fontSize = 10.sp, lineHeight = 13.sp)
+                    }
+                }
+            }
+        }
+    }
+}
+
 
