@@ -44,8 +44,13 @@ import com.example.ui.theme.*
 fun DashboardScreen(viewModel: JobViewModel) {
     var activeTab by remember { mutableStateOf("Discover") }
     var showNotificationHub by remember { mutableStateOf(false) }
+    var showDownloadAppDialog by remember { mutableStateOf(false) }
     val appMode by viewModel.appMode.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    if (showDownloadAppDialog) {
+        DownloadAppDialog(onDismiss = { showDownloadAppDialog = false })
+    }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWideScreen = maxWidth >= 800.dp
@@ -73,6 +78,38 @@ fun DashboardScreen(viewModel: JobViewModel) {
                         }
                     },
                     actions = {
+                        // Download App Button (Especially prominent on Desktop Dashboard / Tablet)
+                        if (isWideScreen) {
+                            Button(
+                                onClick = { showDownloadAppDialog = true },
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = TealCyan,
+                                    contentColor = NavyDark
+                                ),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .height(34.dp)
+                                    .testTag("download_app_desktop_btn")
+                            ) {
+                                Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Download App", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            }
+                        } else {
+                            IconButton(
+                                onClick = { showDownloadAppDialog = true },
+                                modifier = Modifier.padding(end = 4.dp).testTag("download_app_icon_btn")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = "Download App",
+                                    tint = TealCyan
+                                )
+                            }
+                        }
+
                         // Global Notification Bell with Badge
                         val notifications by viewModel.notifications.collectAsStateWithLifecycle()
                         val unreadCount = notifications.count { !it.isRead }
@@ -249,6 +286,32 @@ fun DashboardScreen(viewModel: JobViewModel) {
                                 )
                             )
                         }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        NavigationRailItem(
+                            selected = false,
+                            onClick = { showDownloadAppDialog = true },
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = "Download App",
+                                    tint = TealCyan
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = "Get App",
+                                    color = TealCyan,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            colors = NavigationRailItemDefaults.colors(
+                                indicatorColor = NavyMedium
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
                     Box(modifier = Modifier.fillMaxHeight().width(1.dp).background(NavyLight))
                 }

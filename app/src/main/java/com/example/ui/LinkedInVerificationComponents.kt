@@ -759,3 +759,175 @@ fun ProofField(label: String, value: String) {
         )
     }
 }
+
+/**
+ * Interactive Download App Modal for Desktop Dashboard & Mobile users.
+ */
+@Composable
+fun DownloadAppDialog(
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    val appShareUrl = "https://globalvisajobs.com"
+    val directApkUrl = "https://github.com/aistudio/global-visa-jobs/releases/latest/download/app-release.apk"
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            colors = CardDefaults.cardColors(containerColor = NavyMedium),
+            shape = RoundedCornerShape(20.dp),
+            border = BorderStroke(1.dp, TealCyan),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .testTag("download_app_dialog")
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Header
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(TealCyan.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = TealCyan,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Download Mobile App",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = "Android APK & Multi-Platform Access",
+                            color = SlateMuted,
+                            fontSize = 11.sp
+                        )
+                    }
+
+                    IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SlateMuted)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(color = NavyLight, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Feature Highlights
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(NavyDark)
+                        .padding(12.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("5,000+ Live Verified Sponsor Jobs", color = WhiteActive, fontSize = 12.sp)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("AI ATS Resume Builder & Visa Probability", color = WhiteActive, fontSize = 12.sp)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("LinkedIn 1-Click Verification & Sync", color = WhiteActive, fontSize = 12.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Action: Direct APK Download
+                Button(
+                    onClick = {
+                        try {
+                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(directApkUrl)).apply {
+                                flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
+                            context.startActivity(intent)
+                            Toast.makeText(context, "Opening direct APK download...", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Link copied to clipboard", Toast.LENGTH_SHORT).show()
+                            clipboard.setText(AnnotatedString(directApkUrl))
+                        }
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = TealCyan,
+                        contentColor = NavyDark
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(44.dp)
+                        .testTag("direct_apk_download_btn")
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Download Android APK (v2.4)", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Action: Copy Shareable Web & App Link
+                OutlinedButton(
+                    onClick = {
+                        clipboard.setText(AnnotatedString(appShareUrl))
+                        Toast.makeText(context, "App URL copied to clipboard: $appShareUrl", Toast.LENGTH_LONG).show()
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(1.dp, NavyLight),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = WhiteActive),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(42.dp)
+                        .testTag("copy_app_link_btn")
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp), tint = SlateMuted)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Copy App Link & Share", fontSize = 12.sp, color = WhiteActive)
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Step-by-step installation instructions
+                Text(
+                    text = "Installation Instructions:",
+                    color = SlateMuted,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "1. Download the .apk file on your Android device.\n2. Tap the notification to install.\n3. If prompted, toggle 'Allow from this source' in Settings.",
+                    color = SlateMuted,
+                    fontSize = 11.sp,
+                    lineHeight = 16.sp
+                )
+            }
+        }
+    }
+}
+
