@@ -28,7 +28,7 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
             FirebaseSyncManager.initialize(context)
 
             val existing = jobDao.getAllJobsFlow().firstOrNull() ?: emptyList()
-            if (existing.isEmpty()) {
+            if (existing.size < DefaultJobs.list.size) {
                 Log.d("JobRepository", "Pre-populating database with default sponsor jobs.")
                 jobDao.insertJobs(DefaultJobs.list)
             }

@@ -672,6 +672,34 @@
       color: var(--text-white);
       background: rgba(255, 255, 255, 0.06);
     }
+    .btn-linkedin-oauth {
+      background: #0A66C2;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
+    }
+    .btn-linkedin-oauth:hover {
+      background: #084e96;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(10, 102, 194, 0.45);
+    }
+    .field-highlight {
+      animation: highlightPulse 2s ease-in-out;
+    }
+    @keyframes highlightPulse {
+      0% { box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.8); border-color: #0A66C2; }
+      50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.6); border-color: var(--emerald); }
+      100% { box-shadow: none; border-color: var(--border-color); }
+    }
     .toast-close-btn {
       background: transparent;
       border: none;
@@ -1430,9 +1458,9 @@ International Engineering Candidate
 
   <!-- Candidate Immigration Profile Modal -->
   <div id="profileModal" class="modal-overlay" onclick="closeProfileModal(event)">
-    <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
+    <div class="modal-content" style="max-width: 540px;" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeProfileModal()">&times;</button>
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
         <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--emerald), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 22px;">
           👤
         </div>
@@ -1442,7 +1470,56 @@ International Engineering Candidate
         </div>
       </div>
 
+      <!-- LinkedIn Connect Banner / OAuth Card -->
+      <div id="linkedInConnectSection" style="margin-bottom: 18px; padding: 14px 16px; background: rgba(10, 102, 194, 0.08); border: 1px solid rgba(10, 102, 194, 0.35); border-radius: 12px;">
+        <div id="linkedInUnconnected" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 34px; height: 34px; background: #0A66C2; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 18px;">
+              in
+            </div>
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--text-white);">Connect LinkedIn</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Fast-track profile: import nationality & degree via OAuth</div>
+            </div>
+          </div>
+          <button type="button" class="btn-linkedin-oauth" onclick="openLinkedInOAuthModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.95 0-1.72.77-1.72 1.72s.77 1.72 1.72 1.72a1.72 1.72 0 0 0 0-3.44z"/></svg>
+            Connect LinkedIn
+          </button>
+        </div>
+
+        <div id="linkedInConnected" style="display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div id="linkedInAvatarBadge" style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #0A66C2, var(--teal)); border: 2px solid #38bdf8; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px;">
+              PS
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span id="linkedInCandidateName" style="font-size: 13.5px; font-weight: 700; color: var(--text-white);">Priya Sharma</span>
+                <span style="background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4); font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;">✓ Verified</span>
+              </div>
+              <div id="linkedInCandidateRole" style="font-size: 11.5px; color: var(--text-muted);">Pre-filled with verified credentials via LinkedIn OAuth</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" style="background: transparent; border: 1px solid rgba(10, 102, 194, 0.5); color: #38bdf8; font-size: 11px; padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="openLinkedInOAuthModal()">Re-sync</button>
+            <button type="button" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-dim); font-size: 11px; padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="disconnectLinkedIn()">Unlink</button>
+          </div>
+        </div>
+      </div>
+
       <form id="profileForm" onsubmit="saveUserProfile(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 12.5px; color: var(--text-muted); display: block; margin-bottom: 6px;">Full Name</label>
+            <input type="text" id="userName" class="input-control" placeholder="e.g. Priya Sharma">
+          </div>
+          <div>
+            <label style="font-size: 12.5px; color: var(--text-muted); display: block; margin-bottom: 6px;">Current Role / Headline</label>
+            <input type="text" id="userHeadline" class="input-control" placeholder="e.g. Senior Software Engineer">
+          </div>
+        </div>
+
         <div style="margin-bottom: 14px;">
           <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Nationality / Passport Country <span style="color: var(--emerald); font-weight: bold;">*</span></label>
           <select id="userNationality" class="input-control" required>
@@ -1501,6 +1578,77 @@ International Engineering Candidate
     </div>
   </div>
 
+  <!-- Simulated LinkedIn OAuth 2.0 Consent Modal -->
+  <div id="linkedInOAuthModal" class="modal-overlay" onclick="closeLinkedInOAuthModal(event)" style="z-index: 2100; display: none;">
+    <div class="modal-content" style="max-width: 480px; padding: 0; overflow: hidden; border: 1px solid rgba(10, 102, 194, 0.5); background: #101626;" onclick="event.stopPropagation()">
+      <!-- LinkedIn Brand Header -->
+      <div style="background: #0A66C2; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px; color: white;">
+          <div style="background: white; color: #0A66C2; font-weight: 900; font-size: 16px; width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; line-height: 1;">in</div>
+          <span style="font-weight: 700; font-size: 15px; letter-spacing: 0.2px;">LinkedIn OAuth 2.0 Authorization</span>
+        </div>
+        <button onclick="closeLinkedInOAuthModal()" style="background: transparent; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- OAuth Content Body -->
+      <div style="padding: 22px 24px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color);">
+          <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--emerald), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            🌐
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 14px; color: var(--text-white);">Global Visa Jobs</div>
+            <div style="font-size: 12px; color: var(--text-muted);">requests authorization to access your professional profile</div>
+          </div>
+        </div>
+
+        <!-- Simulated Account Persona Selector -->
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Select LinkedIn Profile Account to authorize:</label>
+          <select id="oauthPersonaSelect" class="input-control" style="background: #182234; font-size: 13px;">
+            <option value="priya">Priya Sharma — Cloud & AI Specialist (India, Master's Degree)</option>
+            <option value="alex">Alex Chen — Senior Systems Architect (United States, Doctorate / PhD)</option>
+            <option value="david">David Okafor — Healthcare / Senior Nurse (Nigeria, Bachelor's Degree)</option>
+            <option value="elena">Elena Santos — Full-Stack Engineer (Philippines, Bachelor's Degree)</option>
+            <option value="kwame">Kwame Mensah — Civil & Structural Engineer (Ghana, Master's Degree)</option>
+            <option value="oliver">Oliver Wright — Finance & Risk Analyst (United Kingdom, Master's Degree)</option>
+          </select>
+        </div>
+
+        <!-- Requested Scopes -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 14px; margin-bottom: 18px;">
+          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Requested Permissions (OAuth Scopes):</div>
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; color: var(--text-white);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: #38bdf8;">✓</span> <span><strong>r_liteprofile:</strong> Name, headline, photo & verified current role</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: #38bdf8;">✓</span> <span><strong>r_education:</strong> Highest degree credential & academic background</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="color: #38bdf8;">✓</span> <span><strong>r_location:</strong> Nationality & citizenship to match sponsorship visas</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress indicator (hidden by default) -->
+        <div id="oauthLoadingState" style="display: none; text-align: center; padding: 10px 0 14px;">
+          <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(10, 102, 194, 0.2); border-top-color: #0A66C2; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px;"></div>
+          <div id="oauthStatusText" style="font-size: 13px; color: #38bdf8; font-weight: 600;">Authenticating with LinkedIn OAuth 2.0...</div>
+        </div>
+
+        <!-- OAuth Action Buttons -->
+        <div id="oauthActionButtons" style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn-toast-dismiss" style="padding: 10px 18px;" onclick="closeLinkedInOAuthModal()">Cancel</button>
+          <button type="button" class="btn-linkedin-oauth" style="padding: 10px 22px; font-size: 13px;" onclick="submitLinkedInOAuth()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.95 0-1.72.77-1.72 1.72s.77 1.72 1.72 1.72a1.72 1.72 0 0 0 0-3.44z"/></svg>
+            Allow Access & Pre-fill
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Subtle Profile Reminder Toast Notification -->
   <div id="profileReminderToast" class="profile-toast" role="alert" aria-live="polite">
     <div class="toast-indicator"></div>
@@ -1554,7 +1702,7 @@ International Engineering Candidate
         country: "United Kingdom",
         city: "London",
         visaType: "UK Skilled Worker",
-        salary: "£85,000 - £105,000",
+        salary: "£85,000 - £110,000",
         relocation: "Full Relocation (£5,000 stipend, flight, 1-mo apartment)",
         tags: ["Kotlin", "Compose", "Coroutines", "FinTech"],
         description: "Scale next-generation banking services. Monzo is a licensed A-Rated UK Home Office Sponsor with immediate Certificate of Sponsorship allocation."
@@ -1577,67 +1725,226 @@ International Engineering Candidate
         company: "Shopify Inc.",
         country: "Canada",
         city: "Toronto / Remote CA",
-        visaType: "Canada LMIA",
-        salary: "C$145,000 - C$180,000",
+        visaType: "Canada LMIA (GTS)",
+        salary: "C$150,000 - C$185,000",
         relocation: "Global Talent Stream 2-Week Express Processing",
         tags: ["PyTorch", "LLMs", "Python", "Distributed Systems"],
         description: "Accelerate merchant commerce with generative AI models. Fast-track Canadian LMIA exempt Global Talent Stream sponsorship."
       },
       {
         id: "job-4",
-        title: "Principal Distributed Systems Engineer",
+        title: "Staff Cloud Security & DevOps Engineer",
         company: "Stripe US Infrastructure",
         country: "United States",
-        city: "Seattle / San Francisco",
-        visaType: "US H-1B / O-1",
-        salary: "$185,000 - $240,000 + Equity",
+        city: "San Francisco / Seattle",
+        visaType: "US H-1B / O-1 / EB-2",
+        salary: "$190,000 - $245,000 + Equity",
         relocation: "Premium Legal Team for O-1 / H-1B Cap Exempt Transfer",
         tags: ["Rust", "Distributed DB", "Java", "High TPS"],
         description: "Build global payment infrastructure processing billions daily. Comprehensive US visa legal support for H-1B transfers, O-1, and EB-2 PERM green cards."
       },
       {
         id: "job-5",
-        title: "Lead Full-Stack Web Architect",
+        title: "Principal Distributed Systems Architect",
         company: "Booking.com B.V.",
         country: "Netherlands",
         city: "Amsterdam",
-        visaType: "Tech Visa",
-        salary: "€90,000 - €115,000",
+        visaType: "Dutch Tech Visa (IND)",
+        salary: "€95,000 - €125,000",
         relocation: "30% Tax Ruling Eligibility + Flight & Housing",
         tags: ["React", "TypeScript", "Node.js", "GraphQL"],
         description: "Drive high-traffic travel booking micro-frontends. Direct IND Highly Skilled Migrant sponsorship with the Dutch 30% tax exemption."
       },
       {
         id: "job-6",
-        title: "Senior Site Reliability Engineer",
+        title: "Staff Site Reliability Engineer",
         company: "Atlassian Pty Ltd",
         country: "Australia",
         city: "Sydney",
-        visaType: "Tech Visa",
-        salary: "A$160,000 - A$195,000",
+        visaType: "TSS 482 / 186 ENS",
+        salary: "A$165,000 - A$200,000",
         relocation: "TSS 482 Visa with Direct Employer PR Nomination",
         tags: ["GCP", "Observability", "Linux", "Python"],
         description: "Ensure 99.999% uptime for Jira and Confluence cloud. Australia TSS 482 visa sponsorship with clear pathway to permanent residency (Subclass 186)."
+      },
+      {
+        id: "job-7",
+        title: "Registered Nurse (Sponsorship Available)",
+        company: "HealCare Ltd & NHS Trust",
+        country: "United Kingdom",
+        city: "London",
+        visaType: "UK Skilled Worker (Health & Care)",
+        salary: "£35,000 - £44,000",
+        relocation: "Free 3-Mo Accommodation + NMC & OSCE Exam Covered",
+        tags: ["Nursing", "NHS Band 5/6", "Acute Care", "Healthcare"],
+        description: "Join premier NHS Trusts across London. Full Skilled Worker sponsorship with complete reimbursement of OSCE fees and flight allowance."
+      },
+      {
+        id: "job-8",
+        title: "Long-Haul Commercial Truck Driver",
+        company: "TransCanada Logistics",
+        country: "Canada",
+        city: "Calgary, AB",
+        visaType: "Canada LMIA Approved",
+        salary: "C$68,000 - C$84,000",
+        relocation: "LMIA Positive Assessment + Settlement Bonus",
+        tags: ["Class 1", "Logistics", "Heavy Vehicle", "Supply Chain"],
+        description: "Pre-approved LMIA work permit position for experienced commercial heavy vehicle operators across Canadian inter-provincial routes."
+      },
+      {
+        id: "job-9",
+        title: "Specialist Resident Medical Officer (RMO)",
+        company: "St. Vincent's Healthcare Group",
+        country: "Ireland",
+        city: "Dublin",
+        visaType: "Critical Skills Permit (CSEP)",
+        salary: "€72,000 - €95,000",
+        relocation: "Relocation Stipend + IMC Licensing Assistance",
+        tags: ["Emergency Medicine", "Inpatient", "Clinical", "Healthcare"],
+        description: "Immediate critical skills permit sponsorship for qualified medical physicians. Pathway to Stamp 4 permanent residency after 21 months."
+      },
+      {
+        id: "job-10",
+        title: "Senior Civil & Infrastructure Structural Engineer",
+        company: "Pacific Build Group & Arup",
+        country: "Australia",
+        city: "Sydney / Melbourne",
+        visaType: "Australia Subclass 482 / 186",
+        salary: "A$120,000 - A$145,000",
+        relocation: "Full Relocation + Australian Permanent Residency Pathway",
+        tags: ["Structural", "Civil 3D", "AutoCAD", "BIM", "Infrastructure"],
+        description: "Lead major transport and tunnel infrastructure projects. Direct TSS 482 visa nomination and employer-sponsored permanent residency."
+      },
+      {
+        id: "job-11",
+        title: "Renewable High-Voltage Grid Engineer",
+        company: "Siemens Energy Global",
+        country: "Germany",
+        city: "Munich",
+        visaType: "EU Blue Card",
+        salary: "€76,000 - €90,000",
+        relocation: "Visa Concierge + Language Training Support",
+        tags: ["High Voltage", "Power Grid", "Substations", "Renewables"],
+        description: "Design multi-gigawatt offshore wind transmission links across Europe. Fast-track EU Blue Card sponsorship under German STEM shortage regulations."
+      },
+      {
+        id: "job-12",
+        title: "Clinical Radiographer & MRI Specialist",
+        company: "Auckland District Health Board",
+        country: "New Zealand",
+        city: "Auckland",
+        visaType: "NZ Green List Tier 1",
+        salary: "NZ$88,000 - NZ$115,000",
+        relocation: "NZ$10,000 Relocation Grant + Straight-to-Residence Visa",
+        tags: ["MRI", "CT Scan", "Medical Imaging", "Healthcare"],
+        description: "New Zealand Green List Tier 1 role providing immediate Straight-to-Residence visa grant upon employment with Auckland DHB."
+      },
+      {
+        id: "job-13",
+        title: "Computer Vision & Autonomous Robotics Engineer",
+        company: "Woven Planet (Toyota Group)",
+        country: "Japan",
+        city: "Tokyo",
+        visaType: "Japan Highly Skilled Professional (HSP)",
+        salary: "¥9,500,000 - ¥14,500,000",
+        relocation: "Full Relocation + English Working Environment",
+        tags: ["Computer Vision", "C++", "ROS2", "Robotics", "Autonomous"],
+        description: "Design perception models for autonomous vehicles. Sponsoring Japan HSP Visa with expedited 1-year permanent residency pathway for 80+ point scores."
+      },
+      {
+        id: "job-14",
+        title: "Quantitative Risk & Algorithmic Data Modeler",
+        company: "DBS Bank & Global Markets",
+        country: "Singapore",
+        city: "Singapore",
+        visaType: "Singapore Employment Pass (COMPASS)",
+        salary: "S$155,000 - S$210,000",
+        relocation: "Comprehensive Housing + Employment Pass Processing",
+        tags: ["Python", "C++", "Quantitative Finance", "Risk Modeling"],
+        description: "Build high-throughput risk engines and valuation platforms. Direct Employment Pass sponsorship under Singapore's COMPASS points framework."
+      },
+      {
+        id: "job-15",
+        title: "Offshore Wind Turbine Maintenance Specialist",
+        company: "Vestas Wind Systems A/S",
+        country: "Denmark",
+        city: "Aarhus",
+        visaType: "Danish Fast-Track Scheme",
+        salary: "50,000 - 65,000 DKK/mo",
+        relocation: "GWO Safety Certification + Housing Assistance",
+        tags: ["Wind Energy", "Offshore", "Turbines", "Electrical"],
+        description: "Certified fast-track employer with the Danish Agency for International Recruitment (SIRI). Fast-track work permit for offshore technicians."
+      },
+      {
+        id: "job-16",
+        title: "Senior Clinical Pharmacist (Tax-Free)",
+        company: "Cleveland Clinic Abu Dhabi",
+        country: "United Arab Emirates",
+        city: "Abu Dhabi",
+        visaType: "UAE 10-Yr Golden / Green Visa",
+        salary: "32,000 - 45,000 AED/mo (Tax-Free)",
+        relocation: "100% Tax-Free + Furnished Villa + Family Flights",
+        tags: ["Pharmacy", "Clinical", "Oncology", "Healthcare"],
+        description: "World-class healthcare facility sponsoring UAE Golden Visas and Green Visas with tax-free compensation and full family healthcare coverage."
+      },
+      {
+        id: "job-17",
+        title: "Senior Care Assistant & Companion",
+        company: "Serene Meadows ElderCare",
+        country: "United Kingdom",
+        city: "Manchester",
+        visaType: "Health & Care Worker Visa",
+        salary: "£24,500 - £28,000",
+        relocation: "Visa Fee Reimbursement + Initial Accommodation",
+        tags: ["Elderly Care", "CQC Certified", "Healthcare Support"],
+        description: "Compliant with Care Quality Commission (CQC) standards. Immediate Certificate of Sponsorship under the UK Health and Care Worker route."
+      },
+      {
+        id: "job-18",
+        title: "Senior Cloud Architect (Fast-Track)",
+        company: "Nordic Cloud AB",
+        country: "Sweden",
+        city: "Stockholm",
+        visaType: "Swedish Work Permit",
+        salary: "68,000 - 82,000 SEK/mo",
+        relocation: "Swedish Migration Fast-Track + Family Relocation",
+        tags: ["Kubernetes", "AWS", "Terraform", "Go", "Cloud"],
+        description: "Certified Swedish Migration Agency fast-track sponsor. Design cloud-native multi-tenant infrastructures with comprehensive family relocation."
       }
     ];
 
     // Verified Sponsors Directory
     const SPONSORS_DATA = [
       { name: "Monzo Bank Ltd", country: "United Kingdom", tier: "A-Rating (Worker)", routes: "Skilled Worker, Global Business", quota: "450+ Uncapped", status: "Active" },
+      { name: "HealCare & London NHS Trust", country: "United Kingdom", tier: "NHS Fast-Track A-Rating", routes: "Health & Care Worker Visa", quota: "1,200+ Active", status: "Active" },
       { name: "Delivery Hero SE", country: "Germany", tier: "Federal BAMF Whitelist", routes: "EU Blue Card, Specialist Visa", quota: "250+ Approved", status: "Active" },
+      { name: "Siemens Energy Global", country: "Germany", tier: "Federal BAMF Whitelist", routes: "EU Blue Card, STEM Fast-Track", quota: "500+ Active", status: "Active" },
       { name: "Shopify Canada", country: "Canada", tier: "GTS Priority Designated", routes: "Global Talent Stream, LMIA", quota: "300+ Annual", status: "Active" },
+      { name: "TransCanada Logistics", country: "Canada", tier: "LMIA Verified Employer", routes: "Temporary Foreign Worker (TFWP)", quota: "150+ Pre-Approved", status: "Active" },
       { name: "Stripe Inc.", country: "United States", tier: "E-Verify Certified", routes: "H-1B, O-1A, L-1A/B, EB-2", quota: "Uncapped PERM", status: "Active" },
       { name: "Booking.com B.V.", country: "Netherlands", tier: "IND Recognized Sponsor", routes: "Highly Skilled Migrant, EU Blue", quota: "180+ Active", status: "Active" },
-      { name: "Atlassian Pty", country: "Australia", tier: "Accredited Sponsor", routes: "TSS 482, Subclass 186 ENS", quota: "120+ Active", status: "Active" }
+      { name: "Atlassian Pty", country: "Australia", tier: "Accredited Sponsor", routes: "TSS 482, Subclass 186 ENS", quota: "120+ Active", status: "Active" },
+      { name: "Pacific Build Group & Arup", country: "Australia", tier: "Accredited Sponsor", routes: "TSS 482, Subclass 186/494", quota: "85+ Active", status: "Active" },
+      { name: "St. Vincent's Healthcare Group", country: "Ireland", tier: "DETE Priority Employer", routes: "Critical Skills Permit (CSEP)", quota: "220+ Active", status: "Active" },
+      { name: "Auckland District Health Board", country: "New Zealand", tier: "AEWV Accredited Employer", routes: "Green List Straight-to-Residence", quota: "350+ Active", status: "Active" },
+      { name: "Woven Planet (Toyota Group)", country: "Japan", tier: "HSP Designated Sponsor", routes: "Highly Skilled Professional (HSP)", quota: "100+ Active", status: "Active" },
+      { name: "DBS Bank & Global Markets", country: "Singapore", tier: "MOM Recognized Financial Institution", routes: "Employment Pass (COMPASS)", quota: "200+ Active", status: "Active" },
+      { name: "Cleveland Clinic Abu Dhabi", country: "United Arab Emirates", tier: "MOHAP Tier 1 Hospital", routes: "10-Year Golden Visa, Green Visa", quota: "Uncapped", status: "Active" },
+      { name: "Vestas Wind Systems A/S", country: "Denmark", tier: "SIRI Fast-Track Scheme", routes: "Danish Pay Limit & Fast-Track", quota: "140+ Active", status: "Active" }
     ];
 
     // SOC Occupation Database
     const SOC_DATA = [
       { code: "2136", title: "Programmers and Software Development Professionals", country: "United Kingdom", minSalary: "£49,400 (£34,580 New Entrant)", shortage: "Yes (ISL Priority)", level: "RQF 6 (Degree)" },
+      { code: "2231", title: "Nurses and Midwives (Band 5/6 Registered)", country: "United Kingdom", minSalary: "£28,407 (Band 5 / ISL Exempt)", shortage: "Yes (Health & Care Priority)", level: "RQF 6 (Degree)" },
       { code: "2135", title: "IT Business Analysts, Architects and Systems Designers", country: "United Kingdom", minSalary: "£51,700", shortage: "Standard Eligible", level: "RQF 6 (Degree)" },
-      { code: "2139", title: "Information Technology Professionals NEC", country: "United Kingdom", minSalary: "£40,900", shortage: "Yes (ISL Priority)", level: "RQF 6 (Degree)" },
+      { code: "2121", title: "Civil Engineers and Structural Engineering Managers", country: "United Kingdom / Aus", minSalary: "£45,500 / A$105,000", shortage: "Yes (Core Shortage)", level: "RQF 6 (Degree)" },
       { code: "2512", title: "Software and Applications Developers and Analysts", country: "Germany (EU)", minSalary: "€41,041 (MINT / STEM)", shortage: "Yes (Blue Card Fast Track)", level: "University Degree" },
+      { code: "2144", title: "Mechanical and Electrical Energy Engineers", country: "Germany (EU)", minSalary: "€41,041 (MINT / STEM)", shortage: "Yes (Blue Card Fast Track)", level: "Engineering Degree" },
       { code: "NOC 21232", title: "Software Developers and Programmers", country: "Canada (GTS)", minSalary: "C$92,000 (Category B)", shortage: "Yes (2-Week Processing)", level: "TEER 1 (Degree)" },
+      { code: "NOC 73300", title: "Transport Truck Drivers (Commercial Class 1)", country: "Canada (LMIA)", minSalary: "C$55,000 (Prevailing Wage)", shortage: "Yes (Provincial LMIA Stream)", level: "TEER 3 (Certified)" },
+      { code: "ANZSCO 254499", title: "Registered Nurses NEC", country: "Australia & New Zealand", minSalary: "A$82,000 / NZ$85,000", shortage: "Yes (Green List Tier 1 / PMSOL)", level: "Bachelor's Degree" },
+      { code: "ANZSCO 233211", title: "Civil Engineer (Infrastructure)", country: "Australia & New Zealand", minSalary: "A$108,000", shortage: "Yes (MLTSSL Priority)", level: "Bachelor's Degree" },
       { code: "SOC 15-1252", title: "Software Developers (H-1B / PERM Prevailing)", country: "United States", minSalary: "$118,000 (Level 2 Prevailing)", shortage: "H-1B Cap Exempt / O-1", level: "Bachelor's / Master's" }
     ];
 
@@ -1739,11 +2046,198 @@ International Engineering Candidate
       }
     }
 
+    const LINKEDIN_PERSONAS = {
+      priya: {
+        name: 'Priya Sharma',
+        headline: 'Senior Cloud & AI Specialist · Ex-Amazon',
+        nationality: 'India',
+        education: "Master's Degree",
+        occupation: 'Technology',
+        avatar: 'PS',
+        verified: true
+      },
+      alex: {
+        name: 'Alex Chen',
+        headline: 'Senior Systems Architect & Tech Lead',
+        nationality: 'United States',
+        education: 'Doctorate / PhD',
+        occupation: 'Technology',
+        avatar: 'AC',
+        verified: true
+      },
+      david: {
+        name: 'David Okafor',
+        headline: 'Clinical Nurse Specialist & Healthcare Practitioner',
+        nationality: 'Nigeria',
+        education: "Bachelor's Degree",
+        occupation: 'Healthcare',
+        avatar: 'DO',
+        verified: true
+      },
+      elena: {
+        name: 'Elena Santos',
+        headline: 'Full-Stack Developer & Mobile Engineer',
+        nationality: 'Philippines',
+        education: "Bachelor's Degree",
+        occupation: 'Technology',
+        avatar: 'ES',
+        verified: true
+      },
+      kwame: {
+        name: 'Kwame Mensah',
+        headline: 'Chartered Structural & Civil Engineer',
+        nationality: 'Ghana',
+        education: "Master's Degree",
+        occupation: 'Engineering',
+        avatar: 'KM',
+        verified: true
+      },
+      oliver: {
+        name: 'Oliver Wright',
+        headline: 'Financial Analyst & Global Risk Strategist',
+        nationality: 'United Kingdom',
+        education: "Master's Degree",
+        occupation: 'Finance',
+        avatar: 'OW',
+        verified: true
+      }
+    };
+
+    function openLinkedInOAuthModal() {
+      const modal = document.getElementById('linkedInOAuthModal');
+      if (!modal) return;
+      const loadingState = document.getElementById('oauthLoadingState');
+      const actionButtons = document.getElementById('oauthActionButtons');
+      if (loadingState) loadingState.style.display = 'none';
+      if (actionButtons) actionButtons.style.display = 'flex';
+      modal.style.display = 'flex';
+    }
+
+    function closeLinkedInOAuthModal(e) {
+      if (e && e.target && e.target !== e.currentTarget) return;
+      const modal = document.getElementById('linkedInOAuthModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function submitLinkedInOAuth() {
+      const loadingState = document.getElementById('oauthLoadingState');
+      const actionButtons = document.getElementById('oauthActionButtons');
+      const statusText = document.getElementById('oauthStatusText');
+      const personaKey = document.getElementById('oauthPersonaSelect')?.value || 'priya';
+      const persona = LINKEDIN_PERSONAS[personaKey] || LINKEDIN_PERSONAS.priya;
+
+      if (actionButtons) actionButtons.style.display = 'none';
+      if (loadingState) loadingState.style.display = 'block';
+
+      if (statusText) statusText.innerText = 'Step 1/3: Authenticating with LinkedIn OAuth 2.0...';
+
+      setTimeout(() => {
+        if (statusText) statusText.innerText = 'Step 2/3: Exchanging Auth Code & Verifying Profile...';
+      }, 400);
+
+      setTimeout(() => {
+        if (statusText) statusText.innerText = 'Step 3/3: Importing Degree & Nationality Credentials...';
+      }, 800);
+
+      setTimeout(() => {
+        // Pre-fill profile fields
+        const nameInput = document.getElementById('userName');
+        const headlineInput = document.getElementById('userHeadline');
+        const nationalitySelect = document.getElementById('userNationality');
+        const educationSelect = document.getElementById('userEducation');
+        const occupationSelect = document.getElementById('userOccupation');
+
+        if (nameInput) {
+          nameInput.value = persona.name;
+          nameInput.classList.remove('field-highlight');
+          void nameInput.offsetWidth;
+          nameInput.classList.add('field-highlight');
+        }
+        if (headlineInput) {
+          headlineInput.value = persona.headline;
+          headlineInput.classList.remove('field-highlight');
+          void headlineInput.offsetWidth;
+          headlineInput.classList.add('field-highlight');
+        }
+        if (nationalitySelect) {
+          nationalitySelect.value = persona.nationality;
+          nationalitySelect.classList.remove('field-highlight');
+          void nationalitySelect.offsetWidth;
+          nationalitySelect.classList.add('field-highlight');
+        }
+        if (educationSelect) {
+          educationSelect.value = persona.education;
+          educationSelect.classList.remove('field-highlight');
+          void educationSelect.offsetWidth;
+          educationSelect.classList.add('field-highlight');
+        }
+        if (occupationSelect) {
+          occupationSelect.value = persona.occupation;
+          occupationSelect.classList.remove('field-highlight');
+          void occupationSelect.offsetWidth;
+          occupationSelect.classList.add('field-highlight');
+        }
+
+        // Save connected state in localStorage
+        localStorage.setItem('gvj_linkedin_connected', 'true');
+        localStorage.setItem('gvj_linkedin_data', JSON.stringify(persona));
+
+        updateLinkedInUI(persona);
+        closeLinkedInOAuthModal();
+
+        const alertBox = document.getElementById('profileSavedAlert');
+        if (alertBox) {
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = `✓ <strong>LinkedIn Connected!</strong> Imported <strong>${persona.name}</strong> (${persona.nationality}, ${persona.education}). Click "Save Profile" to apply.`;
+        }
+      }, 1200);
+    }
+
+    function disconnectLinkedIn() {
+      localStorage.removeItem('gvj_linkedin_connected');
+      localStorage.removeItem('gvj_linkedin_data');
+      updateLinkedInUI(null);
+      const alertBox = document.getElementById('profileSavedAlert');
+      if (alertBox) {
+        alertBox.style.display = 'block';
+        alertBox.innerHTML = 'LinkedIn account unlinked. You can reconnect anytime.';
+        setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
+      }
+    }
+
+    function updateLinkedInUI(personaData) {
+      const unconnected = document.getElementById('linkedInUnconnected');
+      const connected = document.getElementById('linkedInConnected');
+      const candidateName = document.getElementById('linkedInCandidateName');
+      const candidateRole = document.getElementById('linkedInCandidateRole');
+      const avatarBadge = document.getElementById('linkedInAvatarBadge');
+
+      const isConnected = localStorage.getItem('gvj_linkedin_connected') === 'true';
+      const savedPersona = personaData || JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
+
+      if (isConnected && connected && unconnected) {
+        unconnected.style.display = 'none';
+        connected.style.display = 'flex';
+        if (candidateName) candidateName.innerText = savedPersona.name;
+        if (candidateRole) candidateRole.innerText = `${savedPersona.headline} · Verified via LinkedIn OAuth`;
+        if (avatarBadge) avatarBadge.innerText = savedPersona.avatar || savedPersona.name.split(' ').map(n => n[0]).join('');
+      } else if (connected && unconnected) {
+        connected.style.display = 'none';
+        unconnected.style.display = 'flex';
+      }
+    }
+
     function openProfileModal() {
       dismissProfileToast(false);
       const modal = document.getElementById('profileModal');
       if (!modal) return;
       const profile = JSON.parse(localStorage.getItem('gvj_user_profile') || '{}');
+      if (profile.name && document.getElementById('userName')) {
+        document.getElementById('userName').value = profile.name;
+      }
+      if (profile.headline && document.getElementById('userHeadline')) {
+        document.getElementById('userHeadline').value = profile.headline;
+      }
       if (profile.nationality && document.getElementById('userNationality')) {
         document.getElementById('userNationality').value = profile.nationality;
       }
@@ -1753,6 +2247,7 @@ International Engineering Candidate
       if (profile.occupation && document.getElementById('userOccupation')) {
         document.getElementById('userOccupation').value = profile.occupation;
       }
+      updateLinkedInUI();
       modal.style.display = 'flex';
     }
 
@@ -1766,11 +2261,15 @@ International Engineering Candidate
 
     function saveUserProfile(e) {
       if (e) e.preventDefault();
+      const name = document.getElementById('userName')?.value || '';
+      const headline = document.getElementById('userHeadline')?.value || '';
       const nationality = document.getElementById('userNationality')?.value || '';
       const education = document.getElementById('userEducation')?.value || '';
       const occupation = document.getElementById('userOccupation')?.value || '';
 
       const profile = {
+        name,
+        headline,
         nationality,
         education,
         occupation,
@@ -1783,6 +2282,7 @@ International Engineering Candidate
       const alertBox = document.getElementById('profileSavedAlert');
       if (alertBox) {
         alertBox.style.display = 'block';
+        alertBox.innerHTML = '✓ Profile updated! Your nationality and education are saved for accurate visa matching.';
       }
 
       setTimeout(() => {
