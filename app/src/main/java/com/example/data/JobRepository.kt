@@ -290,6 +290,76 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         FirebaseSyncManager.uploadProfileToFirebase(profile)
     }
 
+    suspend fun linkLinkedInProfile(data: com.example.auth.LinkedInProfileData, autoImportToProfile: Boolean) {
+        val current = jobDao.getUserProfile() ?: UserProfileEntity()
+        val formattedResume = com.example.auth.LinkedInOAuthService.formatAsAtsResume(data)
+        
+        val updated = if (autoImportToProfile) {
+            current.copy(
+                fullName = if (data.fullName.isNotBlank()) data.fullName else current.fullName,
+                skills = if (data.skills.isNotEmpty()) data.skills.joinToString(", ") else current.skills,
+                experience = if (data.positions.isNotEmpty()) {
+                    data.positions.joinToString("\n\n") { pos ->
+                        "${pos.title} at ${pos.company} (${pos.startDate} - ${pos.endDate}): ${pos.description}"
+                    }
+                } else current.experience,
+                education = if (data.educations.isNotEmpty()) {
+                    data.educations.joinToString("\n") { edu ->
+                        "${edu.degree} in ${edu.fieldOfStudy}, ${edu.school} (${edu.startYear}-${edu.endYear})"
+                    }
+                } else current.education,
+                preferredOccupations = if (data.headline.isNotBlank()) data.headline.take(60) else current.preferredOccupations,
+                resumeText = formattedResume,
+                linkedInConnected = true,
+                linkedInMemberId = data.memberId,
+                linkedInEmail = data.email,
+                linkedInEmailVerified = data.isEmailVerified,
+                linkedInHeadline = data.headline,
+                linkedInProfilePicture = data.profilePictureUrl,
+                linkedInVerifiedAt = data.verifiedAtTimestamp,
+                linkedInVerificationHash = data.verificationHash,
+                linkedInTrustScore = data.trustScore,
+                linkedInConnectionsCount = data.connectionsCount,
+                linkedInIndustry = data.industry
+            )
+        } else {
+            current.copy(
+                linkedInConnected = true,
+                linkedInMemberId = data.memberId,
+                linkedInEmail = data.email,
+                linkedInEmailVerified = data.isEmailVerified,
+                linkedInHeadline = data.headline,
+                linkedInProfilePicture = data.profilePictureUrl,
+                linkedInVerifiedAt = data.verifiedAtTimestamp,
+                linkedInVerificationHash = data.verificationHash,
+                linkedInTrustScore = data.trustScore,
+                linkedInConnectionsCount = data.connectionsCount,
+                linkedInIndustry = data.industry
+            )
+        }
+        jobDao.insertProfile(updated)
+        FirebaseSyncManager.uploadProfileToFirebase(updated)
+    }
+
+    suspend fun unlinkLinkedInProfile() {
+        val current = jobDao.getUserProfile() ?: UserProfileEntity()
+        val updated = current.copy(
+            linkedInConnected = false,
+            linkedInMemberId = "",
+            linkedInEmail = "",
+            linkedInEmailVerified = false,
+            linkedInHeadline = "",
+            linkedInProfilePicture = "",
+            linkedInVerifiedAt = 0L,
+            linkedInVerificationHash = "",
+            linkedInTrustScore = 0,
+            linkedInConnectionsCount = "",
+            linkedInIndustry = ""
+        )
+        jobDao.insertProfile(updated)
+        FirebaseSyncManager.uploadProfileToFirebase(updated)
+    }
+
     suspend fun getUserProfile(): UserProfileEntity? {
         return jobDao.getUserProfile()
     }

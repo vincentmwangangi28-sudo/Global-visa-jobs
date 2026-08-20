@@ -5,6 +5,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
+import com.example.auth.LinkedInOAuthService
+import com.example.auth.LinkedInOAuthState
+import com.example.auth.LinkedInProfileData
 import com.example.data.*
 import com.example.network.GeminiApiClient
 import com.example.network.JobVerificationResult
@@ -782,6 +785,116 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearRelocationSalaryInsight() {
         _relocationSalaryInsight.value = null
+    }
+
+    // ==========================================
+    // LinkedIn OAuth2 & Verification Architecture
+    // ==========================================
+    private val _linkedInOAuthState = MutableStateFlow<LinkedInOAuthState>(LinkedInOAuthState.Idle)
+    val linkedInOAuthState: StateFlow<LinkedInOAuthState> = _linkedInOAuthState.asStateFlow()
+
+    private val _linkedInImportPreview = MutableStateFlow<LinkedInProfileData?>(null)
+    val linkedInImportPreview: StateFlow<LinkedInProfileData?> = _linkedInImportPreview.asStateFlow()
+
+    private val _isUnlinkingLinkedIn = MutableStateFlow(false)
+    val isUnlinkingLinkedIn: StateFlow<Boolean> = _isUnlinkingLinkedIn.asStateFlow()
+
+    /**
+     * Prepares OAuth2 authorization URL and launches LinkedIn Login.
+     */
+    fun startLinkedInOAuthFlow(context: android.content.Context) {
+        try {
+            _linkedInOAuthState.value = LinkedInOAuthState.Authorizing
+            val (authUrl, _) = LinkedInOAuthService.createAuthorizationUrl()
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(authUrl)).apply {
+                flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("JobViewModel", "Failed to launch LinkedIn OAuth URL", e)
+            _linkedInOAuthState.value = LinkedInOAuthState.Error("Could not open browser: ${e.message}")
+        }
+    }
+
+    /**
+     * Handles the deep link redirect callback from LinkedIn with authorization code and state token.
+     */
+    fun handleLinkedInOAuthCallback(uri: android.net.Uri) {
+        val code = uri.getQueryParameter("code")
+        val state = uri.getQueryParameter("state")
+        val error = uri.getQueryParameter("error")
+        val errorDescription = uri.getQueryParameter("error_description")
+
+        if (error != null) {
+            _linkedInOAuthState.value = LinkedInOAuthState.Error(errorDescription ?: error)
+            return
+        }
+
+        if (code.isNullOrEmpty() || state.isNullOrEmpty()) {
+            _linkedInOAuthState.value = LinkedInOAuthState.Error("Missing authorization code or state token.")
+            return
+        }
+
+        viewModelScope.launch {
+            _linkedInOAuthState.value = LinkedInOAuthState.ExchangingToken()
+            val result = LinkedInOAuthService.exchangeCodeAndFetchProfile(code, state)
+            result.onSuccess { profileData ->
+                _linkedInOAuthState.value = LinkedInOAuthState.Success(profileData)
+                _linkedInImportPreview.value = profileData
+            }.onFailure { ex ->
+                _linkedInOAuthState.value = LinkedInOAuthState.Error(ex.message ?: "Authentication failed.")
+            }
+        }
+    }
+
+    /**
+     * Connects with Sandbox Verified LinkedIn profile for instant testing and demonstration.
+     */
+    fun connectLinkedInSandbox(
+        customName: String = "Sarah Jenkins",
+        customHeadline: String = "Lead Cloud Architect & AI Specialist | Open to UK Skilled Worker / EU Blue Card Sponsorship",
+        customEmail: String = "sarah.jenkins.verified@example.com"
+    ) {
+        viewModelScope.launch {
+            _linkedInOAuthState.value = LinkedInOAuthState.FetchingProfile("Simulating OAuth2 PKCE handshake with LinkedIn...")
+            kotlinx.coroutines.delay(800) // Realistic UX handshake animation
+            val profile = LinkedInOAuthService.createMockVerifiedProfile(
+                customName = customName,
+                customHeadline = customHeadline,
+                customEmail = customEmail
+            )
+            _linkedInOAuthState.value = LinkedInOAuthState.Success(profile)
+            _linkedInImportPreview.value = profile
+        }
+    }
+
+    /**
+     * Applies imported LinkedIn data to the user profile in Room database.
+     */
+    fun applyLinkedInImport(data: LinkedInProfileData, autoImportToProfile: Boolean = true) {
+        viewModelScope.launch {
+            repository.linkLinkedInProfile(data, autoImportToProfile)
+            _linkedInOAuthState.value = LinkedInOAuthState.Idle
+            _linkedInImportPreview.value = null
+        }
+    }
+
+    /**
+     * Unlinks LinkedIn account and revokes verification badge.
+     */
+    fun unlinkLinkedInAccount() {
+        viewModelScope.launch {
+            _isUnlinkingLinkedIn.value = true
+            repository.unlinkLinkedInProfile()
+            _linkedInOAuthState.value = LinkedInOAuthState.Idle
+            _linkedInImportPreview.value = null
+            _isUnlinkingLinkedIn.value = false
+        }
+    }
+
+    fun dismissLinkedInDialog() {
+        _linkedInOAuthState.value = LinkedInOAuthState.Idle
+        _linkedInImportPreview.value = null
     }
 }
 

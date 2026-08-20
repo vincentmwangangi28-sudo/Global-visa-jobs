@@ -113,8 +113,25 @@
         <p>AI generated embassy and employer visa interview questions with scoring guidelines.</p>
       </div>
     </div>
-    <a href="globalvisajobs://open" class="cta-btn">Launch Global Visa Jobs App</a>
-    <div class="footer-note">Google Site Verification: <code>google00332d67777e965d.html</code> &bull; Active & Indexed</div>
+    <button type="button" class="cta-btn" id="openAppBtn">Launch Global Visa Jobs App</button>
+    <p id="appNotice" style="margin-top: 12px; font-size: 13px; color: var(--text-muted); display: none;">
+      App installed? It should open automatically. If viewing on desktop or without the APK installed, download the APK or open on your Android device.
+    </p>
+    <div class="footer-note">Google Site Verification Active &bull; Verified International Visa Sponsorship Platform</div>
   </div>
+  <script>
+    document.getElementById('openAppBtn').addEventListener('click', function() {
+      var notice = document.getElementById('appNotice');
+      if (notice) notice.style.display = 'block';
+      var customScheme = 'globalvisajobs://open';
+      var intentUrl = 'intent://open#Intent;scheme=globalvisajobs;package=com.example;end';
+      var isAndroid = /android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        window.location.href = intentUrl;
+      } else {
+        window.location.href = customScheme;
+      }
+    });
+  </script>
 </body>
 </html>

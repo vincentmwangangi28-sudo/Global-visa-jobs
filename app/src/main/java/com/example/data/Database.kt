@@ -41,7 +41,19 @@ data class UserProfileEntity(
     val preferredOccupations: String = "",
     val salaryExpectations: String = "",
     val resumeText: String = "",
-    val coverLetterText: String = ""
+    val coverLetterText: String = "",
+    // LinkedIn OAuth2 & Professional Verification fields
+    val linkedInConnected: Boolean = false,
+    val linkedInMemberId: String = "",
+    val linkedInEmail: String = "",
+    val linkedInEmailVerified: Boolean = false,
+    val linkedInHeadline: String = "",
+    val linkedInProfilePicture: String = "",
+    val linkedInVerifiedAt: Long = 0L,
+    val linkedInVerificationHash: String = "",
+    val linkedInTrustScore: Int = 0,
+    val linkedInConnectionsCount: String = "",
+    val linkedInIndustry: String = ""
 )
 
 @Entity(tableName = "custom_alerts")
@@ -177,7 +189,7 @@ data class JobNotificationEntity(
     val isPush: Boolean = false
 )
 
-@Database(entities = [JobEntity::class, UserProfileEntity::class, CustomAlertEntity::class, VisaApplicationEntity::class, RelocationTaskEntity::class, JobNotificationEntity::class], version = 4, exportSchema = false)
+@Database(entities = [JobEntity::class, UserProfileEntity::class, CustomAlertEntity::class, VisaApplicationEntity::class, RelocationTaskEntity::class, JobNotificationEntity::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun jobDao(): JobDao
 }

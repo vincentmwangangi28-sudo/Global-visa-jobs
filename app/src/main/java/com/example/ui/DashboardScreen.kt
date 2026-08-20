@@ -2695,6 +2695,14 @@ fun ProfileSubScreen(profile: com.example.data.UserProfileEntity, viewModel: Job
             .verticalScroll(rememberScrollState())
             .padding(bottom = 24.dp)
     ) {
+        // LinkedIn OAuth2 & Professional Verification Card
+        LinkedInOAuthCard(
+            profile = profile,
+            viewModel = viewModel
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = "Aggregator Matching Profile",
             color = WhiteActive,
