@@ -46,6 +46,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
     var showNotificationHub by remember { mutableStateOf(false) }
     var showDownloadAppDialog by remember { mutableStateOf(false) }
     val appMode by viewModel.appMode.collectAsStateWithLifecycle()
+    val showProfileReminderToast by viewModel.showProfileReminderToast.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     if (showDownloadAppDialog) {
@@ -338,6 +339,105 @@ fun DashboardScreen(viewModel: JobViewModel) {
                 onDismiss = { showNotificationHub = false }
             )
         }
+
+        AnimatedVisibility(
+            visible = showProfileReminderToast,
+            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(
+                    bottom = if (isWideScreen) 24.dp else 92.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
+        ) {
+            Surface(
+                modifier = Modifier
+                    .widthIn(max = 460.dp)
+                    .shadow(12.dp, RoundedCornerShape(16.dp)),
+                shape = RoundedCornerShape(16.dp),
+                color = NavyMedium,
+                border = BorderStroke(1.dp, EmeraldGreen.copy(alpha = 0.5f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(EmeraldGreen.copy(alpha = 0.12f), RoundedCornerShape(8.dp)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AccountCircle,
+                                    contentDescription = "Profile",
+                                    tint = EmeraldGreen,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Complete Your Profile",
+                                color = WhiteActive,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
+                        IconButton(
+                            onClick = { viewModel.dismissProfileReminderToast() },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = SlateMuted,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Add your Nationality and Education details to unlock personalized visa sponsorship and eligibility matches.",
+                        color = SlateMuted,
+                        fontSize = 12.5.sp,
+                        lineHeight = 17.sp
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(
+                            onClick = { viewModel.dismissProfileReminderToast() },
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Text("Later", color = SlateMuted, fontSize = 12.sp)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                viewModel.dismissProfileReminderToast()
+                                activeTab = "Match"
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            Text("Complete Profile", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -466,7 +566,12 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
         ) {
             OutlinedTextField(
                 value = queryText,
-                onValueChange = { queryText = it },
+                onValueChange = {
+                    queryText = it
+                    if (it.isNotBlank()) {
+                        viewModel.checkAndTriggerFirstSearchReminder()
+                    }
+                },
                 placeholder = { Text("Role (e.g., Nurse, Driver, Dev)", color = SlateMuted) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = SlateMuted) },
                 modifier = Modifier
@@ -488,6 +593,7 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
             // AI Search Scraper button
             Button(
                 onClick = {
+                    viewModel.checkAndTriggerFirstSearchReminder()
                     viewModel.performLiveScrapeSearch(queryText.ifEmpty { "Visa sponsorship jobs" }, searchCountryText)
                 },
                 shape = RoundedCornerShape(12.dp),

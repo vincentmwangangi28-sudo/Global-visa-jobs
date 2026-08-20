@@ -131,6 +131,27 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     private val _indeedError = MutableStateFlow<String?>(null)
     val indeedError: StateFlow<String?> = _indeedError.asStateFlow()
 
+    // First-search Profile Completion Reminder Toast State
+    private val _showProfileReminderToast = MutableStateFlow(false)
+    val showProfileReminderToast: StateFlow<Boolean> = _showProfileReminderToast.asStateFlow()
+
+    private var hasSearchedOnce = false
+
+    fun checkAndTriggerFirstSearchReminder() {
+        if (!hasSearchedOnce) {
+            hasSearchedOnce = true
+            viewModelScope.launch {
+                val profile = repository.getUserProfile()
+                if (profile == null || profile.nationality.isBlank() || profile.education.isBlank()) {
+                    _showProfileReminderToast.value = true
+                }
+            }
+        }
+    }
+
+    fun dismissProfileReminderToast() {
+        _showProfileReminderToast.value = false
+    }
 
     init {
         viewModelScope.launch {
@@ -166,6 +187,7 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
      * Trigger Live Web Scrape Search powered by Google Search Grounding & Gemini 3.5-flash
      */
     fun performLiveScrapeSearch(query: String, country: String) {
+        checkAndTriggerFirstSearchReminder()
         viewModelScope.launch {
             _isSearching.value = true
             _searchStatus.value = "Initiating global visa-sponsored job search..."

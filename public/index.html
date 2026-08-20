@@ -6,13 +6,13 @@
   <meta name="google-site-verification" content="Y5kaN4arFVmI6aOPqllXrToNiKDxeE2I6HDOx4_GuBE" />
   <meta name="google-site-verification" content="3QFc7WKZ0EkHcU2SNlOjMiIcezTm6zhkuQSO6iWNNcc" />
   <title>Global Visa Jobs - International Visa Sponsorship Career Portal & Relocation Platform</title>
-  <meta name="description" content="Search verified visa-sponsored jobs across the UK, Germany, Canada, USA, Australia, and EU. Explore verified sponsor employers, calculate take-home relocation salary, and optimize your ATS resume.">
-  <meta name="keywords" content="visa sponsorship jobs, UK skilled worker visa jobs, Germany EU Blue Card, Canada LMIA jobs, Tech visa jobs, international relocation jobs, sponsor license lookup">
+  <meta name="description" content="Search 5,000+ verified visa sponsorship jobs across the UK, Germany, Canada, USA, Australia, and EU. Points calculator, sponsor registry, salary comparison, visa cost breakdown, and AI ATS resume optimizer.">
+  <meta name="keywords" content="visa sponsorship jobs, UK skilled worker visa, EU Blue Card Germany, Canada LMIA jobs, Tech visa jobs, sponsor license lookup, visa fee calculator, SOC codes, relocation timeline">
   
   <!-- Open Graph / SEO -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Global Visa Jobs - International Visa Sponsorship Career Portal">
-  <meta property="og:description" content="Discover verified visa sponsorship opportunities worldwide with salary calculator and AI ATS optimization.">
+  <meta property="og:description" content="Discover verified visa sponsorship opportunities worldwide with salary calculator, immigration timeline roadmap, visa fees budget, and AI ATS optimization.">
   <meta property="og:url" content="https://globalvisajobs.com">
   
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22 width=%2232%22 height=%2232%22><text y=%2226%22 font-size=%2226%22>🌐</text></svg>">
@@ -30,7 +30,7 @@
       "price": "0",
       "priceCurrency": "USD"
     },
-    "description": "Verified Visa Sponsorship Job Search, AI Resume Tailoring, Relocation Budget Calculator, and Sponsor Directory."
+    "description": "Verified Visa Sponsorship Job Search, AI Resume Tailoring, Relocation Budget Calculator, Visa Fee Estimator, SOC Codes Registry, and Sponsor Directory."
   }
   </script>
 
@@ -46,6 +46,8 @@
       --teal: #06B6D4;
       --blue: #38BDF8;
       --blue-accent: #0284C7;
+      --purple: #A855F7;
+      --indigo: #6366F1;
       --text-white: #F9FAFB;
       --text-muted: #94A3B8;
       --text-dim: #64748B;
@@ -67,9 +69,9 @@
       line-height: 1.5;
     }
 
-    /* Top Navigation Header */
+    /* Header */
     header {
-      background: rgba(17, 24, 39, 0.95);
+      background: rgba(17, 24, 39, 0.96);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
@@ -78,7 +80,7 @@
       padding: 12px 24px;
     }
     .header-content {
-      max-width: 1240px;
+      max-width: 1320px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -116,16 +118,17 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* Navigation Tabs */
+    /* Nav Tabs */
     .nav-tabs {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(10, 15, 29, 0.7);
+      gap: 4px;
+      background: rgba(10, 15, 29, 0.8);
       padding: 4px;
       border-radius: 10px;
       border: 1px solid var(--border-color);
       overflow-x: auto;
+      max-width: 100%;
     }
     .nav-tab-btn {
       background: transparent;
@@ -133,7 +136,7 @@
       color: var(--text-muted);
       font-size: 13px;
       font-weight: 600;
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
       display: flex;
@@ -175,18 +178,18 @@
       background: #0369A1;
     }
 
-    /* Main Container */
+    /* Main */
     main {
-      max-width: 1240px;
+      max-width: 1320px;
       width: 100%;
       margin: 0 auto;
       padding: 24px;
       flex: 1;
     }
 
-    /* Verification Ribbon */
+    /* Banner Ribbon */
     .verification-ribbon {
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.12));
       border: 1px solid rgba(16, 185, 129, 0.3);
       border-radius: 12px;
       padding: 12px 18px;
@@ -231,7 +234,7 @@
       margin-top: 4px;
     }
 
-    /* Search & Filter Bar */
+    /* Search & Filter Box */
     .search-filter-box {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -241,18 +244,14 @@
     }
     .search-row {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      grid-template-columns: 2fr 1.2fr 1.2fr 1fr auto;
       gap: 12px;
     }
-    @media (max-width: 900px) {
-      .search-row {
-        grid-template-columns: 1fr 1fr;
-      }
+    @media (max-width: 960px) {
+      .search-row { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 600px) {
-      .search-row {
-        grid-template-columns: 1fr;
-      }
+      .search-row { grid-template-columns: 1fr; }
     }
     .input-control {
       background: var(--bg-dark);
@@ -268,7 +267,7 @@
     .input-control:focus {
       border-color: var(--teal);
     }
-    .btn-search {
+    .btn-primary {
       background: var(--emerald);
       color: #064E3B;
       font-weight: 700;
@@ -283,20 +282,16 @@
       gap: 6px;
       transition: opacity 0.2s;
     }
-    .btn-search:hover {
-      opacity: 0.9;
-    }
+    .btn-primary:hover { opacity: 0.9; }
 
-    /* Live Job Grid */
+    /* Job Grid */
     .job-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 18px;
     }
     @media (max-width: 640px) {
-      .job-grid {
-        grid-template-columns: 1fr;
-      }
+      .job-grid { grid-template-columns: 1fr; }
     }
     .job-card {
       background: var(--bg-card);
@@ -407,25 +402,23 @@
       cursor: pointer;
     }
 
-    /* Calculator & Resume Tool Cards */
+    /* Container layouts */
     .tool-container {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 16px;
-      padding: 28px;
+      padding: 24px;
       margin-bottom: 24px;
     }
-    .calc-grid {
+    .two-col-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
-    @media (max-width: 768px) {
-      .calc-grid {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 860px) {
+      .two-col-grid { grid-template-columns: 1fr; }
     }
-    .calc-result-box {
+    .result-box {
       background: var(--bg-dark);
       border: 1px solid var(--border-accent);
       border-radius: 14px;
@@ -437,17 +430,17 @@
       align-items: center;
       padding: 8px 0;
       border-bottom: 1px solid var(--border-color);
-      font-size: 14px;
+      font-size: 13px;
     }
     .result-row:last-child {
       border-bottom: none;
-      padding-top: 14px;
+      padding-top: 12px;
       font-weight: 800;
-      font-size: 16px;
+      font-size: 15px;
       color: var(--emerald);
     }
 
-    /* Sponsor Directory Table */
+    /* Tables */
     .table-container {
       overflow-x: auto;
       border: 1px solid var(--border-color);
@@ -472,30 +465,43 @@
       border-bottom: 1px solid var(--border-color);
       color: var(--text-white);
     }
-    tr:last-child td {
-      border-bottom: none;
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    /* Timeline Stepper */
+    .timeline-wrapper {
+      position: relative;
+      padding-left: 28px;
     }
-    tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+    .timeline-wrapper::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: var(--border-accent);
+    }
+    .timeline-step {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .timeline-step::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--emerald);
+      border: 3px solid var(--bg-dark);
+    }
+    .timeline-step.future::before {
+      background: var(--text-dim);
     }
 
-    /* APK Download Screen in Web */
-    .download-hero {
-      text-align: center;
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 20px 0;
-    }
-    .apk-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 32px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    }
-
-    /* Modal dialog */
+    /* Modals */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -514,7 +520,7 @@
       background: var(--bg-card);
       border: 1px solid var(--border-accent);
       border-radius: 16px;
-      max-width: 600px;
+      max-width: 620px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
@@ -528,8 +534,164 @@
       background: transparent;
       border: none;
       color: var(--text-muted);
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    /* Points Score Badge */
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--emerald-dark), var(--bg-dark));
+      border: 3px solid var(--emerald);
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--emerald);
+    }
+
+    /* Subtle Profile Reminder Toast */
+    .profile-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      max-width: 430px;
+      width: calc(100% - 48px);
+      background: rgba(17, 24, 39, 0.96);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.2);
+      backdrop-filter: blur(16px);
+      z-index: 2000;
+      padding: 16px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transform: translateY(120%);
+      opacity: 0;
+      visibility: hidden;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .profile-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+    .toast-indicator {
+      position: absolute;
+      top: 0;
+      left: 18px;
+      right: 18px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--emerald), var(--teal), var(--blue));
+      border-radius: 3px 3px 0 0;
+    }
+    .toast-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.15);
+    }
+    .toast-body {
+      flex: 1;
+    }
+    .toast-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 4px;
+    }
+    .toast-tag {
+      background: rgba(6, 182, 212, 0.18);
+      color: var(--teal);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .toast-message {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+    .toast-message strong {
+      color: var(--emerald);
+    }
+    .toast-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-toast-primary {
+      background: linear-gradient(135deg, var(--emerald), #059669);
+      color: #064E3B;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-toast-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+    .btn-toast-dismiss {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-toast-dismiss:hover {
+      color: var(--text-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .toast-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
       font-size: 20px;
       cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .toast-close-btn:hover {
+      color: var(--text-white);
+    }
+    @media (max-width: 600px) {
+      .profile-toast {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        width: auto;
+      }
     }
 
     /* Footer */
@@ -544,7 +706,7 @@
     .footer-links {
       display: flex;
       justify-content: center;
-      gap: 18px;
+      gap: 16px;
       margin-bottom: 12px;
       flex-wrap: wrap;
     }
@@ -570,66 +732,90 @@
 
       <nav class="nav-tabs" role="tablist">
         <button class="nav-tab-btn active" id="tabBtn-jobs" onclick="switchTab('jobs')">
-          <span>🛂</span> Live Visa Jobs
+          <span>🛂</span> Visa Jobs
+        </button>
+        <button class="nav-tab-btn" id="tabBtn-points" onclick="switchTab('points')">
+          <span>⚖️</span> Points Test
         </button>
         <button class="nav-tab-btn" id="tabBtn-sponsors" onclick="switchTab('sponsors')">
-          <span>🏢</span> Verified Sponsors
+          <span>🏢</span> Sponsors Registry
         </button>
         <button class="nav-tab-btn" id="tabBtn-calculator" onclick="switchTab('calculator')">
-          <span>💰</span> Relocation Calculator
+          <span>💰</span> Salary & Tax
+        </button>
+        <button class="nav-tab-btn" id="tabBtn-fees" onclick="switchTab('fees')">
+          <span>🏷️</span> Visa Cost Estimator
+        </button>
+        <button class="nav-tab-btn" id="tabBtn-timeline" onclick="switchTab('timeline')">
+          <span>🗺️</span> Relocation Roadmap
+        </button>
+        <button class="nav-tab-btn" id="tabBtn-soc" onclick="switchTab('soc')">
+          <span>🔍</span> Shortage Occupations (SOC)
+        </button>
+        <button class="nav-tab-btn" id="tabBtn-interview" onclick="switchTab('interview')">
+          <span>🎤</span> Embassy Prep
+        </button>
+        <button class="nav-tab-btn" id="tabBtn-coverletter" onclick="switchTab('coverletter')">
+          <span>✍️</span> Visa Cover Letter AI
         </button>
         <button class="nav-tab-btn" id="tabBtn-resume" onclick="switchTab('resume')">
           <span>📄</span> AI ATS Matcher
         </button>
+        <button class="nav-tab-btn" id="tabBtn-tracker" onclick="switchTab('tracker')">
+          <span>📋</span> My Saved (<span id="savedCountBadge">0</span>)
+        </button>
+        <button class="nav-tab-btn" id="tabBtn-profile" onclick="openProfileModal()">
+          <span>👤</span> My Profile
+        </button>
         <button class="nav-tab-btn" id="tabBtn-download" onclick="switchTab('download')">
-          <span>📱</span> Download APK
+          <span>📱</span> APK Hub
         </button>
       </nav>
 
       <div class="header-actions">
         <a href="#download" class="btn-download-top" onclick="switchTab('download')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
-          Download App (.APK)
+          Download APK
         </a>
       </div>
     </div>
   </header>
 
-  <!-- Main Content Area -->
+  <!-- Main Content -->
   <main>
-    <!-- Google Search Console Verified Ribbon -->
+    <!-- Verification Ribbon -->
     <div class="verification-ribbon">
       <div class="verification-ribbon-text">
         <div class="status-dot"></div>
-        <span><strong>Google Search Verified:</strong> Official international visa sponsorship registry with 5,200+ active listings.</span>
+        <span><strong>Google Search Verified Platform:</strong> Real-time visa sponsorship registry with licensed UK CoS, Germany EU Blue Card, and Canada LMIA employers.</span>
       </div>
       <div style="font-size: 12px; color: var(--emerald); font-weight: 700;">
-        Updated Daily &bull; Real-time CoS & LMIA Verification
+        5,200+ Live Listings &bull; Updated Daily
       </div>
     </div>
 
-    <!-- TAB 1: LIVE VISA JOBS -->
+    <!-- 1. LIVE VISA JOBS -->
     <section id="section-jobs">
       <div class="section-header">
         <h2><span>🌐</span> Verified International Visa Sponsorship Jobs</h2>
-        <p>Explore thousands of employers offering guaranteed Certificate of Sponsorship (UK), EU Blue Card (Germany), LMIA (Canada), and H-1B / O-1 (USA).</p>
+        <p>Explore employers offering Certificate of Sponsorship (UK), EU Blue Card (Germany), LMIA (Canada), and H-1B / O-1 (USA).</p>
       </div>
 
       <!-- Search & Filters -->
       <div class="search-filter-box">
         <div class="search-row">
-          <input type="text" id="jobSearchInput" class="input-control" placeholder="Job title, skill (e.g. Kotlin, Nurse, Python)..." oninput="filterJobs()">
+          <input type="text" id="jobSearchInput" class="input-control" placeholder="Search title, tech stack (e.g. Kotlin, React, Nurse, Python)..." oninput="filterJobs()">
           <select id="countrySelect" class="input-control" onchange="filterJobs()">
             <option value="ALL">All Countries</option>
             <option value="United Kingdom">United Kingdom (UK)</option>
             <option value="Germany">Germany (EU Blue Card)</option>
-            <option value="Canada">Canada (LMIA / Global Talent)</option>
+            <option value="Canada">Canada (LMIA / GTS)</option>
             <option value="United States">United States (H-1B / O-1)</option>
             <option value="Netherlands">Netherlands (Kennismigrant)</option>
-            <option value="Australia">Australia (TSS 482 / PR)</option>
+            <option value="Australia">Australia (TSS 482)</option>
           </select>
           <select id="visaTypeSelect" class="input-control" onchange="filterJobs()">
-            <option value="ALL">All Visa Types</option>
+            <option value="ALL">All Visa Routes</option>
             <option value="UK Skilled Worker">UK Skilled Worker (CoS)</option>
             <option value="EU Blue Card">EU Blue Card</option>
             <option value="Canada LMIA">Canada LMIA</option>
@@ -638,24 +824,117 @@
           </select>
           <select id="relocationSelect" class="input-control" onchange="filterJobs()">
             <option value="ALL">All Benefits</option>
-            <option value="YES">Full Relocation Package</option>
+            <option value="YES">Full Relocation Included</option>
             <option value="VISA_ONLY">Visa Sponsorship Only</option>
           </select>
-          <button class="btn-search" onclick="filterJobs()">Search</button>
+          <button class="btn-primary" onclick="filterJobs()">Search Jobs</button>
         </div>
       </div>
 
       <!-- Jobs Grid -->
-      <div class="job-grid" id="jobGridContainer">
-        <!-- Rendered dynamically -->
+      <div class="job-grid" id="jobGridContainer"></div>
+    </section>
+
+    <!-- 2. POINTS-BASED IMMIGRATION CALCULATOR -->
+    <section id="section-points" style="display: none;">
+      <div class="section-header">
+        <h2><span>⚖️</span> Official Visa Points & Eligibility Assessment</h2>
+        <p>Calculate your qualification points for UK Skilled Worker (70 pts required), Germany Chancenkarte / EU Blue Card, or Canada CRS score.</p>
+      </div>
+
+      <div class="tool-container">
+        <div class="two-col-grid">
+          <div>
+            <div style="margin-bottom: 14px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Immigration System</label>
+              <select id="pointsSystemType" class="input-control" onchange="calcUKPoints()">
+                <option value="UK">UK Points-Based Skilled Worker (70 Pts)</option>
+                <option value="DE">Germany Opportunity Card / Blue Card (Chancenkarte)</option>
+                <option value="CA">Canada Express Entry CRS Estimator</option>
+              </select>
+            </div>
+
+            <div id="ukPointsFields">
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Job Offer from Home Office Licensed Sponsor (Mandatory 20 pts)</label>
+                <select id="ukJobOffer" class="input-control" onchange="calcUKPoints()">
+                  <option value="20">Yes - Confirmed job offer with Certificate of Sponsorship (+20)</option>
+                  <option value="0">No - Currently searching (+0)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Job at Appropriate Skill Level RQF 3 or above (Mandatory 20 pts)</label>
+                <select id="ukSkillLevel" class="input-control" onchange="calcUKPoints()">
+                  <option value="20">Yes - Degree level or professional occupation code (+20)</option>
+                  <option value="0">No / Unsure (+0)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">English Language Proficiency B1 CEFR or Degree taught in English (Mandatory 10 pts)</label>
+                <select id="ukEnglish" class="input-control" onchange="calcUKPoints()">
+                  <option value="10">Yes - IELTS/PTE Level B1+ or UK/NARIC English Degree (+10)</option>
+                  <option value="0">No (+0)</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Salary & Tradeable Points (Need 20 pts)</label>
+                <select id="ukTradeable" class="input-control" onchange="calcUKPoints()">
+                  <option value="20">Salary equals/exceeds £38,700 (or going rate for code) (+20)</option>
+                  <option value="20">Role is on the Immigration Salary List / Shortage (+20)</option>
+                  <option value="20">PhD in relevant STEM subject or New Entrant rate (+20)</option>
+                  <option value="10">Salary £34,830 - £38,699 with related STEM qualification (+10)</option>
+                  <option value="0">Salary below required thresholds (+0)</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="calcUKPoints()">Re-evaluate Points</button>
+          </div>
+
+          <div class="result-box" style="text-align: center;">
+            <div style="margin-bottom: 14px;">
+              <div class="score-badge" id="pointsTotalBadge">70</div>
+            </div>
+            <h3 id="pointsStatusTitle" style="color: var(--emerald); font-size: 18px; margin-bottom: 8px;">ELIGIBLE FOR VISA SPONSORSHIP</h3>
+            <p id="pointsStatusDesc" style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+              Congratulations! You meet the full 70-point threshold required by the UK Home Office to issue a Skilled Worker Visa (CoS).
+            </p>
+
+            <div style="text-align: left; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px;">
+              <div class="result-row">
+                <span>Job Offer:</span>
+                <span id="ptsJob" style="color: var(--emerald); font-weight: bold;">+20 Pts</span>
+              </div>
+              <div class="result-row">
+                <span>Skill Level RQF3+:</span>
+                <span id="ptsSkill" style="color: var(--emerald); font-weight: bold;">+20 Pts</span>
+              </div>
+              <div class="result-row">
+                <span>English Language (B1):</span>
+                <span id="ptsEnglish" style="color: var(--emerald); font-weight: bold;">+10 Pts</span>
+              </div>
+              <div class="result-row">
+                <span>Salary & Tradeable:</span>
+                <span id="ptsSalary" style="color: var(--emerald); font-weight: bold;">+20 Pts</span>
+              </div>
+              <div class="result-row">
+                <span>Total Score / Required:</span>
+                <span id="ptsFinal" style="color: var(--teal); font-weight: 800;">70 / 70</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- TAB 2: VERIFIED SPONSORS DIRECTORY -->
+    <!-- 3. VERIFIED SPONSOR DIRECTORY & LICENSE CHECKER -->
     <section id="section-sponsors" style="display: none;">
       <div class="section-header">
         <h2><span>🏢</span> Official Sponsor Directory & License Registry</h2>
-        <p>Direct lookup for verified sponsor ratings, active license status, and remaining quota capacity.</p>
+        <p>Direct lookup for verified sponsor ratings, active license status, and remaining visa quota capacity.</p>
       </div>
 
       <div class="search-filter-box">
@@ -674,24 +953,22 @@
               <th>Status</th>
             </tr>
           </thead>
-          <tbody id="sponsorTableBody">
-            <!-- Rendered dynamically -->
-          </tbody>
+          <tbody id="sponsorTableBody"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 3: RELOCATION SALARY & TAX CALCULATOR -->
+    <!-- 4. RELOCATION SALARY CALCULATOR -->
     <section id="section-calculator" style="display: none;">
       <div class="section-header">
         <h2><span>💰</span> Relocation & Net Take-Home Salary Calculator</h2>
-        <p>Estimate your post-tax take-home pay, local living expenses, and monthly savings in target countries.</p>
+        <p>Estimate post-tax take-home pay, local living expenses, and monthly savings in target countries.</p>
       </div>
 
       <div class="tool-container">
-        <div class="calc-grid">
+        <div class="two-col-grid">
           <div>
-            <div style="margin-bottom: 16px;">
+            <div style="margin-bottom: 14px;">
               <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Destination Country</label>
               <select id="calcCountry" class="input-control" onchange="calculateRelocation()">
                 <option value="UK">United Kingdom (£ GBP)</option>
@@ -701,11 +978,11 @@
                 <option value="NL">Netherlands (€ EUR - 30% Ruling)</option>
               </select>
             </div>
-            <div style="margin-bottom: 16px;">
+            <div style="margin-bottom: 14px;">
               <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Offered Annual Gross Salary</label>
-              <input type="number" id="calcGrossSalary" class="input-control" value="65000" step="1000" oninput="calculateRelocation()">
+              <input type="number" id="calcGrossSalary" class="input-control" value="68000" step="1000" oninput="calculateRelocation()">
             </div>
-            <div style="margin-bottom: 16px;">
+            <div style="margin-bottom: 14px;">
               <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Household Dependents Relocating</label>
               <select id="calcDependents" class="input-control" onchange="calculateRelocation()">
                 <option value="0">Single Applicant (0 dependents)</option>
@@ -713,65 +990,344 @@
                 <option value="2">Family with Children (2+ dependents)</option>
               </select>
             </div>
-            <button class="btn-search" style="width: 100%;" onclick="calculateRelocation()">Calculate Relocation Budget</button>
+            <button class="btn-primary" style="width: 100%;" onclick="calculateRelocation()">Calculate Relocation Budget</button>
           </div>
 
-          <div class="calc-result-box">
+          <div class="result-box">
             <h4 style="color: var(--emerald); margin-bottom: 16px; font-size: 16px;">Monthly Financial Breakdown</h4>
             <div class="result-row">
               <span style="color: var(--text-muted);">Gross Monthly Pay:</span>
-              <span id="resGross">$5,416</span>
+              <span id="resGross">£5,667</span>
             </div>
             <div class="result-row">
-              <span style="color: var(--text-muted);">Income Tax & Social Security:</span>
-              <span id="resTax" style="color: var(--danger);">-$1,480</span>
+              <span style="color: var(--text-muted);">Income Tax & National Insurance:</span>
+              <span id="resTax" style="color: var(--danger);">-£1,586</span>
             </div>
             <div class="result-row">
               <span style="color: var(--text-muted);">Net Take-Home Pay:</span>
-              <span id="resNet" style="color: var(--teal); font-weight: 700;">$3,936</span>
+              <span id="resNet" style="color: var(--teal); font-weight: 700;">£4,081</span>
             </div>
             <div class="result-row">
               <span style="color: var(--text-muted);">Estimated Rent & Utilities:</span>
-              <span id="resRent">-$1,650</span>
+              <span id="resRent">-£1,650</span>
             </div>
             <div class="result-row">
-              <span style="color: var(--text-muted);">Groceries, Transit, Healthcare:</span>
-              <span id="resLiving">-$750</span>
+              <span style="color: var(--text-muted);">Groceries & Local Transit:</span>
+              <span id="resLiving">-£800</span>
             </div>
             <div class="result-row">
               <span>Estimated Monthly Savings:</span>
-              <span id="resSavings">+$1,536 / mo</span>
+              <span id="resSavings" style="color: var(--emerald);">+£1,631 / mo</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- TAB 4: AI ATS RESUME MATCHER -->
-    <section id="section-resume" style="display: none;">
+    <!-- 5. VISA COST & GOVERNMENT FEES ESTIMATOR -->
+    <section id="section-fees" style="display: none;">
       <div class="section-header">
-        <h2><span>📄</span> AI ATS Visa Resume Optimizer</h2>
-        <p>Score your resume against international visa clearance algorithms and get instant tailored bullet points.</p>
+        <h2><span>🏷️</span> Official Visa Application & Relocation Fee Estimator</h2>
+        <p>Calculate mandatory government application charges, Immigration Health Surcharge (IHS), biometric fees, and flight moving costs.</p>
       </div>
 
       <div class="tool-container">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="two-col-grid">
           <div>
-            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Paste Target Job Description & Requirements:</label>
-            <textarea id="atsJobDesc" class="input-control" rows="7" placeholder="Paste job requirements here (e.g. Senior Kotlin Engineer with Coroutines, Jetpack Compose, CI/CD, Visa Sponsorship requested)..."></textarea>
-            
-            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-top: 14px; margin-bottom: 6px;">Your Core Technical Skills & Experience Summary:</label>
-            <textarea id="atsUserSkills" class="input-control" rows="5" placeholder="List your key tools, years of experience, and notable project achievements..."></textarea>
-            
-            <button class="btn-search" style="margin-top: 16px; width: 100%;" onclick="analyzeATSResume()">Analyze & Generate Tailored Bullet Points</button>
+            <div style="margin-bottom: 14px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Visa Route</label>
+              <select id="feeRoute" class="input-control" onchange="calculateVisaFees()">
+                <option value="UK_SW_3YR">UK Skilled Worker Visa (Up to 3 Years)</option>
+                <option value="UK_SW_5YR">UK Skilled Worker Visa (Over 3 Years / 5 Years)</option>
+                <option value="DE_BLUECARD">Germany EU Blue Card</option>
+                <option value="CA_GTS">Canada Global Talent Stream Work Permit</option>
+                <option value="US_H1B">United States H-1B Consular Filing</option>
+              </select>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Total Applicants (Principal + Dependents)</label>
+              <select id="feeApplicants" class="input-control" onchange="calculateVisaFees()">
+                <option value="1">1 Person (Solo applicant)</option>
+                <option value="2">2 Persons (Applicant + Spouse/Partner)</option>
+                <option value="3">3 Persons (Applicant + Spouse + 1 Child)</option>
+                <option value="4">4 Persons (Family of 4)</option>
+              </select>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Processing Speed</label>
+              <select id="feeSpeed" class="input-control" onchange="calculateVisaFees()">
+                <option value="STANDARD">Standard Processing (3-8 Weeks)</option>
+                <option value="PRIORITY">Priority Processing (5 Business Days) (+£500 / $650)</option>
+                <option value="SUPER_PRIORITY">Super Priority (24-48 Hours) (+£1,000 / $1,300)</option>
+              </select>
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Who Pays the Fees?</label>
+              <select id="feePayer" class="input-control" onchange="calculateVisaFees()">
+                <option value="SPONSOR_ALL">Employer / Sponsor Covers All Visa & Relocation Fees</option>
+                <option value="SPONSOR_VISA">Employer Pays Visa App Only (Applicant Pays IHS & Flights)</option>
+                <option value="APPLICANT">Applicant Pays Full Fees Upfront (Reimbursement later)</option>
+              </select>
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="calculateVisaFees()">Recalculate Visa Budget</button>
           </div>
 
-          <div class="calc-result-box" id="atsResultPanel">
+          <div class="result-box">
+            <h4 style="color: var(--teal); margin-bottom: 16px; font-size: 16px;">Visa Cost Breakdown</h4>
+            <div class="result-row">
+              <span style="color: var(--text-muted);">Government Visa Application Fee:</span>
+              <span id="feeAppTotal">£719</span>
+            </div>
+            <div class="result-row">
+              <span style="color: var(--text-muted);">Immigration Health Surcharge (IHS):</span>
+              <span id="feeIhsTotal">£3,105</span>
+            </div>
+            <div class="result-row">
+              <span style="color: var(--text-muted);">Biometric & TB Screening:</span>
+              <span id="feeBioTotal">£150</span>
+            </div>
+            <div class="result-row">
+              <span style="color: var(--text-muted);">Priority Processing Fee:</span>
+              <span id="feePriorityTotal">£0</span>
+            </div>
+            <div class="result-row">
+              <span style="color: var(--text-muted);">Estimated Flight & Relocation Buffer:</span>
+              <span id="feeFlightTotal">£1,200</span>
+            </div>
+            <div class="result-row">
+              <span>Your Estimated Out-Of-Pocket Cost:</span>
+              <span id="feeTotalOut" style="color: var(--emerald); font-weight: 800; font-size: 16px;">£0 (Covered by Sponsor)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. RELOCATION ROADMAP & IMMIGRATION TIMELINE -->
+    <section id="section-timeline" style="display: none;">
+      <div class="section-header">
+        <h2><span>🗺️</span> Visa Sponsorship & Relocation Milestone Roadmap</h2>
+        <p>A step-by-step interactive tracker of your international employment migration journey from offer to arrival.</p>
+      </div>
+
+      <div class="tool-container">
+        <div class="two-col-grid">
+          <div>
+            <h3 style="font-size: 16px; color: var(--emerald); margin-bottom: 16px;">Interactive Immigration Milestones</h3>
+            <div class="timeline-wrapper">
+              <div class="timeline-step">
+                <strong style="color: var(--text-white); font-size: 14px;">1. Job Offer & Contract Signed</strong>
+                <p style="font-size: 12px; color: var(--text-muted);">Confirm job offer terms, sponsor license tier rating, and relocation allowance in employment contract.</p>
+              </div>
+              <div class="timeline-step">
+                <strong style="color: var(--text-white); font-size: 14px;">2. Certificate of Sponsorship (CoS) / LMIA Allocation</strong>
+                <p style="font-size: 12px; color: var(--text-muted);">Employer assigns defined CoS (UK) or LMIA / Global Talent Stream file with exact SOC occupation code.</p>
+              </div>
+              <div class="timeline-step">
+                <strong style="color: var(--text-white); font-size: 14px;">3. English Certification & Degree Verification</strong>
+                <p style="font-size: 12px; color: var(--text-muted);">ECCTIS / NARIC comparability certificate or IELTS Academic / General UKVI B1+ test score obtained.</p>
+              </div>
+              <div class="timeline-step">
+                <strong style="color: var(--text-white); font-size: 14px;">4. Online Visa Submission & IHS Payment</strong>
+                <p style="font-size: 12px; color: var(--text-muted);">Submit online visa application, pay Immigration Health Surcharge, and book biometric appointment.</p>
+              </div>
+              <div class="timeline-step future">
+                <strong style="color: var(--text-white); font-size: 14px;">5. VFS / TLS Biometrics & Passport Stamping</strong>
+                <p style="font-size: 12px; color: var(--text-muted);">Submit fingerprints and passport. Receive entry vignette sticker (90-day travel window).</p>
+              </div>
+              <div class="timeline-step future">
+                <strong style="color: var(--text-white); font-size: 14px;">6. Arrival, Housing & BRP / Anmeldung Registration</strong>
+                <p style="font-size: 12px; color: var(--text-muted);">Fly to destination country, pick up biometric residence permit (BRP) or complete city hall registration.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-box">
+            <h4 style="color: var(--teal); margin-bottom: 12px; font-size: 15px;">Required Documents Checklist</h4>
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">Check off the documents ready for your visa filing:</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked style="accent-color: var(--emerald);"> Valid International Passport (6+ months validity)
+              </label>
+              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked style="accent-color: var(--emerald);"> Defined Certificate of Sponsorship (CoS) Reference Number
+              </label>
+              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked style="accent-color: var(--emerald);"> Proof of English Language Proficiency (IELTS / Degree)
+              </label>
+              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" style="accent-color: var(--emerald);"> Tuberculosis (TB) Medical Clearance Test (if applicable)
+              </label>
+              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" style="accent-color: var(--emerald);"> Criminal Record Police Certificate (for health/social roles)
+              </label>
+              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" style="accent-color: var(--emerald);"> Bank Statement Showing Maintenance Funds (£1,270 for 28 days)
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. SHORTAGE OCCUPATION & SOC CODES LOOKUP -->
+    <section id="section-soc" style="display: none;">
+      <div class="section-header">
+        <h2><span>🔍</span> Immigration Salary List & Shortage SOC Codes</h2>
+        <p>Verify official standard occupational classification (SOC) codes, going salary thresholds, and shortage discounts.</p>
+      </div>
+
+      <div class="search-filter-box">
+        <input type="text" id="socSearchInput" class="input-control" placeholder="Search occupation title (e.g. Software, Nurse, Architect, Data, Mechanical)..." oninput="filterSocCodes()">
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>SOC Code</th>
+              <th>Standard Job Title</th>
+              <th>Eligible Country</th>
+              <th>Minimum Going Rate</th>
+              <th>Shortage List Status</th>
+              <th>Degree / RQF Level</th>
+            </tr>
+          </thead>
+          <tbody id="socTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. EMBASSY INTERVIEW SIMULATOR -->
+    <section id="section-interview" style="display: none;">
+      <div class="section-header">
+        <h2><span>🎤</span> AI Embassy & Visa Consular Interview Simulator</h2>
+        <p>Practice realistic immigration consular questions asked at UK VFS, US Embassy (DS-160/H-1B), and German Ausländerbehörde.</p>
+      </div>
+
+      <div class="tool-container">
+        <div class="two-col-grid">
+          <div>
+            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Interview Stage & Visa Type:</label>
+            <select id="interviewVisaType" class="input-control" onchange="loadInterviewQuestion()">
+              <option value="UK_SKILLED">UK Home Office - Skilled Worker Visa Interview</option>
+              <option value="US_H1B">US Consular Officer - H-1B / O-1 Stamping Interview</option>
+              <option value="DE_BLUECARD">Germany - EU Blue Card & Relocation Assessment</option>
+              <option value="CA_LMIA">Canada IRCC - Global Talent Stream Entry</option>
+            </select>
+
+            <div style="margin-top: 16px; background: var(--bg-dark); border: 1px solid var(--border-accent); border-radius: 12px; padding: 16px;">
+              <div style="font-size: 12px; color: var(--teal); font-weight: 700; margin-bottom: 4px;">CONSULAR OFFICER QUESTION:</div>
+              <h3 id="interviewQuestionText" style="font-size: 15px; color: var(--text-white); margin-bottom: 12px;">
+                "How did you secure this role with your UK sponsor, and what specialized technical skills qualify you above local domestic talent?"
+              </h3>
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Your Sample Practice Answer:</label>
+              <textarea id="interviewUserAnswer" class="input-control" rows="5" placeholder="Type your structured practice response here explaining your recruitment timeline, technical qualifications, and sponsor relationship..."></textarea>
+              <button class="btn-primary" style="margin-top: 12px; width: 100%;" onclick="evaluateInterviewAnswer()">Submit Answer for AI Scoring</button>
+            </div>
+          </div>
+
+          <div class="result-box" id="interviewFeedbackBox">
+            <h4 style="color: var(--emerald); margin-bottom: 12px;">AI Consular Scoring & Advice</h4>
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+              <div style="font-size: 32px; font-weight: 900; color: var(--emerald);" id="interviewScore">92%</div>
+              <div style="font-size: 13px; color: var(--text-muted);">
+                <strong>Strong Consular Clarity:</strong> Answer cleanly explains employment sponsorship without immigration red flags.
+              </div>
+            </div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 12px;">
+              <h5 style="color: var(--teal); font-size: 13px; margin-bottom: 6px;">Key Interview Dos & Don'ts:</h5>
+              <ul style="margin-left: 18px; font-size: 12px; color: var(--text-white); line-height: 1.6;">
+                <li><strong>Do:</strong> State your exact CoS / LMIA reference number and company sponsor license rating confidently.</li>
+                <li><strong>Do:</strong> Focus on unique technical niche competencies matching the exact SOC code in your certificate.</li>
+                <li><strong>Don't:</strong> Hesitate when stating your contractual gross salary or work location address.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. AI VISA COVER LETTER GENERATOR -->
+    <section id="section-coverletter" style="display: none;">
+      <div class="section-header">
+        <h2><span>✍️</span> AI Visa Sponsorship Cover Letter & Justification Generator</h2>
+        <p>Create a customized, ATS-compliant cover letter highlighting your immigration eligibility, shortage occupation skills, and relocation readiness.</p>
+      </div>
+
+      <div class="tool-container">
+        <div class="two-col-grid">
+          <div>
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Employer Name</label>
+              <input type="text" id="clEmployer" class="input-control" value="Monzo Financial Technologies Ltd" placeholder="e.g. Monzo, Delivery Hero, Spotify">
+            </div>
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Position & Route</label>
+              <input type="text" id="clPosition" class="input-control" value="Senior Android Engineer (UK Skilled Worker CoS)" placeholder="e.g. Staff Cloud Engineer (EU Blue Card)">
+            </div>
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Your Core Technical Strengths (Comma-separated)</label>
+              <input type="text" id="clStrengths" class="input-control" value="Kotlin Coroutines, Jetpack Compose, Clean Architecture, CI/CD, FinTech Scalability">
+            </div>
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Years of Specialized Experience</label>
+              <select id="clExpYears" class="input-control">
+                <option value="6+">6+ Years (Senior / Lead)</option>
+                <option value="3-5">3 - 5 Years (Mid-Senior)</option>
+                <option value="8+">8+ Years (Staff / Principal Architect)</option>
+              </select>
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="generateCoverLetter()">Generate Tailored Cover Letter</button>
+          </div>
+
+          <div class="result-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="color: var(--teal); font-size: 15px;">Generated Visa Cover Letter</h4>
+              <button class="btn-download-top" style="font-size: 11px; padding: 4px 10px;" onclick="copyCoverLetter()">📋 Copy Text</button>
+            </div>
+            <textarea id="clResultText" class="input-control" rows="13" style="font-size: 12px; line-height: 1.6; background: var(--bg-card); color: var(--text-white);" readonly>
+Dear Hiring Team at Monzo Financial Technologies Ltd,
+
+I am writing to express my enthusiastic application for the Senior Android Engineer role. With over 6+ years of specialized experience in Kotlin Coroutines, Jetpack Compose, Clean Architecture, CI/CD, and FinTech Scalability, I am eager to contribute immediately to your engineering squads in London.
+
+Having reviewed the UK Home Office Immigration Salary List and SOC 2136 code guidelines, my technical qualifications and degree background meet the full 70-point Skilled Worker Visa threshold with B1+ English proficiency already verified. I require Certificate of Sponsorship (CoS) allocation and am fully prepared to relocate smoothly with complete documentation ready for immediate biometrics.
+
+I look forward to discussing how my experience can support Monzo's ambitious scaling goals.
+
+Sincerely,
+International Engineering Candidate
+            </textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. AI ATS RESUME OPTIMIZER -->
+    <section id="section-resume" style="display: none;">
+      <div class="section-header">
+        <h2><span>📄</span> AI ATS Visa Resume Optimizer</h2>
+        <p>Score your resume against international shortage-occupation criteria and generate tailored bullet points.</p>
+      </div>
+
+      <div class="tool-container">
+        <div class="two-col-grid">
+          <div>
+            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Job Description & Requirements:</label>
+            <textarea id="atsJobDesc" class="input-control" rows="7" placeholder="Paste job requirements here (e.g. Senior Kotlin Engineer with Coroutines, Jetpack Compose, CI/CD, Visa Sponsorship requested)..."></textarea>
+            
+            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-top: 14px; margin-bottom: 6px;">Your Core Technical Skills & Summary:</label>
+            <textarea id="atsUserSkills" class="input-control" rows="5" placeholder="List your key tools, years of experience, and project achievements..."></textarea>
+            
+            <button class="btn-primary" style="margin-top: 16px; width: 100%;" onclick="analyzeATSResume()">Analyze & Generate Tailored Bullet Points</button>
+          </div>
+
+          <div class="result-box" id="atsResultPanel">
             <h4 style="color: var(--teal); margin-bottom: 12px;">ATS Visa Match Analysis</h4>
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
               <div style="font-size: 36px; font-weight: 900; color: var(--emerald);" id="atsScoreValue">94%</div>
               <div style="font-size: 13px; color: var(--text-muted);">
-                <strong>High Visa Probability Match:</strong> Your profile contains 8 of 9 international immigration priority keywords.
+                <strong>High Visa Probability Match:</strong> Your profile contains 8 of 9 international shortage-occupation keywords.
               </div>
             </div>
             <div style="margin-bottom: 12px; font-size: 13px; color: var(--text-muted);">
@@ -787,22 +1343,46 @@
       </div>
     </section>
 
-    <!-- TAB 5: DOWNLOAD APK & MOBILE APP -->
+    <!-- 11. MY SAVED JOBS & APPLICATION TRACKER -->
+    <section id="section-tracker" style="display: none;">
+      <div class="section-header">
+        <h2><span>📋</span> Saved Jobs & Visa Application Pipeline</h2>
+        <p>Track your saved visa sponsorship jobs, interview stages, and Certificate of Sponsorship updates.</p>
+      </div>
+
+      <div class="tool-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+          <div style="font-size: 14px; color: var(--text-muted);">
+            Active Applications Tracked: <strong id="trackerCountText" style="color: var(--emerald);">0</strong>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-primary" style="font-size: 12px; padding: 6px 14px;" onclick="exportTrackerData()">Export CSV</button>
+            <button class="btn-download-top" style="font-size: 12px; padding: 6px 14px; background: transparent; border-color: var(--border-accent);" onclick="clearAllSaved()">Clear All</button>
+          </div>
+        </div>
+
+        <div id="trackerListContainer" class="job-grid">
+          <!-- Rendered dynamically from localStorage -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. DOWNLOAD APK HUB -->
     <section id="section-download" style="display: none;">
-      <div class="download-hero">
-        <div class="apk-card">
+      <div style="text-align: center; max-width: 680px; margin: 0 auto; padding: 20px 0;">
+        <div class="tool-container" style="text-align: center; padding: 36px 24px;">
           <div style="font-size: 48px; margin-bottom: 12px;">📱</div>
           <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 8px;">Install Global Visa Jobs Android App</h2>
           <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">
-            Get real-time push notifications when new visa-sponsored roles open, track your applications, and 1-click apply.
+            Get real-time push alerts when new visa-sponsored roles open, track applications, and 1-click apply.
           </p>
 
           <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px;">
-            <button class="btn-download-top" style="font-size: 14px; padding: 12px 24px;" id="webDownloadApkBtn" onclick="triggerApkDownload()">
+            <button class="btn-download-top" style="font-size: 14px; padding: 12px 24px;" onclick="triggerApkDownload()">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
               Download Android APK (.APK)
             </button>
-            <button class="btn-search" style="font-size: 14px; padding: 12px 20px;" onclick="triggerIntentLaunch()">
+            <button class="btn-primary" style="font-size: 14px; padding: 12px 20px;" onclick="triggerIntentLaunch()">
               Launch Mobile App
             </button>
           </div>
@@ -842,25 +1422,128 @@
       <p id="modalDescription" style="font-size: 13px; color: var(--text-white); line-height: 1.6; margin-bottom: 20px;"></p>
 
       <div style="display: flex; gap: 10px;">
-        <button class="btn-search" style="flex: 1;" onclick="applyForJob()">1-Click Apply with Visa Profile</button>
-        <button class="btn-download-top" style="background: transparent; border-color: var(--border-accent);" onclick="bookmarkJob()">⭐ Save</button>
+        <button class="btn-primary" style="flex: 1;" onclick="applyForJob()">1-Click Apply with Visa Profile</button>
+        <button class="btn-download-top" style="background: transparent; border-color: var(--border-accent);" id="modalSaveBtn" onclick="toggleSaveCurrentJob()">⭐ Bookmark</button>
       </div>
     </div>
+  </div>
+
+  <!-- Candidate Immigration Profile Modal -->
+  <div id="profileModal" class="modal-overlay" onclick="closeProfileModal(event)">
+    <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--emerald), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 22px;">
+          👤
+        </div>
+        <div>
+          <h3 style="color: var(--text-white); font-size: 18px; font-weight: 800; margin: 0 0 2px 0;">Candidate Visa Profile</h3>
+          <p style="color: var(--text-muted); font-size: 12px; margin: 0;">Configure your nationality & education to unlock personalized sponsorship matching</p>
+        </div>
+      </div>
+
+      <form id="profileForm" onsubmit="saveUserProfile(event)">
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Nationality / Passport Country <span style="color: var(--emerald); font-weight: bold;">*</span></label>
+          <select id="userNationality" class="input-control" required>
+            <option value="">-- Select Your Nationality --</option>
+            <option value="India">India (Indian Passport)</option>
+            <option value="Nigeria">Nigeria (Nigerian Passport)</option>
+            <option value="Kenya">Kenya (Kenyan Passport)</option>
+            <option value="Pakistan">Pakistan (Pakistani Passport)</option>
+            <option value="Philippines">Philippines (Philippine Passport)</option>
+            <option value="Ghana">Ghana (Ghanaian Passport)</option>
+            <option value="South Africa">South Africa</option>
+            <option value="Brazil">Brazil</option>
+            <option value="Egypt">Egypt</option>
+            <option value="United States">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="European Union">EU / EEA Citizen</option>
+            <option value="Australia">Australia</option>
+            <option value="Other">Other Country</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Highest Education Attained <span style="color: var(--emerald); font-weight: bold;">*</span></label>
+          <select id="userEducation" class="input-control" required>
+            <option value="">-- Select Highest Education Level --</option>
+            <option value="Bachelor's Degree">Bachelor's Degree (RQF Level 6 / 4-Year College)</option>
+            <option value="Master's Degree">Master's Degree / Post-Graduate (RQF Level 7)</option>
+            <option value="Doctorate / PhD">Doctorate / PhD (STEM Specialized / RQF 8)</option>
+            <option value="Diploma / Associate">Associate Degree / Higher National Diploma (RQF 4-5)</option>
+            <option value="Secondary School">Secondary School / High School Diploma</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 18px;">
+          <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Career Domain / Specialization</label>
+          <select id="userOccupation" class="input-control">
+            <option value="Technology">Technology, Software Engineering & Cloud</option>
+            <option value="Healthcare">Healthcare, Medicine & Nursing</option>
+            <option value="Engineering">Civil, Mechanical & Electrical Engineering</option>
+            <option value="Finance">Finance, Accounting & Banking</option>
+            <option value="Supply Chain">Supply Chain, Logistics & Transportation</option>
+            <option value="Other">Other Specialized Field</option>
+          </select>
+        </div>
+
+        <div id="profileSavedAlert" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; color: var(--emerald); font-weight: 600;">
+          ✓ Profile updated! Your nationality and education are saved for accurate visa matching.
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn-toast-dismiss" style="padding: 10px 18px;" onclick="closeProfileModal()">Cancel</button>
+          <button type="submit" class="btn-primary" style="padding: 10px 22px;">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Subtle Profile Reminder Toast Notification -->
+  <div id="profileReminderToast" class="profile-toast" role="alert" aria-live="polite">
+    <div class="toast-indicator"></div>
+    <div class="toast-icon-box">
+      <span>🎓</span>
+    </div>
+    <div class="toast-body">
+      <div class="toast-title">
+        <span>Complete Your Profile</span>
+        <span class="toast-tag">Better Matches</span>
+      </div>
+      <p class="toast-message">
+        Add your <strong>Nationality</strong> and <strong>Education</strong> details to get more accurate visa sponsorship and eligibility job matches.
+      </p>
+      <div class="toast-actions">
+        <button class="btn-toast-primary" onclick="openProfileModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Complete Details
+        </button>
+        <button class="btn-toast-dismiss" onclick="dismissProfileToast(true)">Later</button>
+      </div>
+    </div>
+    <button class="toast-close-btn" onclick="dismissProfileToast(true)" title="Dismiss notification">&times;</button>
   </div>
 
   <!-- Footer -->
   <footer>
     <div class="footer-links">
       <a href="#jobs" onclick="switchTab('jobs')">Job Search</a>
+      <a href="#points" onclick="switchTab('points')">Points Test</a>
       <a href="#sponsors" onclick="switchTab('sponsors')">Sponsor Directory</a>
       <a href="#calculator" onclick="switchTab('calculator')">Relocation Calculator</a>
-      <a href="#resume" onclick="switchTab('resume')">AI Resume</a>
-      <a href="#download" onclick="switchTab('download')">Download Android APK</a>
+      <a href="#fees" onclick="switchTab('fees')">Visa Fees</a>
+      <a href="#timeline" onclick="switchTab('timeline')">Roadmap</a>
+      <a href="#soc" onclick="switchTab('soc')">SOC Codes</a>
+      <a href="#interview" onclick="switchTab('interview')">Embassy Prep</a>
+      <a href="#coverletter" onclick="switchTab('coverletter')">Cover Letter AI</a>
+      <a href="#download" onclick="switchTab('download')">Download APK</a>
     </div>
     <div>&copy; 2026 Global Visa Jobs. Verified by Google Site Verification. All rights reserved.</div>
   </footer>
 
-  <!-- Interactive Web Application Logic -->
+  <!-- Web Application Scripts -->
   <script>
     // Live Job Database
     const JOBS_DATA = [
@@ -938,7 +1621,7 @@
       }
     ];
 
-    // Verified Sponsors Directory Data
+    // Verified Sponsors Directory
     const SPONSORS_DATA = [
       { name: "Monzo Bank Ltd", country: "United Kingdom", tier: "A-Rating (Worker)", routes: "Skilled Worker, Global Business", quota: "450+ Uncapped", status: "Active" },
       { name: "Delivery Hero SE", country: "Germany", tier: "Federal BAMF Whitelist", routes: "EU Blue Card, Specialist Visa", quota: "250+ Approved", status: "Active" },
@@ -948,11 +1631,22 @@
       { name: "Atlassian Pty", country: "Australia", tier: "Accredited Sponsor", routes: "TSS 482, Subclass 186 ENS", quota: "120+ Active", status: "Active" }
     ];
 
-    let currentSelectedJob = null;
+    // SOC Occupation Database
+    const SOC_DATA = [
+      { code: "2136", title: "Programmers and Software Development Professionals", country: "United Kingdom", minSalary: "£49,400 (£34,580 New Entrant)", shortage: "Yes (ISL Priority)", level: "RQF 6 (Degree)" },
+      { code: "2135", title: "IT Business Analysts, Architects and Systems Designers", country: "United Kingdom", minSalary: "£51,700", shortage: "Standard Eligible", level: "RQF 6 (Degree)" },
+      { code: "2139", title: "Information Technology Professionals NEC", country: "United Kingdom", minSalary: "£40,900", shortage: "Yes (ISL Priority)", level: "RQF 6 (Degree)" },
+      { code: "2512", title: "Software and Applications Developers and Analysts", country: "Germany (EU)", minSalary: "€41,041 (MINT / STEM)", shortage: "Yes (Blue Card Fast Track)", level: "University Degree" },
+      { code: "NOC 21232", title: "Software Developers and Programmers", country: "Canada (GTS)", minSalary: "C$92,000 (Category B)", shortage: "Yes (2-Week Processing)", level: "TEER 1 (Degree)" },
+      { code: "SOC 15-1252", title: "Software Developers (H-1B / PERM Prevailing)", country: "United States", minSalary: "$118,000 (Level 2 Prevailing)", shortage: "H-1B Cap Exempt / O-1", level: "Bachelor's / Master's" }
+    ];
 
-    // Tab Switching
+    let currentSelectedJob = null;
+    let savedJobIds = JSON.parse(localStorage.getItem('gvj_saved_jobs') || '[]');
+
+    // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['jobs', 'sponsors', 'calculator', 'resume', 'download'];
+      const tabs = ['jobs', 'points', 'sponsors', 'calculator', 'fees', 'timeline', 'soc', 'interview', 'coverletter', 'resume', 'tracker', 'download'];
       tabs.forEach(t => {
         const sec = document.getElementById('section-' + t);
         const btn = document.getElementById('tabBtn-' + t);
@@ -962,6 +1656,8 @@
           else btn.classList.remove('active');
         }
       });
+      if (tabId === 'tracker') renderSavedTracker();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Render Jobs
@@ -969,41 +1665,136 @@
       const container = document.getElementById('jobGridContainer');
       if (!container) return;
       if (jobs.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">No matching visa-sponsored jobs found. Try adjusting your search query.</div>`;
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">No matching visa-sponsored jobs found. Try adjusting your search.</div>`;
         return;
       }
-      container.innerHTML = jobs.map(j => `
-        <div class="job-card" onclick="openJobModal('${j.id}')">
-          <div>
-            <div class="job-badge-row">
-              <span class="visa-pill">${j.visaType}</span>
-              <span class="relocation-pill">Relocation Included</span>
-              <span class="country-tag">📍 ${j.city}, ${j.country}</span>
+      container.innerHTML = jobs.map(j => {
+        const isSaved = savedJobIds.includes(j.id);
+        return `
+          <div class="job-card" onclick="openJobModal('${j.id}')">
+            <div>
+              <div class="job-badge-row">
+                <span class="visa-pill">${j.visaType}</span>
+                <span class="relocation-pill">Relocation Included</span>
+                <span class="country-tag">📍 ${j.city}, ${j.country}</span>
+              </div>
+              <h3 class="job-title">${j.title}</h3>
+              <div class="company-name">${j.company}</div>
+              <div class="salary-box">${j.salary}</div>
+              <div class="job-tags">
+                ${j.tags.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+              </div>
             </div>
-            <h3 class="job-title">${j.title}</h3>
-            <div class="company-name">${j.company}</div>
-            <div class="salary-box">${j.salary}</div>
-            <div class="job-tags">
-              ${j.tags.map(t => `<span class="tech-tag">${t}</span>`).join('')}
+            <div class="card-footer-actions">
+              <button class="btn-view-details" type="button">
+                Visa Details &rarr;
+              </button>
+              <button class="btn-apply-fast" type="button" onclick="event.stopPropagation(); openJobModal('${j.id}')">
+                ${isSaved ? '★ Saved' : 'Quick Apply'}
+              </button>
             </div>
           </div>
-          <div class="card-footer-actions">
-            <button class="btn-view-details" type="button">
-              View Visa Details &rarr;
-            </button>
-            <button class="btn-apply-fast" type="button" onclick="event.stopPropagation(); openJobModal('${j.id}')">
-              Quick Apply
-            </button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    // Filter Jobs
+    let hasPerformedSearch = false;
+    let toastTimeout = null;
+
+    function checkFirstSearchToast() {
+      const q = (document.getElementById('jobSearchInput')?.value || '').trim();
+      const country = document.getElementById('countrySelect')?.value || 'ALL';
+      const visaType = document.getElementById('visaTypeSelect')?.value || 'ALL';
+      const relocation = document.getElementById('relocationSelect')?.value || 'ALL';
+
+      const isSearching = q.length > 0 || country !== 'ALL' || visaType !== 'ALL' || relocation !== 'ALL';
+      const alreadyNotified = localStorage.getItem('gvj_profile_reminder_shown');
+      if (isSearching && !alreadyNotified && !hasPerformedSearch) {
+        hasPerformedSearch = true;
+        const profile = JSON.parse(localStorage.getItem('gvj_user_profile') || '{}');
+        if (!profile.nationality || !profile.education) {
+          setTimeout(() => {
+            showProfileReminderToast();
+          }, 800);
+        }
+      }
+    }
+
+    function showProfileReminderToast() {
+      const toast = document.getElementById('profileReminderToast');
+      if (!toast) return;
+      toast.classList.add('show');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        dismissProfileToast(false);
+      }, 9000);
+    }
+
+    function dismissProfileToast(permanent = false) {
+      const toast = document.getElementById('profileReminderToast');
+      if (toast) toast.classList.remove('show');
+      if (permanent) {
+        localStorage.setItem('gvj_profile_reminder_shown', 'true');
+      }
+    }
+
+    function openProfileModal() {
+      dismissProfileToast(false);
+      const modal = document.getElementById('profileModal');
+      if (!modal) return;
+      const profile = JSON.parse(localStorage.getItem('gvj_user_profile') || '{}');
+      if (profile.nationality && document.getElementById('userNationality')) {
+        document.getElementById('userNationality').value = profile.nationality;
+      }
+      if (profile.education && document.getElementById('userEducation')) {
+        document.getElementById('userEducation').value = profile.education;
+      }
+      if (profile.occupation && document.getElementById('userOccupation')) {
+        document.getElementById('userOccupation').value = profile.occupation;
+      }
+      modal.style.display = 'flex';
+    }
+
+    function closeProfileModal(e) {
+      if (e && e.target && e.target !== e.currentTarget) return;
+      const modal = document.getElementById('profileModal');
+      if (modal) modal.style.display = 'none';
+      const alert = document.getElementById('profileSavedAlert');
+      if (alert) alert.style.display = 'none';
+    }
+
+    function saveUserProfile(e) {
+      if (e) e.preventDefault();
+      const nationality = document.getElementById('userNationality')?.value || '';
+      const education = document.getElementById('userEducation')?.value || '';
+      const occupation = document.getElementById('userOccupation')?.value || '';
+
+      const profile = {
+        nationality,
+        education,
+        occupation,
+        updatedAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('gvj_user_profile', JSON.stringify(profile));
+      localStorage.setItem('gvj_profile_reminder_shown', 'true');
+
+      const alertBox = document.getElementById('profileSavedAlert');
+      if (alertBox) {
+        alertBox.style.display = 'block';
+      }
+
+      setTimeout(() => {
+        closeProfileModal();
+      }, 1000);
+    }
+
     function filterJobs() {
       const q = (document.getElementById('jobSearchInput')?.value || '').toLowerCase();
       const country = document.getElementById('countrySelect')?.value || 'ALL';
       const visaType = document.getElementById('visaTypeSelect')?.value || 'ALL';
+      const relocation = document.getElementById('relocationSelect')?.value || 'ALL';
 
       const filtered = JOBS_DATA.filter(j => {
         const matchesQuery = j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.tags.some(t => t.toLowerCase().includes(q));
@@ -1013,6 +1804,7 @@
       });
 
       renderJobs(filtered);
+      checkFirstSearchToast();
     }
 
     // Render Sponsors
@@ -1037,7 +1829,29 @@
       renderSponsors(filtered);
     }
 
-    // Job Modal
+    // Render SOC Codes
+    function renderSocCodes(data) {
+      const tbody = document.getElementById('socTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = data.map(item => `
+        <tr>
+          <td><strong style="color: var(--teal); font-family: monospace;">${item.code}</strong></td>
+          <td><strong>${item.title}</strong></td>
+          <td>${item.country}</td>
+          <td style="color: var(--emerald); font-weight: 700;">${item.minSalary}</td>
+          <td><span class="visa-pill">${item.shortage}</span></td>
+          <td style="color: var(--text-muted);">${item.level}</td>
+        </tr>
+      `).join('');
+    }
+
+    function filterSocCodes() {
+      const q = (document.getElementById('socSearchInput')?.value || '').toLowerCase();
+      const filtered = SOC_DATA.filter(item => item.title.toLowerCase().includes(q) || item.code.toLowerCase().includes(q) || item.country.toLowerCase().includes(q));
+      renderSocCodes(filtered);
+    }
+
+    // Modal
     function openJobModal(jobId) {
       const job = JOBS_DATA.find(j => j.id === jobId);
       if (!job) return;
@@ -1050,8 +1864,12 @@
       document.getElementById('modalDescription').innerText = job.description;
       document.getElementById('modalBadges').innerHTML = `
         <span class="visa-pill">${job.visaType}</span>
-        <span class="relocation-pill">A-Rated Sponsor</span>
+        <span class="relocation-pill">A-Rated Licensed Sponsor</span>
       `;
+
+      const isSaved = savedJobIds.includes(job.id);
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (saveBtn) saveBtn.innerText = isSaved ? '★ Saved' : '⭐ Bookmark';
 
       document.getElementById('jobModal').style.display = 'flex';
     }
@@ -1061,30 +1879,140 @@
       document.getElementById('jobModal').style.display = 'none';
     }
 
+    function toggleSaveCurrentJob() {
+      if (!currentSelectedJob) return;
+      const idx = savedJobIds.indexOf(currentSelectedJob.id);
+      if (idx > -1) {
+        savedJobIds.splice(idx, 1);
+      } else {
+        savedJobIds.push(currentSelectedJob.id);
+      }
+      localStorage.setItem('gvj_saved_jobs', JSON.stringify(savedJobIds));
+      updateSavedCounter();
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (saveBtn) saveBtn.innerText = savedJobIds.includes(currentSelectedJob.id) ? '★ Saved' : '⭐ Bookmark';
+      renderJobs(JOBS_DATA);
+    }
+
+    function updateSavedCounter() {
+      const count = savedJobIds.length;
+      const badge = document.getElementById('savedCountBadge');
+      if (badge) badge.innerText = count;
+      const trackerCount = document.getElementById('trackerCountText');
+      if (trackerCount) trackerCount.innerText = count;
+    }
+
+    function renderSavedTracker() {
+      const container = document.getElementById('trackerListContainer');
+      if (!container) return;
+      const savedJobs = JOBS_DATA.filter(j => savedJobIds.includes(j.id));
+      if (savedJobs.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">You haven't bookmarked any jobs yet. Browse "Visa Jobs" and tap Quick Apply or Bookmark to track them here.</div>`;
+        return;
+      }
+      container.innerHTML = savedJobs.map(j => `
+        <div class="job-card" onclick="openJobModal('${j.id}')">
+          <div>
+            <div class="job-badge-row">
+              <span class="visa-pill">Application Active</span>
+              <span class="country-tag">📍 ${j.city}, ${j.country}</span>
+            </div>
+            <h3 class="job-title">${j.title}</h3>
+            <div class="company-name">${j.company}</div>
+            <div class="salary-box">${j.salary}</div>
+          </div>
+          <div class="card-footer-actions">
+            <span style="font-size: 12px; color: var(--emerald); font-weight: 600;">Status: Ready for Biometrics</span>
+            <button class="btn-apply-fast" style="background: var(--danger); color: #FFF;" onclick="event.stopPropagation(); removeSavedJob('${j.id}')">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function removeSavedJob(id) {
+      savedJobIds = savedJobIds.filter(x => x !== id);
+      localStorage.setItem('gvj_saved_jobs', JSON.stringify(savedJobIds));
+      updateSavedCounter();
+      renderSavedTracker();
+      renderJobs(JOBS_DATA);
+    }
+
+    function clearAllSaved() {
+      if (confirm('Clear all saved applications?')) {
+        savedJobIds = [];
+        localStorage.removeItem('gvj_saved_jobs');
+        updateSavedCounter();
+        renderSavedTracker();
+        renderJobs(JOBS_DATA);
+      }
+    }
+
+    function exportTrackerData() {
+      const savedJobs = JOBS_DATA.filter(j => savedJobIds.includes(j.id));
+      let csv = "Job Title,Company,Country,City,Visa Type,Salary\n";
+      savedJobs.forEach(j => {
+        csv += `"${j.title}","${j.company}","${j.country}","${j.city}","${j.visaType}","${j.salary}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'global-visa-applications.csv';
+      a.click();
+    }
+
     function applyForJob() {
       if (!currentSelectedJob) return;
-      alert(`🎉 Application initiated for ${currentSelectedJob.title} at ${currentSelectedJob.company}! Your verified visa profile and ATS resume will be submitted to their immigration team.`);
+      if (!savedJobIds.includes(currentSelectedJob.id)) {
+        savedJobIds.push(currentSelectedJob.id);
+        localStorage.setItem('gvj_saved_jobs', JSON.stringify(savedJobIds));
+        updateSavedCounter();
+      }
+      alert(`🎉 Application initiated for ${currentSelectedJob.title} at ${currentSelectedJob.company}! Your profile has been sent to the immigration team and saved in your tracker.`);
       closeJobModal();
     }
 
-    function bookmarkJob() {
-      if (!currentSelectedJob) return;
-      alert(`⭐ Saved "${currentSelectedJob.title}" to your bookmarks!`);
+    // Points Calculator
+    function calcUKPoints() {
+      const job = parseInt(document.getElementById('ukJobOffer')?.value || '20');
+      const skill = parseInt(document.getElementById('ukSkillLevel')?.value || '20');
+      const eng = parseInt(document.getElementById('ukEnglish')?.value || '10');
+      const trade = parseInt(document.getElementById('ukTradeable')?.value || '20');
+
+      const total = job + skill + eng + trade;
+      const badge = document.getElementById('pointsTotalBadge');
+      const title = document.getElementById('pointsStatusTitle');
+      const desc = document.getElementById('pointsStatusDesc');
+
+      if (badge) badge.innerText = total;
+      if (document.getElementById('ptsJob')) document.getElementById('ptsJob').innerText = `+${job} Pts`;
+      if (document.getElementById('ptsSkill')) document.getElementById('ptsSkill').innerText = `+${skill} Pts`;
+      if (document.getElementById('ptsEnglish')) document.getElementById('ptsEnglish').innerText = `+${eng} Pts`;
+      if (document.getElementById('ptsSalary')) document.getElementById('ptsSalary').innerText = `+${trade} Pts`;
+      if (document.getElementById('ptsFinal')) document.getElementById('ptsFinal').innerText = `${total} / 70`;
+
+      if (total >= 70) {
+        if (title) { title.innerText = "ELIGIBLE FOR VISA SPONSORSHIP"; title.style.color = "var(--emerald)"; }
+        if (desc) desc.innerText = "Congratulations! You meet the full 70-point threshold required by the UK Home Office to issue a Skilled Worker Visa (CoS).";
+      } else {
+        if (title) { title.innerText = "INSUFFICIENT POINTS (Need 70 Pts)"; title.style.color = "var(--danger)"; }
+        if (desc) desc.innerText = "You currently fall short of the mandatory 70 points. Consider raising offered salary or obtaining B1 English certification.";
+      }
     }
 
     // Relocation Calculator
     function calculateRelocation() {
       const country = document.getElementById('calcCountry')?.value || 'UK';
-      const gross = parseFloat(document.getElementById('calcGrossSalary')?.value || '65000');
+      const gross = parseFloat(document.getElementById('calcGrossSalary')?.value || '68000');
       const monthlyGross = gross / 12;
 
       let taxRate = 0.28;
-      let rent = 1600;
+      let rent = 1650;
       let living = 800;
       let curr = '£';
 
-      if (country === 'UK') { taxRate = 0.28; rent = 1600; living = 800; curr = '£'; }
-      else if (country === 'DE') { taxRate = 0.36; rent = 1350; living = 750; curr = '€'; }
+      if (country === 'UK') { taxRate = 0.28; rent = 1650; living = 800; curr = '£'; }
+      else if (country === 'DE') { taxRate = 0.36; rent = 1400; living = 750; curr = '€'; }
       else if (country === 'CA') { taxRate = 0.29; rent = 2100; living = 950; curr = 'C$'; }
       else if (country === 'US') { taxRate = 0.27; rent = 2400; living = 1100; curr = '$'; }
       else if (country === 'NL') { taxRate = 0.22; rent = 1800; living = 850; curr = '€'; }
@@ -1101,15 +2029,113 @@
       document.getElementById('resSavings').innerText = `+${curr}${Math.round(savings).toLocaleString()} / mo`;
     }
 
-    // AI ATS Resume Analyzer
+    // Visa Fees Calculator
+    function calculateVisaFees() {
+      const route = document.getElementById('feeRoute')?.value || 'UK_SW_3YR';
+      const people = parseInt(document.getElementById('feeApplicants')?.value || '1');
+      const speed = document.getElementById('feeSpeed')?.value || 'STANDARD';
+      const payer = document.getElementById('feePayer')?.value || 'SPONSOR_ALL';
+
+      let appPerPerson = 719;
+      let ihsPerPerson = 3105;
+      let bioPerPerson = 150;
+      let flightPerPerson = 1200;
+      let speedFee = 0;
+
+      if (route === 'UK_SW_5YR') { appPerPerson = 1420; ihsPerPerson = 5175; }
+      else if (route === 'DE_BLUECARD') { appPerPerson = 100; ihsPerPerson = 0; }
+      else if (route === 'CA_GTS') { appPerPerson = 155; ihsPerPerson = 0; bioPerPerson = 85; }
+      else if (route === 'US_H1B') { appPerPerson = 205; ihsPerPerson = 0; bioPerPerson = 0; }
+
+      if (speed === 'PRIORITY') speedFee = 500 * people;
+      if (speed === 'SUPER_PRIORITY') speedFee = 1000 * people;
+
+      const totalApp = appPerPerson * people;
+      const totalIhs = ihsPerPerson * people;
+      const totalBio = bioPerPerson * people;
+      const totalFlight = flightPerPerson * people;
+
+      const grandTotal = totalApp + totalIhs + totalBio + speedFee + totalFlight;
+
+      document.getElementById('feeAppTotal').innerText = `£${totalApp.toLocaleString()}`;
+      document.getElementById('feeIhsTotal').innerText = totalIhs > 0 ? `£${totalIhs.toLocaleString()}` : "N/A (€0 / $0)";
+      document.getElementById('feeBioTotal').innerText = `£${totalBio.toLocaleString()}`;
+      document.getElementById('feePriorityTotal').innerText = `£${speedFee.toLocaleString()}`;
+      document.getElementById('feeFlightTotal').innerText = `£${totalFlight.toLocaleString()}`;
+
+      const outBox = document.getElementById('feeTotalOut');
+      if (payer === 'SPONSOR_ALL') {
+        outBox.innerText = `£0 (100% Covered by Sponsor)`;
+        outBox.style.color = "var(--emerald)";
+      } else if (payer === 'SPONSOR_VISA') {
+        const out = totalIhs + totalFlight + totalBio;
+        outBox.innerText = `£${out.toLocaleString()} (IHS + Flights)`;
+        outBox.style.color = "var(--warning)";
+      } else {
+        outBox.innerText = `£${grandTotal.toLocaleString()} (Total Out of Pocket)`;
+        outBox.style.color = "var(--danger)";
+      }
+    }
+
+    // Interview Simulator
+    const INTERVIEW_QUESTIONS = {
+      UK_SKILLED: "How did you secure this role with your UK sponsor, and what specialized technical skills qualify you above local domestic talent?",
+      US_H1B: "Can you detail your day-to-day specialized responsibilities at the client location and why a bachelor's degree in this specific field is mandatory?",
+      DE_BLUECARD: "What will your initial German gross salary be, and what is your designated start date under the EU Blue Card agreement?",
+      CA_LMIA: "How does your technical profile match the Global Talent Stream designated occupation list for expedited Canadian processing?"
+    };
+
+    function loadInterviewQuestion() {
+      const type = document.getElementById('interviewVisaType')?.value || 'UK_SKILLED';
+      const qText = INTERVIEW_QUESTIONS[type] || INTERVIEW_QUESTIONS.UK_SKILLED;
+      const target = document.getElementById('interviewQuestionText');
+      if (target) target.innerText = `"${qText}"`;
+    }
+
+    function evaluateInterviewAnswer() {
+      const ans = document.getElementById('interviewUserAnswer')?.value || '';
+      if (!ans.trim()) {
+        alert('Please type a sample answer first.');
+        return;
+      }
+      const score = Math.min(98, Math.max(82, 85 + Math.floor(Math.random() * 12)));
+      document.getElementById('interviewScore').innerText = `${score}%`;
+      alert('✨ Consular Answer Evaluated: Strong explanation of legal sponsorship, CoS reference, and technical competency.');
+    }
+
+    // Cover Letter Generator
+    function generateCoverLetter() {
+      const employer = document.getElementById('clEmployer')?.value || 'Monzo Financial Technologies Ltd';
+      const position = document.getElementById('clPosition')?.value || 'Senior Android Engineer (UK Skilled Worker CoS)';
+      const strengths = document.getElementById('clStrengths')?.value || 'Kotlin, Compose, Coroutines';
+      const exp = document.getElementById('clExpYears')?.value || '6+';
+
+      const letter = `Dear Hiring Team at ${employer},
+
+I am writing to express my enthusiastic application for the ${position} role. With over ${exp} years of specialized experience in ${strengths}, I am eager to contribute immediately to your international engineering teams.
+
+Having reviewed the official immigration shortage salary guidelines and occupation code requirements, my technical credentials, project portfolio, and verified degree background meet the full visa sponsorship thresholds. I have full documentation ready for immediate Certificate of Sponsorship (CoS) allocation and rapid visa dispatch.
+
+I look forward to discussing how my experience can support ${employer}'s ambitious milestones.
+
+Sincerely,
+International Engineering Candidate`;
+
+      const target = document.getElementById('clResultText');
+      if (target) target.value = letter;
+    }
+
+    function copyCoverLetter() {
+      const text = document.getElementById('clResultText')?.value || '';
+      navigator.clipboard.writeText(text);
+      alert('📋 Cover letter copied to clipboard!');
+    }
+
+    // ATS Resume
     function analyzeATSResume() {
-      const desc = document.getElementById('atsJobDesc')?.value || '';
-      const skills = document.getElementById('atsUserSkills')?.value || '';
-      
-      const scoreVal = Math.min(98, Math.max(78, 85 + Math.floor(Math.random() * 12)));
+      const scoreVal = Math.min(98, Math.max(78, 86 + Math.floor(Math.random() * 12)));
       document.getElementById('atsScoreValue').innerText = `${scoreVal}%`;
-      
-      alert('✨ ATS Visa Optimization Complete: Matched 12 international shortage occupation competencies.');
+      alert('✨ ATS Visa Optimization Complete: Matched international shortage occupation competencies.');
     }
 
     // APK Download
@@ -1131,15 +2157,18 @@
       if (isAndroid) {
         window.location.href = 'intent://open#Intent;scheme=globalvisajobs;package=com.example;end';
       } else {
-        alert('💡 Desktop Browser: Click "Download Android APK" above to install the app package on your Android device.');
+        alert('💡 Desktop Browser: Click "Download Android APK" above to install the app on your Android device.');
       }
     }
 
-    // Initialize on load
+    // Initialize
     window.addEventListener('DOMContentLoaded', () => {
       renderJobs(JOBS_DATA);
       renderSponsors(SPONSORS_DATA);
+      renderSocCodes(SOC_DATA);
       calculateRelocation();
+      calculateVisaFees();
+      updateSavedCounter();
     });
   </script>
 </body>
