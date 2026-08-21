@@ -9,8 +9,14 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.network.GeminiApiClient
+import com.example.network.RapidApiClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 
 class JobRepository(private val db: AppDatabase, private val context: Context) {
     private val jobDao = db.jobDao()
@@ -26,6 +32,18 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         try {
             // Gracefully initialize Firebase Sync Framework
             FirebaseSyncManager.initialize(context)
+
+            // Start listening to real-time incoming Firestore jobs feed
+            FirebaseSyncManager.listenToLiveJobsFeed { liveJob ->
+                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                    try {
+                        checkAndTriggerNotifications(listOf(liveJob))
+                        jobDao.insertJob(liveJob)
+                    } catch (e: Exception) {
+                        Log.e("JobRepository", "Failed to process incoming live job from Firestore", e)
+                    }
+                }
+            }
 
             val existing = jobDao.getAllJobsFlow().firstOrNull() ?: emptyList()
             if (existing.size < DefaultJobs.list.size) {
@@ -246,7 +264,7 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
 
     suspend fun fetchAndSaveIndeedJobs(companyName: String, locality: String, start: Int): List<JobEntity> {
         try {
-            val jobs = com.example.network.RapidApiClient.getIndeedCompanyJobs(companyName, locality, start)
+            val jobs = RapidApiClient.getIndeedCompanyJobs(companyName, locality, start)
             if (jobs.isNotEmpty()) {
                 checkAndTriggerNotifications(jobs)
                 jobDao.insertJobs(jobs)
@@ -256,6 +274,149 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
             Log.e("JobRepository", "Failed to fetch and save Indeed jobs", e)
         }
         return emptyList()
+    }
+
+    suspend fun fetchAndSaveGoogleJobs(
+        query: String,
+        location: String,
+        country: String = "US",
+        domain: String = "com",
+        maxRows: Int = 20
+    ): List<JobEntity> {
+        try {
+            val jobs = RapidApiClient.getGoogleJobsScraper(query, location, country, domain, maxRows)
+            if (jobs.isNotEmpty()) {
+                checkAndTriggerNotifications(jobs)
+                jobDao.insertJobs(jobs)
+            }
+            return jobs
+        } catch (e: Exception) {
+            Log.e("JobRepository", "Failed to fetch and save Google Jobs", e)
+        }
+        return emptyList()
+    }
+
+    suspend fun fetchAndSaveMultiSourceJobs(
+        searchTerm: String,
+        location: String,
+        countryIndeed: String = "USA",
+        resultsWanted: Int = 10
+    ): List<JobEntity> {
+        try {
+            val jobs = RapidApiClient.getMultiSourceJobs(searchTerm, location, countryIndeed, resultsWanted)
+            if (jobs.isNotEmpty()) {
+                checkAndTriggerNotifications(jobs)
+                jobDao.insertJobs(jobs)
+            }
+            return jobs
+        } catch (e: Exception) {
+            Log.e("JobRepository", "Failed to fetch and save Multi-source jobs", e)
+        }
+        return emptyList()
+    }
+
+    /**
+     * Master Aggregator: Fetches and saves jobs across all active API keys and endpoints
+     * (Gemini AI Live Web Search, RapidAPI Google Jobs Scraper, PR Labs Multi-Source Jobs, Indeed Sourced Sponsors).
+     */
+    suspend fun fetchAllJobsFromAllApis(
+        query: String = "Visa sponsorship",
+        country: String = "All"
+    ): ApiJobsAggregationResult = coroutineScope {
+        val effectiveQuery = query.trim().ifEmpty { "Visa sponsorship jobs" }
+        val effectiveCountry = if (country.isBlank()) "All" else country
+        val locationParam = if (effectiveCountry == "All") "Remote / Global" else effectiveCountry
+        val countryCode = when (effectiveCountry.lowercase()) {
+            "canada" -> "CA"
+            "united kingdom", "uk" -> "GB"
+            "germany" -> "DE"
+            "australia" -> "AU"
+            "france" -> "FR"
+            else -> "US"
+        }
+
+        // Launch concurrent fetches across all API endpoints
+        val geminiDeferred = async {
+            try {
+                GeminiApiClient.searchJobs(effectiveQuery, effectiveCountry)
+            } catch (e: Exception) {
+                Log.e("JobRepository", "Gemini API job fetch failed", e)
+                emptyList<JobEntity>()
+            }
+        }
+
+        val googleJobsDeferred = async {
+            try {
+                RapidApiClient.getGoogleJobsScraper(
+                    query = effectiveQuery,
+                    location = locationParam,
+                    country = countryCode,
+                    domain = "com",
+                    maxRows = 20
+                )
+            } catch (e: Exception) {
+                Log.e("JobRepository", "Google Jobs Scraper fetch failed", e)
+                emptyList<JobEntity>()
+            }
+        }
+
+        val multiSourceDeferred = async {
+            try {
+                RapidApiClient.getMultiSourceJobs(
+                    searchTerm = effectiveQuery,
+                    location = locationParam,
+                    countryIndeed = if (countryCode == "US") "USA" else countryCode,
+                    resultsWanted = 10
+                )
+            } catch (e: Exception) {
+                Log.e("JobRepository", "Multi-Source PR Labs API fetch failed", e)
+                emptyList<JobEntity>()
+            }
+        }
+
+        val indeedDeferred = async {
+            try {
+                val targetCompany = when (effectiveCountry.lowercase()) {
+                    "united kingdom", "uk" -> "NHS Trust"
+                    "canada" -> "Shopify"
+                    "germany" -> "Siemens"
+                    else -> "Google"
+                }
+                RapidApiClient.getIndeedCompanyJobs(
+                    companyName = targetCompany,
+                    locality = countryCode.lowercase(),
+                    start = 1
+                )
+            } catch (e: Exception) {
+                Log.e("JobRepository", "Indeed Company Jobs fetch failed", e)
+                emptyList<JobEntity>()
+            }
+        }
+
+        val geminiJobs = geminiDeferred.await()
+        val googleJobs = googleJobsDeferred.await()
+        val multiSourceJobs = multiSourceDeferred.await()
+        val indeedJobs = indeedDeferred.await()
+
+        // Combine and deduplicate jobs by ID or title+company
+        val combined = (geminiJobs + googleJobs + multiSourceJobs + indeedJobs)
+            .distinctBy { job ->
+                if (job.id.isNotBlank()) job.id else "${job.title.lowercase().trim()}_${job.company.lowercase().trim()}"
+            }
+
+        if (combined.isNotEmpty()) {
+            checkAndTriggerNotifications(combined)
+            jobDao.insertJobs(combined)
+        }
+
+        ApiJobsAggregationResult(
+            totalJobsAdded = combined.size,
+            geminiJobsCount = geminiJobs.size,
+            googleJobsCount = googleJobs.size,
+            multiSourceJobsCount = multiSourceJobs.size,
+            indeedJobsCount = indeedJobs.size,
+            allFetchedJobs = combined
+        )
     }
 
     suspend fun toggleBookmark(job: JobEntity) {
@@ -374,6 +535,18 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         )
         jobDao.insertAlert(alert)
 
+        // Sync subscription to Firestore
+        val firestoreAlert = FirestoreJobAlert(
+            id = "alert_${System.currentTimeMillis()}",
+            queryText = queryText,
+            country = country,
+            userEmail = "vincentmwangangi28@gmail.com",
+            isActive = true,
+            pushEnabled = push,
+            emailEnabled = email
+        )
+        FirebaseSyncManager.subscribeJobAlertToFirestore(firestoreAlert)
+
         try {
             val existingJobs = jobDao.getAllJobsFlow().firstOrNull() ?: emptyList()
             val userEmail = "vincentmwangangi28@gmail.com"
@@ -412,8 +585,97 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         }
     }
 
+    suspend fun toggleRealtimeSearchAlert(
+        queryText: String,
+        country: String,
+        enabled: Boolean,
+        email: Boolean = true,
+        push: Boolean = true
+    ): Boolean {
+        val cleanQuery = queryText.trim().ifEmpty { "Visa sponsorship jobs" }
+        val cleanCountry = if (country.isBlank()) "All" else country
+
+        val existingAlerts = jobDao.getAllAlertsFlow().firstOrNull() ?: emptyList()
+        val match = existingAlerts.find {
+            it.queryText.equals(cleanQuery, ignoreCase = true) &&
+            (it.country.equals(cleanCountry, ignoreCase = true) || (it.country.isBlank() && cleanCountry == "All"))
+        }
+
+        if (enabled) {
+            if (match == null) {
+                addAlert(
+                    queryText = cleanQuery,
+                    country = cleanCountry,
+                    email = email,
+                    push = push,
+                    telegram = false
+                )
+            }
+            return true
+        } else {
+            if (match != null) {
+                deleteAlert(match.id)
+            }
+            return false
+        }
+    }
+
+    suspend fun triggerSimulatedRealtimeJobAlert(queryText: String, country: String): JobEntity {
+        val effectiveQuery = queryText.trim().ifEmpty { "Senior Android Developer" }
+        val effectiveCountry = if (country.isBlank() || country == "All") "United Kingdom" else country
+
+        val companyNames = listOf("Revolut", "Monzo Bank", "Deliveroo", "Spotify", "Shopify", "Klarna", "Siemens Healthineers", "AstraZeneca")
+        val sampleCompany = companyNames.random()
+        val sampleSalary = when (effectiveCountry) {
+            "United Kingdom" -> "£85,000 - £110,000 / yr"
+            "Canada" -> "$130,000 - $165,000 CAD / yr"
+            "Germany" -> "€75,000 - €95,000 / yr"
+            "Australia" -> "$140,000 - $180,000 AUD / yr"
+            "Sweden" -> "65,000 - 85,000 SEK / mo"
+            else -> "$120,000 - $150,000 USD / yr"
+        }
+
+        val visaCategory = when (effectiveCountry) {
+            "United Kingdom" -> "Skilled Worker Visa (CoS Guaranteed)"
+            "Canada" -> "Global Talent Stream / LMIA Exempt"
+            "Germany" -> "EU Blue Card Sponsored"
+            "Australia" -> "TSS Subclass 482 / 186 PR Track"
+            "Sweden" -> "Swedish Work Permit (Fast-Track)"
+            else -> "Full Visa Sponsorship Provided"
+        }
+
+        val timestamp = System.currentTimeMillis()
+        val liveJob = JobEntity(
+            id = "live_rt_${timestamp}",
+            title = effectiveQuery,
+            company = sampleCompany,
+            country = effectiveCountry,
+            location = "$sampleCompany HQ ($effectiveCountry)",
+            description = "Immediate hiring for $effectiveQuery with verified visa sponsorship, relocation package, and legal fee reimbursement for overseas talent.",
+            salary = sampleSalary,
+            visaType = visaCategory,
+            confidenceScore = 98,
+            confidenceReason = "Live Firestore Real-Time Verified Sponsor Alert",
+            relocationAssistance = true,
+            contractType = "Full-time",
+            industry = "Technology",
+            experienceLevel = "Senior",
+            applicationUrl = "https://www.google.com/search?q=${java.net.URLEncoder.encode("$sampleCompany $effectiveQuery careers", "UTF-8")}",
+            datePosted = "Just now (Live Alert)",
+            isCustomPosted = false
+        )
+
+        // Publish to Firestore live stream and local database
+        FirebaseSyncManager.publishJobToLiveFeed(liveJob)
+        checkAndTriggerNotifications(listOf(liveJob))
+        jobDao.insertJob(liveJob)
+
+        return liveJob
+    }
+
     suspend fun deleteAlert(id: Int) {
         jobDao.deleteAlertById(id)
+        FirebaseSyncManager.unsubscribeJobAlertFromFirestore("alert_$id")
     }
 
     // Notification action handlers
@@ -527,3 +789,12 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         }
     }
 }
+
+data class ApiJobsAggregationResult(
+    val totalJobsAdded: Int = 0,
+    val geminiJobsCount: Int = 0,
+    val googleJobsCount: Int = 0,
+    val multiSourceJobsCount: Int = 0,
+    val indeedJobsCount: Int = 0,
+    val allFetchedJobs: List<JobEntity> = emptyList()
+)

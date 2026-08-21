@@ -484,6 +484,9 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
     var googleJobsDomain by remember { mutableStateOf("com") }
     var googleJobsMaxRows by remember { mutableStateOf(20) }
 
+    var filterSavedOnly by remember { mutableStateOf(false) }
+    var showExportPdfDialog by remember { mutableStateOf(false) }
+
     var activeDetailJob by remember { mutableStateOf<JobEntity?>(null) }
     val context = LocalContext.current
 
@@ -505,8 +508,9 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
             "High Confidence" -> job.confidenceScore >= 90
             else -> true
         }
+        val matchSaved = !filterSavedOnly || job.isBookmarked
 
-        matchQuery && matchCountry && matchIndustry && matchExp && matchSponsorship
+        matchQuery && matchCountry && matchIndustry && matchExp && matchSponsorship && matchSaved
     }
 
     Column(
@@ -649,6 +653,24 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
                 }
             }
         }
+
+        // Real-Time Firestore Notification & Search Alert Card
+        RealtimeJobAlertCard(
+            queryText = queryText,
+            searchCountryText = searchCountryText,
+            viewModel = viewModel,
+            onCriteriaSelected = { newRole, newCountry ->
+                queryText = newRole
+                searchCountryText = newCountry
+            }
+        )
+
+        // Master Fetch All Jobs from API Keys Card
+        AllApiJobsMasterCard(
+            queryText = queryText,
+            searchCountryText = searchCountryText,
+            viewModel = viewModel
+        )
 
         // Search Status Alert
         searchStatus?.let { status ->
@@ -1452,8 +1474,48 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
                 .padding(vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Saved Jobs Filter Chip
+            val savedCount = jobs.count { it.isBookmarked }
+            FilterChip(
+                selected = filterSavedOnly,
+                onClick = { filterSavedOnly = !filterSavedOnly },
+                label = { Text("Saved ($savedCount)", fontSize = 12.sp) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (filterSavedOnly) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Saved Jobs",
+                        modifier = Modifier.size(16.dp),
+                        tint = if (filterSavedOnly) NavyDark else EmeraldGreen
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = EmeraldGreen,
+                    selectedLabelColor = NavyDark,
+                    containerColor = NavyDark,
+                    labelColor = WhiteActive
+                ),
+                border = BorderStroke(1.dp, if (filterSavedOnly) EmeraldGreen else NavyLight),
+                modifier = Modifier.testTag("filter_saved_jobs_chip")
+            )
+
+            // PDF Export Button in filter row
+            if (savedCount > 0) {
+                Button(
+                    onClick = { showExportPdfDialog = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                    modifier = Modifier.height(32.dp).testTag("discover_export_pdf_button")
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = "Export PDF", tint = NavyDark, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Export PDF", color = NavyDark, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+
             // Country Filter Dropdown
             FilterBadgeDropdown(
                 label = "Country",
@@ -1857,6 +1919,13 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
                 }
             )
         }
+    }
+
+    if (showExportPdfDialog) {
+        ExportSavedJobsPdfDialog(
+            viewModel = viewModel,
+            onDismiss = { showExportPdfDialog = false }
+        )
     }
 }
 
@@ -2815,6 +2884,8 @@ fun MatchTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
 
 @Composable
 fun CareerToolsSubScreen(viewModel: JobViewModel) {
+    var showPdfExportDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -2822,8 +2893,19 @@ fun CareerToolsSubScreen(viewModel: JobViewModel) {
             .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        SavedJobsPdfExportCard(
+            viewModel = viewModel,
+            onOpenExportDialog = { showPdfExportDialog = true }
+        )
         VisaInterviewPrepCard(viewModel)
         RecruiterColdEmailCard(viewModel)
+    }
+
+    if (showPdfExportDialog) {
+        ExportSavedJobsPdfDialog(
+            viewModel = viewModel,
+            onDismiss = { showPdfExportDialog = false }
+        )
     }
 }
 
@@ -3431,6 +3513,195 @@ fun ResumeSubScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (activeSubMode == "Editor") {
+            // LinkedIn OAuth 2.0 ATS Auto-Populate Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+                    .border(
+                        1.5.dp,
+                        if (profile.linkedInConnected) LinkedInBlue.copy(alpha = 0.8f) else NavyLight,
+                        RoundedCornerShape(16.dp)
+                    )
+                    .testTag("linkedin_resume_autopopulate_card"),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (profile.linkedInConnected) NavyMedium else Color(0xFF0F172A)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(LinkedInBlue),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "in",
+                                color = Color.White,
+                                fontWeight = FontWeight.Black,
+                                fontSize = 20.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = if (profile.linkedInConnected) "LinkedIn Profile Connected" else "LinkedIn OAuth 2.0 ATS Auto-Fill",
+                                    color = WhiteActive,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                                if (profile.linkedInConnected) {
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(4.dp))
+                                            .background(EmeraldGreen.copy(alpha = 0.2f))
+                                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    ) {
+                                        Text(
+                                            text = "VERIFIED ✓",
+                                            color = EmeraldGreen,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.ExtraBold
+                                        )
+                                    }
+                                }
+                            }
+                            Text(
+                                text = if (profile.linkedInConnected)
+                                    "${profile.fullName.ifBlank { "Professional" }} · ${profile.linkedInHeadline.ifBlank { "Visa Sponsorship Ready" }}"
+                                else
+                                    "Pull verified work history, education & skills directly into the ATS Resume Builder",
+                                color = SlateMuted,
+                                fontSize = 11.sp,
+                                maxLines = 1
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    if (profile.linkedInConnected) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    if (profile.fullName.isNotBlank()) name = profile.fullName
+                                    if (profile.linkedInEmail.isNotBlank()) contactEmail = profile.linkedInEmail
+                                    if (profile.education.isNotBlank()) education = profile.education
+                                    if (profile.skills.isNotBlank()) {
+                                        skills = profile.skills
+                                        skillsList.clear()
+                                        skillsList.addAll(profile.skills.split(",").map { it.trim() }.filter { it.isNotEmpty() })
+                                    }
+                                    if (profile.experience.isNotBlank()) {
+                                        experience = profile.experience
+                                        experienceList.clear()
+                                        experienceList.addAll(deserializeExperience(profile.experience))
+                                    }
+                                    activeStep = 1
+                                    Toast.makeText(context, "✨ Pre-populated ATS Form from LinkedIn Profile!", Toast.LENGTH_SHORT).show()
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = LinkedInBlue,
+                                    contentColor = Color.White
+                                ),
+                                modifier = Modifier
+                                    .weight(1.2f)
+                                    .height(40.dp)
+                                    .testTag("autopopulate_from_linkedin_btn")
+                            ) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Pre-populate Form", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            OutlinedButton(
+                                onClick = {
+                                    val targetRole = profile.preferredOccupations.ifBlank { "Senior Software Engineer" }
+                                    viewModel.generateResumeOrCoverLetter(
+                                        role = targetRole,
+                                        type = "ATS Resume",
+                                        tone = "High-Impact ATS"
+                                    )
+                                    activeSubMode = "Generator"
+                                    Toast.makeText(context, "🤖 AI generating ATS resume tailored to $targetRole...", Toast.LENGTH_SHORT).show()
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = TealCyan
+                                ),
+                                border = BorderStroke(1.dp, TealCyan),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(40.dp)
+                                    .testTag("ai_generate_from_linkedin_btn")
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("AI 1-Click ATS", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    viewModel.startLinkedInOAuthFlow(context)
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = LinkedInBlue,
+                                    contentColor = Color.White
+                                ),
+                                modifier = Modifier
+                                    .weight(1.3f)
+                                    .height(40.dp)
+                                    .testTag("linkedin_resume_connect_oauth_btn")
+                            ) {
+                                Icon(Icons.Default.AccountCircle, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("Connect LinkedIn OAuth", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            OutlinedButton(
+                                onClick = {
+                                    viewModel.connectLinkedInSandbox(
+                                        customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
+                                        customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+                                        customEmail = "vincent.mwangangi.verified@example.com"
+                                    )
+                                    Toast.makeText(context, "Connected Verified Sandbox LinkedIn Account!", Toast.LENGTH_SHORT).show()
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = TealCyan
+                                ),
+                                border = BorderStroke(1.dp, NavyLight),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(40.dp)
+                                    .testTag("linkedin_resume_sandbox_btn")
+                            ) {
+                                Text("Sandbox Profile", fontSize = 12.sp)
+                            }
+                        }
+                    }
+                }
+            }
+
             // AI Resume Parser Integration (ResumeOptimizerPro)
             Card(
                 modifier = Modifier
@@ -6113,7 +6384,8 @@ fun getColumnForStatus(status: String): String {
 fun VisaTrackerHeader(
     isKanbanView: Boolean,
     onToggleView: (Boolean) -> Unit,
-    onAddTrack: () -> Unit
+    onAddTrack: () -> Unit,
+    onExportPdf: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -6134,7 +6406,20 @@ fun VisaTrackerHeader(
             )
         }
         
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            // Export PDF Button
+            Button(
+                onClick = onExportPdf,
+                colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                modifier = Modifier.height(28.dp).testTag("export_saved_jobs_pdf_header_button"),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Default.Share, contentDescription = "Export PDF", tint = NavyDark, modifier = Modifier.size(13.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Export PDF", color = NavyDark, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            }
+
             // View Mode Toggle (Kanban vs List)
             Row(
                 modifier = Modifier
@@ -6709,6 +6994,7 @@ fun VisaTrackerSubScreen(viewModel: JobViewModel) {
     val jobs by viewModel.allJobs.collectAsStateWithLifecycle()
     
     var showAddDialog by remember { mutableStateOf(false) }
+    var showExportPdfDialog by remember { mutableStateOf(false) }
     var addPresetStatus by remember { mutableStateOf("Applied") }
     var isKanbanView by remember { mutableStateOf(true) }
 
@@ -6726,6 +7012,9 @@ fun VisaTrackerSubScreen(viewModel: JobViewModel) {
                 onAddTrack = {
                     addPresetStatus = "Applied"
                     showAddDialog = true
+                },
+                onExportPdf = {
+                    showExportPdfDialog = true
                 }
             )
 
@@ -6762,6 +7051,9 @@ fun VisaTrackerSubScreen(viewModel: JobViewModel) {
                 onAddTrack = {
                     addPresetStatus = "Applied"
                     showAddDialog = true
+                },
+                onExportPdf = {
+                    showExportPdfDialog = true
                 }
             )
 
@@ -6791,6 +7083,13 @@ fun VisaTrackerSubScreen(viewModel: JobViewModel) {
                 Toast.makeText(context, "Added tracking for ${app.jobTitle}!", Toast.LENGTH_SHORT).show()
                 showAddDialog = false
             }
+        )
+    }
+
+    if (showExportPdfDialog) {
+        ExportSavedJobsPdfDialog(
+            viewModel = viewModel,
+            onDismiss = { showExportPdfDialog = false }
         )
     }
 }
@@ -7270,6 +7569,399 @@ fun AddVisaApplicationDialog(
                     ) {
                         Text("Add to Tracker", color = NavyDark, fontWeight = FontWeight.Bold)
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ExportSavedJobsPdfDialog(
+    viewModel: JobViewModel,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val savedJobs = viewModel.allJobs.collectAsStateWithLifecycle().value.filter { it.isBookmarked }
+    val visaApps by viewModel.visaApplications.collectAsStateWithLifecycle()
+    val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
+    val isExporting by viewModel.isExportingPdf.collectAsStateWithLifecycle()
+    val lastExportResult by viewModel.lastExportedPdfResult.collectAsStateWithLifecycle()
+
+    var applicantName by remember {
+        mutableStateOf(
+            userProfile?.fullName?.ifBlank { "Vincent Mwangangi" } ?: "Vincent Mwangangi"
+        )
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, NavyLight, RoundedCornerShape(18.dp))
+                .testTag("export_saved_jobs_pdf_dialog"),
+            colors = CardDefaults.cardColors(containerColor = NavyMedium),
+            shape = RoundedCornerShape(18.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Title and Header Icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(TealCyan.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Export PDF",
+                            tint = TealCyan,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Export Saved Jobs PDF",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp
+                        )
+                        Text(
+                            text = "Generate professional immigration tracking document",
+                            color = SlateMuted,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(color = NavyLight, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Stats overview pills
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(NavyDark, RoundedCornerShape(10.dp))
+                            .border(1.dp, NavyLight, RoundedCornerShape(10.dp))
+                            .padding(10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = "${savedJobs.size}", color = EmeraldGreen, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                            Text(text = "Saved Jobs", color = SlateMuted, fontSize = 10.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(NavyDark, RoundedCornerShape(10.dp))
+                            .border(1.dp, NavyLight, RoundedCornerShape(10.dp))
+                            .padding(10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = "${visaApps.size}", color = TealCyan, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                            Text(text = "Milestones", color = SlateMuted, fontSize = 10.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(NavyDark, RoundedCornerShape(10.dp))
+                            .border(1.dp, NavyLight, RoundedCornerShape(10.dp))
+                            .padding(10.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            val uniqueCountries = savedJobs.map { it.country }.distinct().size
+                            Text(text = "$uniqueCountries", color = AmberGold, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                            Text(text = "Countries", color = SlateMuted, fontSize = 10.sp, fontWeight = FontWeight.Medium)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Applicant Name field
+                Text(
+                    text = "Applicant Name (printed on PDF):",
+                    color = WhiteActive,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = applicantName,
+                    onValueChange = { applicantName = it },
+                    placeholder = { Text("e.g. Vincent Mwangangi", color = SlateMuted) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("pdf_applicant_name_input"),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = WhiteActive,
+                        unfocusedTextColor = WhiteActive,
+                        focusedBorderColor = EmeraldGreen,
+                        unfocusedBorderColor = NavyLight,
+                        focusedContainerColor = NavyDark,
+                        unfocusedContainerColor = NavyDark
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Document Inclusions summary checklist
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(NavyDark.copy(alpha = 0.6f), RoundedCornerShape(10.dp))
+                        .border(1.dp, NavyLight.copy(alpha = 0.6f), RoundedCornerShape(10.dp))
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "DOCUMENT SPECIFICATIONS:",
+                        color = TealCyan,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    val points = listOf(
+                        "✔ Full Saved Jobs log with employer & country details",
+                        "✔ Visa sponsorship specifications & verification scores",
+                        "✔ Application submission dates & milestone notes",
+                        "✔ Official PDF formatted for immigration lawyers & records"
+                    )
+                    points.forEach { pt ->
+                        Text(
+                            text = pt,
+                            color = SlateMuted,
+                            fontSize = 10.5.sp,
+                            lineHeight = 15.sp
+                        )
+                    }
+                }
+
+                if (lastExportResult != null) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = EmeraldGreen.copy(alpha = 0.12f)),
+                        border = BorderStroke(1.dp, EmeraldGreen.copy(alpha = 0.4f)),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "PDF Generated Successfully!",
+                                    color = EmeraldGreen,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Saved as: ${lastExportResult?.fileName}",
+                                color = WhiteActive,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                // Bottom buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = {
+                        viewModel.clearLastExportedPdfResult()
+                        onDismiss()
+                    }) {
+                        Text("Close", color = SlateMuted)
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    if (lastExportResult != null) {
+                        Button(
+                            onClick = {
+                                lastExportResult?.file?.let { file ->
+                                    com.example.util.SavedJobsPdfExporter.openOrSharePdf(context, file)
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier.testTag("share_generated_pdf_btn")
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = null, tint = NavyDark, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Open / Share PDF", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
+                    } else {
+                        Button(
+                            onClick = {
+                                viewModel.exportSavedJobsToPdf(
+                                    context = context,
+                                    customName = applicantName
+                                ) { res ->
+                                    if (res != null) {
+                                        Toast.makeText(context, "Exported ${res.totalJobs} jobs to PDF!", Toast.LENGTH_SHORT).show()
+                                        com.example.util.SavedJobsPdfExporter.openOrSharePdf(context, res.file)
+                                    } else {
+                                        Toast.makeText(context, "Failed to generate PDF.", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                            shape = RoundedCornerShape(10.dp),
+                            enabled = !isExporting,
+                            modifier = Modifier.testTag("confirm_export_pdf_btn")
+                        ) {
+                            if (isExporting) {
+                                CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                            } else {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Share, contentDescription = null, tint = NavyDark, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text("Export PDF Tracker", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SavedJobsPdfExportCard(
+    viewModel: JobViewModel,
+    onOpenExportDialog: () -> Unit
+) {
+    val jobs by viewModel.allJobs.collectAsStateWithLifecycle()
+    val savedCount = jobs.count { it.isBookmarked }
+    val visaApps by viewModel.visaApplications.collectAsStateWithLifecycle()
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NavyMedium),
+        border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.5f)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("saved_jobs_pdf_export_card"),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(TealCyan.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Export Saved Jobs PDF",
+                        tint = TealCyan,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Saved Jobs PDF Tracker",
+                        color = WhiteActive,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
+                    Text(
+                        text = "Export your bookmarked jobs & application dates into a formal tracking PDF",
+                        color = SlateMuted,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(NavyDark, RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "$savedCount", color = EmeraldGreen, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "Saved", color = SlateMuted, fontSize = 11.sp)
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(NavyDark, RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "${visaApps.size}", color = TealCyan, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "Milestones", color = SlateMuted, fontSize = 11.sp)
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Button(
+                onClick = onOpenExportDialog,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .testTag("btn_open_pdf_export_dialog"),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = TealCyan,
+                    contentColor = NavyDark
+                )
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Export Saved Jobs to PDF", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
             }
         }
@@ -10793,5 +11485,544 @@ fun RecruiterColdEmailCard(viewModel: JobViewModel) {
         }
     }
 }
+
+@Composable
+fun RealtimeJobAlertCard(
+    queryText: String,
+    searchCountryText: String,
+    viewModel: JobViewModel,
+    onCriteriaSelected: (String, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val customAlerts by viewModel.customAlerts.collectAsStateWithLifecycle()
+    val isSubscribing by viewModel.isRealtimeSubscribing.collectAsStateWithLifecycle()
+    val statusMessage by viewModel.firestoreAlertStatusMessage.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val effectiveQuery = queryText.trim().ifEmpty { "Visa sponsorship jobs" }
+    val effectiveCountry = if (searchCountryText.isBlank()) "All" else searchCountryText
+
+    // Check if this query & country is currently subscribed in the alert list
+    val activeAlert = customAlerts.firstOrNull { alert ->
+        (queryText.isBlank() || alert.queryText.equals(queryText.trim(), ignoreCase = true)) &&
+        (searchCountryText == "All" || alert.country.equals(searchCountryText, ignoreCase = true) || alert.country == "All")
+    }
+    val isSubscribed = activeAlert != null
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NavyMedium),
+        border = BorderStroke(
+            1.dp,
+            if (isSubscribed) EmeraldGreen.copy(alpha = 0.6f) else NavyLight
+        ),
+        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .testTag("realtime_job_alert_card")
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            // Header Row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (isSubscribed) EmeraldGreen.copy(alpha = 0.18f) else NavyLight.copy(alpha = 0.5f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Alerts",
+                        tint = if (isSubscribed) EmeraldGreen else SlateMuted,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Real-Time Job Alerts",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(if (isSubscribed) EmeraldGreen.copy(alpha = 0.15f) else NavyLight)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = if (isSubscribed) "⚡ Firestore Live" else "Firestore Ready",
+                                color = if (isSubscribed) EmeraldGreen else SlateMuted,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    Text(
+                        text = if (queryText.isNotBlank() || searchCountryText != "All") {
+                            "Criteria: '${queryText.ifEmpty { "All Roles" }}' in $searchCountryText"
+                        } else {
+                            "Instant Firestore alerts when matching jobs appear"
+                        },
+                        color = SlateMuted,
+                        fontSize = 11.sp,
+                        maxLines = 1
+                    )
+                }
+
+                // Switch Toggle
+                if (isSubscribing) {
+                    CircularProgressIndicator(
+                        color = EmeraldGreen,
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Switch(
+                        checked = isSubscribed,
+                        onCheckedChange = { checked ->
+                            viewModel.toggleRealtimeSearchAlert(
+                                queryText = queryText,
+                                country = searchCountryText,
+                                enabled = checked,
+                                email = true,
+                                push = true
+                            )
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = NavyDark,
+                            checkedTrackColor = EmeraldGreen,
+                            uncheckedThumbColor = SlateMuted,
+                            uncheckedTrackColor = NavyLight
+                        ),
+                        modifier = Modifier.testTag("job_search_alert_toggle")
+                    )
+                }
+            }
+
+            // Quick Criteria Selector Chips
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Preset Criteria Filters:",
+                color = SlateMuted,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                listOf(
+                    Pair("Senior Android", "United Kingdom"),
+                    Pair("Software Engineer", "Canada"),
+                    Pair("Registered Nurse", "Australia"),
+                    Pair("DevOps Engineer", "Germany"),
+                    Pair("Data Scientist", "Sweden")
+                ).forEach { (role, country) ->
+                    val isSelected = queryText.equals(role, ignoreCase = true) && searchCountryText.equals(country, ignoreCase = true)
+                    SuggestionChip(
+                        onClick = { onCriteriaSelected(role, country) },
+                        label = { Text("'$role' in $country", fontSize = 10.sp) },
+                        colors = SuggestionChipDefaults.suggestionChipColors(
+                            containerColor = if (isSelected) EmeraldGreen.copy(alpha = 0.2f) else NavyDark,
+                            labelColor = if (isSelected) EmeraldGreen else WhiteActive
+                        ),
+                        border = BorderStroke(1.dp, if (isSelected) EmeraldGreen else NavyLight),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                }
+            }
+
+            // Notification Channels & Action Row
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(TealCyan.copy(alpha = 0.12f))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text("📱 Push Active", color = TealCyan, fontSize = 9.sp)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(AmberGold.copy(alpha = 0.12f))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text("📧 Email Synced", color = AmberGold, fontSize = 9.sp)
+                    }
+                }
+
+                // Simulate Live Match Trigger Button
+                Button(
+                    onClick = {
+                        viewModel.triggerSimulatedRealtimeAlert(
+                            queryText = queryText.ifEmpty { "Senior Android Developer" },
+                            country = searchCountryText
+                        )
+                        Toast.makeText(
+                            context,
+                            "⚡ Real-time Firestore Job Streamed! Matching alert notification dispatched.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                    modifier = Modifier.height(30.dp).testTag("simulate_firestore_alert_btn")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Test Live Stream",
+                        tint = NavyDark,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Simulate Match",
+                        color = NavyDark,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Status message feedback banner
+            if (statusMessage != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(EmeraldGreen.copy(alpha = 0.1f))
+                        .border(1.dp, EmeraldGreen.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = statusMessage ?: "",
+                        color = EmeraldGreen,
+                        fontSize = 11.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(
+                        onClick = { viewModel.clearFirestoreAlertStatus() },
+                        modifier = Modifier.size(20.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Dismiss",
+                            tint = EmeraldGreen,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AllApiJobsMasterCard(
+    queryText: String,
+    searchCountryText: String,
+    viewModel: JobViewModel,
+    modifier: Modifier = Modifier
+) {
+    val isFetchingAll by viewModel.isFetchingAllApiJobs.collectAsStateWithLifecycle()
+    val allApiResult by viewModel.allApiJobsResult.collectAsStateWithLifecycle()
+    val allApiStatus by viewModel.allApiJobsStatusMessage.collectAsStateWithLifecycle()
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = NavyMedium),
+        border = BorderStroke(1.dp, EmeraldGreen.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .testTag("all_api_jobs_master_card")
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            Brush.linearGradient(
+                                listOf(EmeraldGreen.copy(alpha = 0.25f), TealCyan.copy(alpha = 0.25f))
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "API Keys Fetch",
+                        tint = EmeraldGreen,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Fetch All Jobs via API Keys",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(EmeraldGreen.copy(alpha = 0.15f))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "4 API Engines",
+                                color = EmeraldGreen,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                    Text(
+                        text = "Aggregates live jobs from Google Jobs API, PR Labs Multi-Source, Indeed Scraper & Gemini AI",
+                        color = SlateMuted,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Connected API Keys Badges
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                val apiChips = listOf(
+                    "🌐 Google Jobs",
+                    "📊 PR Labs",
+                    "🏢 Indeed",
+                    "✨ Gemini AI"
+                )
+                apiChips.forEach { chipText ->
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(NavyLight)
+                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            text = chipText,
+                            color = TealCyan,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Action Button to fetch all jobs
+            Button(
+                onClick = {
+                    viewModel.fetchAllJobsFromApiKeys(
+                        query = queryText.ifEmpty { "Visa sponsorship jobs" },
+                        country = searchCountryText
+                    )
+                },
+                enabled = !isFetchingAll,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .testTag("fetch_all_api_jobs_btn"),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = EmeraldGreen,
+                    contentColor = NavyDark,
+                    disabledContainerColor = EmeraldGreen.copy(alpha = 0.5f)
+                )
+            ) {
+                if (isFetchingAll) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        CircularProgressIndicator(
+                            color = NavyDark,
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Querying all connected API keys...",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = NavyDark
+                        )
+                    }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = NavyDark
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Fetch & Add All Jobs from API Keys",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = NavyDark
+                        )
+                    }
+                }
+            }
+
+            // Results and Status Message Display
+            allApiStatus?.let { status ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(NavyDark)
+                        .padding(10.dp)
+                ) {
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                tint = EmeraldGreen,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = status,
+                                color = WhiteActive,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(
+                                onClick = { viewModel.clearAllApiJobsStatus() },
+                                modifier = Modifier.size(18.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Dismiss",
+                                    tint = SlateMuted,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
+                        }
+
+                        // If result breakdown is present, show breakdown badges
+                        allApiResult?.let { res ->
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(EmeraldGreen.copy(alpha = 0.2f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Total: +${res.totalJobsAdded}",
+                                        color = EmeraldGreen,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(TealCyan.copy(alpha = 0.2f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Google: ${res.googleJobsCount}",
+                                        color = TealCyan,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(EmeraldGreen.copy(alpha = 0.2f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Multi-Source: ${res.multiSourceJobsCount}",
+                                        color = EmeraldGreen,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(AmberGold.copy(alpha = 0.2f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Indeed: ${res.indeedJobsCount}",
+                                        color = AmberGold,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(TealCyan.copy(alpha = 0.2f))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Gemini: ${res.geminiJobsCount}",
+                                        color = TealCyan,
+                                        fontSize = 10.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 

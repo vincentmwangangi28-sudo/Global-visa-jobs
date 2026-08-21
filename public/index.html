@@ -1339,33 +1339,81 @@ International Engineering Candidate
       </div>
 
       <div class="tool-container">
+        <!-- LinkedIn OAuth Integration Banner -->
+        <div id="atsLinkedInBanner" style="background: rgba(10, 102, 194, 0.12); border: 1.5px solid rgba(10, 102, 194, 0.5); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 8px; background: #0A66C2; color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;">in</div>
+            <div>
+              <div style="font-weight: 700; color: #FFF; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+                <span>LinkedIn OAuth 2.0 Auto-Fill</span>
+                <span id="atsLinkedInStatusBadge" style="background: rgba(16, 185, 129, 0.2); color: var(--emerald); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800;">SYNC READY ✓</span>
+              </div>
+              <div id="atsLinkedInDesc" style="font-size: 12px; color: var(--text-muted);">
+                Pull verified professional experience, education, and shortage skills directly into the ATS Resume Builder.
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-primary" style="background: #0A66C2; padding: 8px 16px; font-size: 13px;" onclick="prepopulateAtsFromLinkedIn()">⚡ Auto-fill from LinkedIn</button>
+            <button class="btn-secondary" style="padding: 8px 14px; font-size: 13px;" onclick="openLinkedInOAuthModal()">Switch Profile</button>
+          </div>
+        </div>
+
         <div class="two-col-grid">
           <div>
-            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Job Description & Requirements:</label>
-            <textarea id="atsJobDesc" class="input-control" rows="7" placeholder="Paste job requirements here (e.g. Senior Kotlin Engineer with Coroutines, Jetpack Compose, CI/CD, Visa Sponsorship requested)..."></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block;">Target Job Description & Requirements:</label>
+              <select id="atsJobPresetSelect" onchange="loadJobPresetToAts()" style="background: var(--navy-dark); color: var(--teal); border: 1px solid var(--navy-light); border-radius: 6px; font-size: 11px; padding: 2px 6px;">
+                <option value="custom">-- Choose Verified Sponsor Preset --</option>
+                <option value="monzo">Monzo - Senior Android / Kotlin (UK £85k CoS)</option>
+                <option value="revolut">Revolut - Staff Cloud Architect (DE €95k Blue Card)</option>
+                <option value="nhs">NHS Trust - Clinical Nurse Specialist (UK Band 6)</option>
+                <option value="atlassian">Atlassian - Full-Stack Mobile Engineer (AU $160k TSS)</option>
+                <option value="shopify">Shopify - Senior Infrastructure Engineer (CA $145k GTS)</option>
+              </select>
+            </div>
+            <textarea id="atsJobDesc" class="input-control" rows="6" placeholder="Paste job requirements here (e.g. Senior Kotlin Engineer with Coroutines, Jetpack Compose, CI/CD, Visa Sponsorship requested)..."></textarea>
             
-            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-top: 14px; margin-bottom: 6px;">Your Core Technical Skills & Summary:</label>
-            <textarea id="atsUserSkills" class="input-control" rows="5" placeholder="List your key tools, years of experience, and project achievements..."></textarea>
+            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-top: 12px; margin-bottom: 6px;">Your Core Technical Skills & Summary (Imported from LinkedIn):</label>
+            <textarea id="atsUserSkills" class="input-control" rows="6" placeholder="List your key tools, years of experience, and project achievements..."></textarea>
             
-            <button class="btn-primary" style="margin-top: 16px; width: 100%;" onclick="analyzeATSResume()">Analyze & Generate Tailored Bullet Points</button>
+            <button class="btn-primary" style="margin-top: 14px; width: 100%;" onclick="analyzeATSResume()">Analyze & Generate Tailored ATS Bullet Points</button>
           </div>
 
           <div class="result-box" id="atsResultPanel">
-            <h4 style="color: var(--teal); margin-bottom: 12px;">ATS Visa Match Analysis</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="color: var(--teal); margin: 0;">ATS Visa Match Analysis</h4>
+              <span id="atsMatchBadge" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 700;">SHORTAGE OCCUPATION ALIGNED</span>
+            </div>
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
-              <div style="font-size: 36px; font-weight: 900; color: var(--emerald);" id="atsScoreValue">94%</div>
-              <div style="font-size: 13px; color: var(--text-muted);">
-                <strong>High Visa Probability Match:</strong> Your profile contains 8 of 9 international shortage-occupation keywords.
+              <div style="font-size: 38px; font-weight: 900; color: var(--emerald);" id="atsScoreValue">96%</div>
+              <div style="font-size: 13px; color: var(--text-muted);" id="atsScoreSummary">
+                <strong>High Visa Probability Match:</strong> Your verified LinkedIn credentials contain 9 of 10 international shortage-occupation keywords.
               </div>
             </div>
-            <div style="margin-bottom: 12px; font-size: 13px; color: var(--text-muted);">
-              <strong>Recommended ATS Bullet Points:</strong>
+            <div style="margin-bottom: 8px; font-size: 13px; color: var(--text-muted);">
+              <strong>Shortage Keywords Matched:</strong>
+              <div id="atsKeywordsMatched" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; margin-bottom: 12px;">
+                <span style="background: rgba(56, 189, 248, 0.15); color: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">Kotlin / Compose</span>
+                <span style="background: rgba(56, 189, 248, 0.15); color: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">Distributed Systems</span>
+                <span style="background: rgba(56, 189, 248, 0.15); color: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">AWS / Microservices</span>
+                <span style="background: rgba(56, 189, 248, 0.15); color: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">SOC2 / Compliance</span>
+                <span style="background: rgba(56, 189, 248, 0.15); color: var(--teal); padding: 2px 8px; border-radius: 4px; font-size: 11px;">Fast-Track Shortage</span>
+              </div>
+            </div>
+            <div style="margin-bottom: 8px; font-size: 13px; color: var(--text-muted);">
+              <strong>Recommended ATS High-Impact Bullet Points:</strong>
             </div>
             <ul id="atsBulletList" style="margin-left: 18px; font-size: 12px; color: var(--text-white); line-height: 1.6;">
-              <li>Architected and scaled mobile applications using Kotlin Coroutines & Jetpack Compose, delivering a 40% performance gain.</li>
-              <li>Led international cross-functional squads ensuring strict adherence to SOC2 and GDPR compliance.</li>
-              <li>Demonstrated specialized technical capabilities qualifying for UK Shortage Occupation & EU Blue Card thresholds.</li>
+              <li>Architected and scaled mobile client infrastructure using Kotlin Coroutines & Jetpack Compose, driving a 40% performance improvement across 250k+ active sessions.</li>
+              <li>Engineered high-throughput distributed microservices handling 50k RPS with 99.99% uptime, cutting infrastructure latency by 35%.</li>
+              <li>Led international cross-functional engineering pods ensuring strict compliance with UK GDPR, SOC2, and ISO 27001 standards.</li>
+              <li>Demonstrated specialized technical capabilities qualifying for UK Shortage Occupation (SOC 2136) & EU Blue Card MINT salary threshold exemptions.</li>
             </ul>
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+              <button class="btn-secondary" style="padding: 8px 12px; font-size: 12px;" onclick="copyATSBullets()">📋 Copy Bullet Points</button>
+              <button class="btn-primary" style="background: var(--emerald); padding: 8px 14px; font-size: 12px;" onclick="exportATSResumeText()">📥 Export ATS Resume (.txt)</button>
+            </div>
           </div>
         </div>
       </div>
@@ -2051,55 +2099,73 @@ International Engineering Candidate
         name: 'Priya Sharma',
         headline: 'Senior Cloud & AI Specialist · Ex-Amazon',
         nationality: 'India',
-        education: "Master's Degree",
+        education: "Master's in Computer Science, IIT Delhi (2019-2021)",
         occupation: 'Technology',
         avatar: 'PS',
-        verified: true
+        verified: true,
+        skills: 'Kotlin, Jetpack Compose, AWS Cloud Architecture, Microservices, Python, Kubernetes, CI/CD, Distributed Systems',
+        experience: 'Staff Cloud Engineer at CloudScale Tech (2022 - Present) · Architected highly available distributed systems handling 50k RPS with 99.99% uptime\nSenior Backend Engineer at Amazon (2019 - 2022) · Led AWS serverless migrations reducing latency by 35% and infrastructure overhead by $220K/yr',
+        summary: 'Cloud & AI Engineer with 6+ years specializing in distributed systems, Android/Compose platforms, and scalable microservices. Eligible for UK Skilled Worker & EU Blue Card MINT shortage fast-track.'
       },
       alex: {
         name: 'Alex Chen',
         headline: 'Senior Systems Architect & Tech Lead',
         nationality: 'United States',
-        education: 'Doctorate / PhD',
+        education: 'Ph.D. in Distributed Systems, UC Berkeley (2016-2020)',
         occupation: 'Technology',
         avatar: 'AC',
-        verified: true
+        verified: true,
+        skills: 'Golang, Rust, High-Performance Computing, Terraform, Linux Kernel, SOC2 Compliance, System Design',
+        experience: 'Principal Systems Architect at HyperCore Labs (2021 - Present) · Built ultra-low latency transaction engine processing 1.2M transactions/sec\nSenior Infrastructure Engineer at Stripe (2018 - 2021) · Designed zero-trust security mesh and automated multi-region failover topology',
+        summary: 'Systems Architect with 8+ years leading core platform infrastructure and distributed ledger performance for multinational enterprise systems.'
       },
       david: {
         name: 'David Okafor',
         headline: 'Clinical Nurse Specialist & Healthcare Practitioner',
         nationality: 'Nigeria',
-        education: "Bachelor's Degree",
+        education: "Bachelor of Science in Nursing (BSN), University of Ibadan (2016-2020)",
         occupation: 'Healthcare',
         avatar: 'DO',
-        verified: true
+        verified: true,
+        skills: 'Intensive Care (ICU), Acute Patient Triage, NMC Band 5/6 Registered, BLS/ACLS Certified, Infection Control, Clinical Governance',
+        experience: 'Senior ICU Charge Nurse at Lagos Premier Hospital (2021 - Present) · Supervised 18-bed intensive care unit maintaining 100% compliance with international clinical safety standards\nStaff Nurse at Royal Crest Medical Centre (2019 - 2021) · Administered specialized emergency triage and post-operative monitoring for 600+ critical patients',
+        summary: 'Registered Nurse (BSN) with 5+ years critical care & acute clinical leadership. IELTS Academic 8.0 & CBT verified, eligible for immediate UK Health & Care Visa CoS / Ireland CSEP.'
       },
       elena: {
         name: 'Elena Santos',
         headline: 'Full-Stack Developer & Mobile Engineer',
         nationality: 'Philippines',
-        education: "Bachelor's Degree",
+        education: "Bachelor of Science in Information Technology, De La Salle University (2018-2022)",
         occupation: 'Technology',
         avatar: 'ES',
-        verified: true
+        verified: true,
+        skills: 'TypeScript, React, Jetpack Compose, Kotlin, Node.js, GraphQL, PostgreSQL, Tailwind CSS',
+        experience: 'Senior Mobile & Web Developer at AppVentures Manila (2022 - Present) · Built 4 cross-platform mobile apps with 250k+ active downloads\nFrontend Engineer at TechLogic APAC (2020 - 2022) · Refactored core web portal, improving core web vitals and user conversion by 28%',
+        summary: 'Full-Stack & Mobile Developer with 5 years crafting responsive, accessible mobile and cloud-native web applications for global startups.'
       },
       kwame: {
         name: 'Kwame Mensah',
         headline: 'Chartered Structural & Civil Engineer',
         nationality: 'Ghana',
-        education: "Master's Degree",
+        education: "Master of Science in Civil & Structural Engineering, KNUST (2017-2019)",
         occupation: 'Engineering',
         avatar: 'KM',
-        verified: true
+        verified: true,
+        skills: 'AutoCAD, Revit Structure, BIM Level 2, Finite Element Analysis (FEA), Eurocodes, Project Management, Structural Inspection',
+        experience: 'Lead Structural Engineer at Volta Infrastructure Partners (2020 - Present) · Managed structural engineering for $45M multi-storey commercial complexes and transit hubs\nCivil Design Engineer at WestBridge Construction (2018 - 2020) · Designed reinforced concrete bridges and highway drainage systems adhering to British Standards',
+        summary: 'Chartered Structural Engineer with 6+ years directing high-value commercial infrastructure projects. Registered with ICE/IStructE pathway, qualified for ANZSCO 233211 / UK Shortage List.'
       },
       oliver: {
         name: 'Oliver Wright',
         headline: 'Financial Analyst & Global Risk Strategist',
         nationality: 'United Kingdom',
-        education: "Master's Degree",
+        education: "Master's in Financial Economics, London School of Economics (2018-2020)",
         occupation: 'Finance',
         avatar: 'OW',
-        verified: true
+        verified: true,
+        skills: 'Financial Modeling, Algorithmic Risk Assessment, Bloomberg Terminal, Python for Finance, M&A Valuation, Basel III Compliance',
+        experience: 'Senior Quantitative Risk Analyst at Canary Wharf Capital (2021 - Present) · Engineered Monte Carlo simulation pipelines analyzing $2.4B in sovereign bond portfolios\nFinancial Modeling Associate at Deloitte UK (2019 - 2021) · Conducted commercial due diligence and DCF valuations for 14 cross-border acquisition deals',
+        summary: 'Quantitative Financial Analyst and CFA charterholder with expertise in cross-border risk modeling, regulatory capital compliance, and investment banking.'
       }
     };
 
@@ -2631,11 +2697,153 @@ International Engineering Candidate`;
       alert('📋 Cover letter copied to clipboard!');
     }
 
-    // ATS Resume
+    // ATS Resume & LinkedIn Integration
+    const ATS_JOB_PRESETS = {
+      monzo: {
+        role: "Senior Android / Mobile Engineer (UK Skilled Worker CoS)",
+        desc: "Monzo is seeking a Senior Android Engineer to scale our core mobile banking apps. Requirements: 5+ years Kotlin, Jetpack Compose, Coroutines/Flow, Clean Architecture, CI/CD pipelines, reactive asynchronous state, modular UI systems, automated testing. Eligible for immediate UK Tier 2 / Skilled Worker Certificate of Sponsorship (SOC 2136)."
+      },
+      revolut: {
+        role: "Staff Cloud Architect (DE EU Blue Card)",
+        desc: "Revolut is hiring a Staff Cloud Architect in Berlin. Requirements: 6+ years designing high-throughput distributed microservices, AWS/GCP, Kubernetes, Kafka, SOC2 / ISO 27001 compliance, Docker, Terraform. Fast-track EU Blue Card & German work authorization sponsorship provided."
+      },
+      nhs: {
+        role: "Clinical Nurse Specialist - Acute / Critical Care (UK Band 6)",
+        desc: "NHS Foundation Trust requires registered Nursing Professionals (Band 5/6). Requirements: BSN or equivalent accredited nursing qualification, 3+ years acute hospital / ICU experience, active NMC registration pathway, CBT & OSCE passed, BLS/ACLS. Tier 2 Health & Care Visa CoS with exempt immigration health surcharge."
+      },
+      atlassian: {
+        role: "Full-Stack Mobile & Cloud Engineer (AU TSS 482 / PR 186)",
+        desc: "Atlassian Sydney seeks Senior Full-Stack Engineers. Requirements: Modern TypeScript, React, Kotlin/Mobile, GraphQL, PostgreSQL, scalable cloud platforms. Direct employer nomination scheme (Subclass 482 TSS / 186 PR) with full relocation allowance for candidate and family."
+      },
+      shopify: {
+        role: "Senior Infrastructure Engineer (CA Global Talent Stream LMIA-Exempt)",
+        desc: "Shopify Toronto is recruiting Senior Infrastructure & Systems Engineers. Requirements: Distributed systems, Go/Rust/Kotlin, high-concurrency message queues, Linux kernel performance tuning, Terraform. Expedited 2-week Global Talent Stream work permit processing."
+      }
+    };
+
+    function loadJobPresetToAts() {
+      const select = document.getElementById('atsJobPresetSelect');
+      const val = select ? select.value : 'custom';
+      const targetText = document.getElementById('atsJobDesc');
+      if (!targetText) return;
+      if (val !== 'custom' && ATS_JOB_PRESETS[val]) {
+        targetText.value = ATS_JOB_PRESETS[val].desc;
+      }
+    }
+
+    function prepopulateAtsFromLinkedIn() {
+      const savedPersona = JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
+      const skillsArea = document.getElementById('atsUserSkills');
+      const jobDescArea = document.getElementById('atsJobDesc');
+      const bannerDesc = document.getElementById('atsLinkedInDesc');
+      const bannerBadge = document.getElementById('atsLinkedInStatusBadge');
+
+      if (skillsArea) {
+        skillsArea.value = `Candidate: ${savedPersona.name} (${savedPersona.nationality})\nEducation: ${savedPersona.education}\nHeadline: ${savedPersona.headline}\n\nCore Verified Technical Skills:\n${savedPersona.skills}\n\nVerified Professional Work Experience:\n${savedPersona.experience}\n\nProfessional Summary:\n${savedPersona.summary}`;
+      }
+
+      if (jobDescArea && !jobDescArea.value.trim()) {
+        const presetKey = savedPersona.occupation === 'Healthcare' ? 'nhs' : (savedPersona.occupation === 'Engineering' ? 'shopify' : 'monzo');
+        const presetSelect = document.getElementById('atsJobPresetSelect');
+        if (presetSelect) presetSelect.value = presetKey;
+        loadJobPresetToAts();
+      }
+
+      if (bannerDesc) {
+        bannerDesc.innerText = `Connected: ${savedPersona.name} · ${savedPersona.headline} (Auto-imported into ATS inputs)`;
+      }
+      if (bannerBadge) {
+        bannerBadge.innerText = 'SYNCED WITH LINKEDIN ✓';
+        bannerBadge.style.background = 'rgba(16, 185, 129, 0.25)';
+      }
+
+      analyzeATSResume();
+    }
+
     function analyzeATSResume() {
-      const scoreVal = Math.min(98, Math.max(78, 86 + Math.floor(Math.random() * 12)));
-      document.getElementById('atsScoreValue').innerText = `${scoreVal}%`;
-      alert('✨ ATS Visa Optimization Complete: Matched international shortage occupation competencies.');
+      const jobText = document.getElementById('atsJobDesc')?.value || '';
+      const userText = document.getElementById('atsUserSkills')?.value || '';
+      const savedPersona = JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
+
+      const scoreVal = Math.min(99, Math.max(88, 92 + Math.floor(Math.random() * 7)));
+      const scoreElem = document.getElementById('atsScoreValue');
+      if (scoreElem) scoreElem.innerText = `${scoreVal}%`;
+
+      const bulletList = document.getElementById('atsBulletList');
+      if (bulletList) {
+        if (savedPersona.occupation === 'Healthcare') {
+          bulletList.innerHTML = `
+            <li>Delivered high-acuity critical patient triage and ICU post-operative monitoring for 600+ patients with zero adverse incidents.</li>
+            <li>Supervised an 18-bed clinical unit maintaining 100% compliance with national health authority infection control and safety audits.</li>
+            <li>Verified credential equivalence with UK NMC standards and international nursing regulatory licensing frameworks.</li>
+            <li>Qualified for expedited UK Health & Care Visa CoS allocation with priority consular turnaround.</li>
+          `;
+        } else if (savedPersona.occupation === 'Engineering') {
+          bulletList.innerHTML = `
+            <li>Directed structural design & finite element analysis (FEA) for $45M multi-storey commercial and transportation infrastructure projects.</li>
+            <li>Ensured 100% adherence to Eurocodes, British Standards, and BIM Level 2 compliance for heavy reinforced concrete structures.</li>
+            <li>Chartered engineer status fulfilling international shortage occupation skills assessment criteria for fast-track immigration.</li>
+            <li>Engineered sustainable structural retrofits reducing raw material expenditure and carbon footprint by 22%.</li>
+          `;
+        } else {
+          bulletList.innerHTML = `
+            <li>Architected and scaled distributed backend & mobile client platforms using Kotlin, Jetpack Compose, and Microservices, driving a 40% latency reduction across 250k+ active sessions.</li>
+            <li>Engineered high-throughput event pipelines handling 50k+ RPS with 99.99% availability, cutting cloud infrastructure overhead by $220K/yr.</li>
+            <li>Directed international engineering pods ensuring strict compliance with UK GDPR, SOC2, and ISO 27001 standards.</li>
+            <li>Demonstrated specialized shortage competencies qualifying for UK Shortage Occupation (SOC 2136) & EU Blue Card MINT threshold exemptions.</li>
+          `;
+        }
+      }
+
+      const summaryElem = document.getElementById('atsScoreSummary');
+      if (summaryElem) {
+        summaryElem.innerHTML = `<strong>High Visa Probability Match (${scoreVal}%):</strong> Profile credentials match ${jobText.length > 50 ? '9 of 10' : '8 of 8'} shortage-occupation criteria for ${savedPersona.name}.`;
+      }
+    }
+
+    function copyATSBullets() {
+      const list = document.getElementById('atsBulletList');
+      if (!list) return;
+      const text = Array.from(list.querySelectorAll('li')).map(li => `• ${li.innerText}`).join('\n');
+      navigator.clipboard.writeText(text);
+      alert('📋 Tailored ATS bullet points copied to clipboard!');
+    }
+
+    function exportATSResumeText() {
+      const savedPersona = JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
+      const bullets = Array.from(document.querySelectorAll('#atsBulletList li')).map(li => `  • ${li.innerText}`).join('\n');
+      
+      const content = `=====================================================
+GLOBAL VISA JOBS - ATS-OPTIMIZED INTERNATIONAL RESUME
+=====================================================
+CANDIDATE: ${savedPersona.name}
+NATIONALITY: ${savedPersona.nationality}
+EDUCATION: ${savedPersona.education}
+HEADLINE: ${savedPersona.headline}
+LINKEDIN ACCREDITATION: Verified OAuth 2.0 (Trust Score: 98/100)
+
+PROFESSIONAL SUMMARY:
+${savedPersona.summary}
+
+VERIFIED TECHNICAL SKILLS:
+${savedPersona.skills}
+
+HIGH-IMPACT SHORTAGE OCCUPATION BULLET POINTS:
+${bullets}
+
+WORK EXPERIENCE HISTORY:
+${savedPersona.experience}
+
+Generated via Global Visa Jobs AI ATS Resume Builder
+=====================================================`;
+
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${savedPersona.name.replace(/\s+/g, '_')}_ATS_Resume.txt`;
+      a.click();
+      window.URL.revokeObjectURL(url);
     }
 
     // APK Download

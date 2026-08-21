@@ -15,6 +15,7 @@ import com.example.network.LinkedInJobCountResult
 import com.example.network.RapidApiClient
 import com.example.network.ParsedResumeResult
 import com.example.network.ResumeGapAnalysisResult
+import com.example.util.SavedJobsPdfExporter
 
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -65,6 +66,13 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
 
     val notifications: StateFlow<List<JobNotificationEntity>> = repository.allNotifications
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Realtime Firestore Alerts State
+    private val _isRealtimeSubscribing = MutableStateFlow(false)
+    val isRealtimeSubscribing: StateFlow<Boolean> = _isRealtimeSubscribing.asStateFlow()
+
+    private val _firestoreAlertStatusMessage = MutableStateFlow<String?>(null)
+    val firestoreAlertStatusMessage: StateFlow<String?> = _firestoreAlertStatusMessage.asStateFlow()
 
     // UI States
     private val _isSearching = MutableStateFlow(false)
@@ -419,6 +427,60 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun toggleRealtimeSearchAlert(
+        queryText: String,
+        country: String,
+        enabled: Boolean,
+        email: Boolean = true,
+        push: Boolean = true
+    ) {
+        viewModelScope.launch {
+            _isRealtimeSubscribing.value = true
+            try {
+                val cleanQuery = queryText.trim().ifEmpty { "Visa sponsorship jobs" }
+                val cleanCountry = if (country.isBlank()) "All" else country
+                val isActive = repository.toggleRealtimeSearchAlert(
+                    queryText = cleanQuery,
+                    country = cleanCountry,
+                    enabled = enabled,
+                    email = email,
+                    push = push
+                )
+                _firestoreAlertStatusMessage.value = if (isActive) {
+                    "🔔 Subscribed! Real-time alerts active for '$cleanQuery' in $cleanCountry"
+                } else {
+                    "🔕 Alert unsubscribed for '$cleanQuery'"
+                }
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Failed to toggle realtime alert", e)
+                _firestoreAlertStatusMessage.value = "Failed to update alert: ${e.message}"
+            } finally {
+                _isRealtimeSubscribing.value = false
+            }
+        }
+    }
+
+    fun triggerSimulatedRealtimeAlert(queryText: String, country: String) {
+        viewModelScope.launch {
+            _isRealtimeSubscribing.value = true
+            try {
+                val cleanQuery = queryText.trim().ifEmpty { "Senior Android Developer" }
+                val cleanCountry = if (country.isBlank() || country == "All") "United Kingdom" else country
+                val newJob = repository.triggerSimulatedRealtimeJobAlert(cleanQuery, cleanCountry)
+                _firestoreAlertStatusMessage.value = "⚡ Live Alert Dispatched: '${newJob.title}' at ${newJob.company} (${newJob.country})"
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Failed to trigger live test alert", e)
+                _firestoreAlertStatusMessage.value = "Simulation failed: ${e.message}"
+            } finally {
+                _isRealtimeSubscribing.value = false
+            }
+        }
+    }
+
+    fun clearFirestoreAlertStatus() {
+        _firestoreAlertStatusMessage.value = null
+    }
+
     // Notification Actions
     fun markNotificationAsRead(id: Int) {
         viewModelScope.launch {
@@ -598,16 +660,15 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     private val _multiSourceError = MutableStateFlow<String?>(null)
     val multiSourceError: StateFlow<String?> = _multiSourceError.asStateFlow()
 
-    fun fetchMultiSourceJobs(searchTerm: String, location: String, countryIndeed: String = "USA", resultsWanted: Int = 5) {
+    fun fetchMultiSourceJobs(searchTerm: String, location: String, countryIndeed: String = "USA", resultsWanted: Int = 10) {
         viewModelScope.launch {
             _isFetchingMultiSource.value = true
             _multiSourceError.value = null
             _searchStatus.value = "Initiating multi-source scrape via PR Labs Job Search API..."
             try {
-                val results = RapidApiClient.getMultiSourceJobs(searchTerm, location, countryIndeed, resultsWanted)
+                val results = repository.fetchAndSaveMultiSourceJobs(searchTerm, location, countryIndeed, resultsWanted)
                 if (results.isNotEmpty()) {
-                    db.jobDao().insertJobs(results)
-                    _searchStatus.value = "Successfully aggregated ${results.size} multi-source jobs."
+                    _searchStatus.value = "Successfully aggregated and added ${results.size} multi-source jobs."
                 } else {
                     _multiSourceError.value = "No jobs found for '$searchTerm' in '$location'."
                     _searchStatus.value = "Multi-source API query completed with no matches."
@@ -645,10 +706,9 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             _googleJobsError.value = null
             _searchStatus.value = "Scraping Google Jobs via RapidAPI..."
             try {
-                val results = RapidApiClient.getGoogleJobsScraper(query, location, country, domain, maxRows)
+                val results = repository.fetchAndSaveGoogleJobs(query, location, country, domain, maxRows)
                 if (results.isNotEmpty()) {
-                    db.jobDao().insertJobs(results)
-                    _searchStatus.value = "Successfully parsed ${results.size} Google Jobs."
+                    _searchStatus.value = "Successfully parsed and added ${results.size} Google Jobs."
                 } else {
                     _googleJobsError.value = "No Google jobs found for '$query' in '$location'."
                     _searchStatus.value = "Google Jobs Scraper returned no results."
@@ -665,6 +725,44 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearGoogleJobsError() {
         _googleJobsError.value = null
+    }
+
+    // Master All-API Jobs Aggregation States
+    private val _isFetchingAllApiJobs = MutableStateFlow(false)
+    val isFetchingAllApiJobs: StateFlow<Boolean> = _isFetchingAllApiJobs.asStateFlow()
+
+    private val _allApiJobsResult = MutableStateFlow<ApiJobsAggregationResult?>(null)
+    val allApiJobsResult: StateFlow<ApiJobsAggregationResult?> = _allApiJobsResult.asStateFlow()
+
+    private val _allApiJobsStatusMessage = MutableStateFlow<String?>(null)
+    val allApiJobsStatusMessage: StateFlow<String?> = _allApiJobsStatusMessage.asStateFlow()
+
+    fun fetchAllJobsFromApiKeys(query: String = "", country: String = "All") {
+        checkAndTriggerFirstSearchReminder()
+        viewModelScope.launch {
+            _isFetchingAllApiJobs.value = true
+            _allApiJobsStatusMessage.value = "Connecting to all API keys (Gemini AI, Google Jobs Scraper, Multi-Source PR Labs & Indeed)..."
+            try {
+                val searchQueryText = query.trim().ifEmpty { 
+                    _searchQuery.value.trim().ifEmpty { "Visa sponsorship jobs" }
+                }
+                val searchCountry = if (country.isNotBlank() && country != "All") country else _selectedCountry.value
+                val result = repository.fetchAllJobsFromAllApis(searchQueryText, searchCountry)
+                _allApiJobsResult.value = result
+                _allApiJobsStatusMessage.value = "⚡ Added ${result.totalJobsAdded} total jobs from all API keys! (Google: ${result.googleJobsCount}, Multi-Source: ${result.multiSourceJobsCount}, Indeed: ${result.indeedJobsCount}, Gemini AI: ${result.geminiJobsCount})"
+                _searchStatus.value = "Fetched and added ${result.totalJobsAdded} visa-sponsored jobs from all API sources."
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Error fetching from all API keys", e)
+                _allApiJobsStatusMessage.value = "Error querying all API keys: ${e.message}"
+            } finally {
+                _isFetchingAllApiJobs.value = false
+            }
+        }
+    }
+
+    fun clearAllApiJobsStatus() {
+        _allApiJobsStatusMessage.value = null
+        _allApiJobsResult.value = null
     }
 
     // Resume Parsing States
@@ -918,6 +1016,56 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
         _linkedInOAuthState.value = LinkedInOAuthState.Idle
         _linkedInImportPreview.value = null
     }
+
+    // PDF Export States
+    private val _isExportingPdf = MutableStateFlow(false)
+    val isExportingPdf: StateFlow<Boolean> = _isExportingPdf.asStateFlow()
+
+    private val _lastExportedPdfResult = MutableStateFlow<SavedJobsPdfExporter.ExportResult?>(null)
+    val lastExportedPdfResult: StateFlow<SavedJobsPdfExporter.ExportResult?> = _lastExportedPdfResult.asStateFlow()
+
+    /**
+     * Generates and exports the Saved Jobs list into a professional PDF tracking document.
+     */
+    fun exportSavedJobsToPdf(
+        context: android.content.Context,
+        customName: String? = null,
+        onComplete: ((SavedJobsPdfExporter.ExportResult?) -> Unit)? = null
+    ) {
+        viewModelScope.launch {
+            _isExportingPdf.value = true
+            try {
+                val currentJobs = allJobs.value.filter { it.isBookmarked }
+                val currentProfile = userProfile.value
+                val currentVisaApps = visaApplications.value
+
+                val candidateName = customName?.ifBlank { null }
+                    ?: currentProfile?.fullName?.ifBlank { null }
+                    ?: "Candidate"
+
+                val result = SavedJobsPdfExporter.generateSavedJobsPdf(
+                    context = context,
+                    userName = candidateName,
+                    userProfile = currentProfile,
+                    savedJobs = currentJobs,
+                    visaApplications = currentVisaApps
+                )
+
+                _lastExportedPdfResult.value = result
+                onComplete?.invoke(result)
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Failed to generate Saved Jobs PDF", e)
+                onComplete?.invoke(null)
+            } finally {
+                _isExportingPdf.value = false
+            }
+        }
+    }
+
+    fun clearLastExportedPdfResult() {
+        _lastExportedPdfResult.value = null
+    }
 }
+
 
 

@@ -6,9 +6,21 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
+
+data class FirestoreJobAlert(
+    val id: String = "",
+    val queryText: String = "",
+    val country: String = "",
+    val userEmail: String = "vincentmwangangi28@gmail.com",
+    val createdAt: Long = System.currentTimeMillis(),
+    val isActive: Boolean = true,
+    val pushEnabled: Boolean = true,
+    val emailEnabled: Boolean = true
+)
 
 object FirebaseSyncManager {
     private var isInitialized = false
@@ -47,6 +59,173 @@ object FirebaseSyncManager {
             } else {
                 continuation.resumeWithException(task.exception ?: RuntimeException("Firebase operation task failed"))
             }
+        }
+    }
+
+    suspend fun subscribeJobAlertToFirestore(alert: FirestoreJobAlert): Boolean {
+        if (!isFirebaseReady()) {
+            Log.d("FirebaseSyncManager", "Firebase not ready. Managed alert subscription locally.")
+            return false
+        }
+        return try {
+            val db = firestore ?: return false
+            val alertId = if (alert.id.isNotBlank()) alert.id else "alert_${System.currentTimeMillis()}"
+            val alertMap = hashMapOf(
+                "id" to alertId,
+                "queryText" to alert.queryText,
+                "country" to alert.country,
+                "userEmail" to alert.userEmail,
+                "createdAt" to alert.createdAt,
+                "isActive" to alert.isActive,
+                "pushEnabled" to alert.pushEnabled,
+                "emailEnabled" to alert.emailEnabled,
+                "lastSynced" to System.currentTimeMillis()
+            )
+            db.collection("job_alerts").document(alertId)
+                .set(alertMap)
+                .awaitTask()
+            Log.d("FirebaseSyncManager", "Firestore synced: Job Alert $alertId subscribed successfully.")
+            true
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Firestore job alert sync failed: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun unsubscribeJobAlertFromFirestore(alertId: String): Boolean {
+        if (!isFirebaseReady()) return false
+        return try {
+            val db = firestore ?: return false
+            db.collection("job_alerts").document(alertId)
+                .delete()
+                .awaitTask()
+            Log.d("FirebaseSyncManager", "Firestore synced: Job Alert $alertId removed.")
+            true
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Firestore unsubscribe failed: ${e.message}")
+            false
+        }
+    }
+
+    fun listenToRealtimeJobAlerts(
+        userEmail: String,
+        onAlertsChanged: (List<FirestoreJobAlert>) -> Unit
+    ): ListenerRegistration? {
+        if (!isFirebaseReady()) return null
+        return try {
+            val db = firestore ?: return null
+            db.collection("job_alerts")
+                .whereEqualTo("userEmail", userEmail)
+                .addSnapshotListener { snapshots, error ->
+                    if (error != null) {
+                        Log.w("FirebaseSyncManager", "Listen to job alerts failed", error)
+                        return@addSnapshotListener
+                    }
+                    if (snapshots != null) {
+                        val alerts = snapshots.documents.mapNotNull { doc ->
+                            try {
+                                FirestoreJobAlert(
+                                    id = doc.getString("id") ?: doc.id,
+                                    queryText = doc.getString("queryText") ?: "",
+                                    country = doc.getString("country") ?: "All",
+                                    userEmail = doc.getString("userEmail") ?: userEmail,
+                                    createdAt = doc.getLong("createdAt") ?: System.currentTimeMillis(),
+                                    isActive = doc.getBoolean("isActive") ?: true,
+                                    pushEnabled = doc.getBoolean("pushEnabled") ?: true,
+                                    emailEnabled = doc.getBoolean("emailEnabled") ?: true
+                                )
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
+                        onAlertsChanged(alerts)
+                    }
+                }
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Failed to register snapshot listener for alerts", e)
+            null
+        }
+    }
+
+    fun listenToLiveJobsFeed(
+        onNewJobReceived: (JobEntity) -> Unit
+    ): ListenerRegistration? {
+        if (!isFirebaseReady()) return null
+        return try {
+            val db = firestore ?: return null
+            db.collection("live_jobs_feed")
+                .addSnapshotListener { snapshots, error ->
+                    if (error != null) {
+                        Log.w("FirebaseSyncManager", "Listen to live jobs feed failed", error)
+                        return@addSnapshotListener
+                    }
+                    if (snapshots != null) {
+                        for (dc in snapshots.documentChanges) {
+                            if (dc.type == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
+                                val doc = dc.document
+                                try {
+                                    val job = JobEntity(
+                                        id = doc.getString("id") ?: doc.id,
+                                        title = doc.getString("title") ?: "",
+                                        company = doc.getString("company") ?: "",
+                                        country = doc.getString("country") ?: "United Kingdom",
+                                        location = doc.getString("location") ?: "",
+                                        description = doc.getString("description") ?: "",
+                                        salary = doc.getString("salary") ?: "Competitive",
+                                        visaType = doc.getString("visaType") ?: "Full Visa Sponsorship",
+                                        confidenceScore = doc.getLong("confidenceScore")?.toInt() ?: 95,
+                                        confidenceReason = doc.getString("confidenceReason") ?: "Firestore Live Streamed Listing",
+                                        relocationAssistance = doc.getBoolean("relocationAssistance") ?: true,
+                                        contractType = doc.getString("contractType") ?: "Full-time",
+                                        industry = doc.getString("industry") ?: "Technology",
+                                        experienceLevel = doc.getString("experienceLevel") ?: "Senior",
+                                        applicationUrl = doc.getString("applicationUrl") ?: "https://www.linkedin.com/jobs",
+                                        datePosted = doc.getString("datePosted") ?: "Just now"
+                                    )
+                                    onNewJobReceived(job)
+                                } catch (e: Exception) {
+                                    Log.w("FirebaseSyncManager", "Parsing realtime live job failed", e)
+                                }
+                            }
+                        }
+                    }
+                }
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Failed to register live jobs feed listener", e)
+            null
+        }
+    }
+
+    suspend fun publishJobToLiveFeed(job: JobEntity): Boolean {
+        if (!isFirebaseReady()) return false
+        return try {
+            val db = firestore ?: return false
+            val jobMap = hashMapOf(
+                "id" to job.id,
+                "title" to job.title,
+                "company" to job.company,
+                "country" to job.country,
+                "location" to job.location,
+                "description" to job.description,
+                "salary" to job.salary,
+                "visaType" to job.visaType,
+                "confidenceScore" to job.confidenceScore,
+                "confidenceReason" to job.confidenceReason,
+                "relocationAssistance" to job.relocationAssistance,
+                "contractType" to job.contractType,
+                "industry" to job.industry,
+                "experienceLevel" to job.experienceLevel,
+                "applicationUrl" to job.applicationUrl,
+                "datePosted" to job.datePosted,
+                "publishedAt" to System.currentTimeMillis()
+            )
+            db.collection("live_jobs_feed").document(job.id)
+                .set(jobMap)
+                .awaitTask()
+            true
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Publishing job to live feed failed: ${e.message}")
+            false
         }
     }
 
