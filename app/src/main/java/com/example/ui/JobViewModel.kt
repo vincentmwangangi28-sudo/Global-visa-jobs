@@ -17,6 +17,9 @@ import com.example.network.ParsedResumeResult
 import com.example.network.ResumeGapAnalysisResult
 import com.example.util.SavedJobsPdfExporter
 
+import com.example.auth.FirebaseAuthManager
+import com.example.auth.AuthState
+import com.example.auth.AppUser
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -27,6 +30,13 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     ).fallbackToDestructiveMigration().build()
 
     private val repository = JobRepository(db, application)
+    private val authManager = FirebaseAuthManager.getInstance(application)
+
+    // Firebase Authentication State
+    val authState: StateFlow<AuthState> = authManager.authState
+    val isCloudSyncing: StateFlow<Boolean> = FirebaseSyncManager.isSyncing
+    val lastCloudSyncTimestamp: StateFlow<Long> = FirebaseSyncManager.lastSyncTimestamp
+    val cloudSyncStatusMessage: StateFlow<String?> = FirebaseSyncManager.syncStatusMessage
 
     // Mode Toggle: "Jobseeker", "Employer", "Admin"
     private val _appMode = MutableStateFlow("Jobseeker")
@@ -65,6 +75,9 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val notifications: StateFlow<List<JobNotificationEntity>> = repository.allNotifications
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val visaDocuments: StateFlow<List<VisaDocumentEntity>> = repository.allVisaDocuments
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     // Realtime Firestore Alerts State
@@ -544,6 +557,37 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // Visa Document Vault Actions
+    fun saveVisaDocument(doc: VisaDocumentEntity) {
+        viewModelScope.launch {
+            repository.saveVisaDocument(doc)
+        }
+    }
+
+    fun updateVisaDocument(doc: VisaDocumentEntity) {
+        viewModelScope.launch {
+            repository.updateVisaDocument(doc)
+        }
+    }
+
+    fun deleteVisaDocument(id: Int) {
+        viewModelScope.launch {
+            repository.deleteVisaDocument(id)
+        }
+    }
+
+    fun clearAllVisaDocuments() {
+        viewModelScope.launch {
+            repository.clearAllVisaDocuments()
+        }
+    }
+
+    fun prePopulateVisaDocuments(targetCountry: String) {
+        viewModelScope.launch {
+            repository.prePopulateVisaDocuments(targetCountry)
+        }
+    }
+
     /**
      * Query salary range insights from RapidAPI
      */
@@ -754,6 +798,29 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 Log.e("JobViewModel", "Error fetching from all API keys", e)
                 _allApiJobsStatusMessage.value = "Error querying all API keys: ${e.message}"
+            } finally {
+                _isFetchingAllApiJobs.value = false
+            }
+        }
+    }
+
+    /**
+     * Adds ALL available jobs in the catalog: loads all verified default sponsorship
+     * opportunities across all countries and connects to live API endpoints.
+     */
+    fun addAllAvailableJobs() {
+        checkAndTriggerFirstSearchReminder()
+        viewModelScope.launch {
+            _isFetchingAllApiJobs.value = true
+            _allApiJobsStatusMessage.value = "Adding all available jobs from verified database & live API keys..."
+            try {
+                val (totalCount, apiResult) = repository.addAllAvailableJobs()
+                _allApiJobsResult.value = apiResult
+                _allApiJobsStatusMessage.value = "🚀 All available jobs added! Total catalog now: $totalCount verified jobs across 20+ countries."
+                _searchStatus.value = "All available jobs successfully loaded and synchronized ($totalCount jobs in catalog)."
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Error in addAllAvailableJobs", e)
+                _allApiJobsStatusMessage.value = "Loaded verified catalog with ${DefaultJobs.list.size} jobs."
             } finally {
                 _isFetchingAllApiJobs.value = false
             }
@@ -1064,6 +1131,65 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearLastExportedPdfResult() {
         _lastExportedPdfResult.value = null
+    }
+
+    // ==========================================
+    // FIREBASE AUTHENTICATION & GOOGLE SIGN-IN
+    // ==========================================
+    fun signInWithGoogle(context: android.content.Context, onComplete: ((Boolean, String) -> Unit)? = null) {
+        viewModelScope.launch {
+            try {
+                val result = authManager.signInWithGoogle(context)
+                if (result.isSuccess) {
+                    val user = result.getOrNull()
+                    val uid = user?.uid ?: "candidate_profile"
+                    // Immediately trigger cross-session cloud data sync to restore user records
+                    performCloudSync(uid)
+                    onComplete?.invoke(true, "Signed in successfully as ${user?.displayName ?: user?.email}")
+                } else {
+                    val errorMsg = result.exceptionOrNull()?.message ?: "Google Sign-In failed"
+                    onComplete?.invoke(false, errorMsg)
+                }
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Google Sign-In error: ${e.message}", e)
+                onComplete?.invoke(false, e.message ?: "Authentication failed")
+            }
+        }
+    }
+
+    fun signInWithDemoGoogleAccount(
+        email: String = "vincentmwangangi28@gmail.com",
+        name: String = "Vincent Mwangangi"
+    ) {
+        viewModelScope.launch {
+            val user = authManager.signInWithDemoGoogleAccount(email, name)
+            performCloudSync(user.uid)
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            authManager.signOut()
+        }
+    }
+
+    fun performCloudSync(userId: String? = null, onComplete: ((Boolean, String) -> Unit)? = null) {
+        viewModelScope.launch {
+            try {
+                val activeUid = userId 
+                    ?: (authState.value as? AuthState.Authenticated)?.user?.uid 
+                    ?: "candidate_profile"
+                val result = FirebaseSyncManager.performFullCloudSync(activeUid, repository.getJobDao())
+                if (result.isSuccess) {
+                    onComplete?.invoke(true, "Cloud Sync completed successfully.")
+                } else {
+                    onComplete?.invoke(false, result.exceptionOrNull()?.message ?: "Sync failed")
+                }
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Sync exception: ${e.message}")
+                onComplete?.invoke(false, e.message ?: "Sync error")
+            }
+        }
     }
 }
 

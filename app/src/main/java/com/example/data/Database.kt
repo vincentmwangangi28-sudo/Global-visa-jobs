@@ -164,6 +164,22 @@ interface JobDao {
 
     @Query("DELETE FROM job_notifications")
     suspend fun clearAllNotifications()
+
+    // Document Vault queries
+    @Query("SELECT * FROM visa_documents ORDER BY expiryDate ASC")
+    fun getAllVisaDocumentsFlow(): Flow<List<VisaDocumentEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertVisaDocument(doc: VisaDocumentEntity)
+
+    @Update
+    suspend fun updateVisaDocument(doc: VisaDocumentEntity)
+
+    @Query("DELETE FROM visa_documents WHERE id = :id")
+    suspend fun deleteVisaDocumentById(id: Int)
+
+    @Query("DELETE FROM visa_documents")
+    suspend fun clearAllVisaDocuments()
 }
 
 @Entity(tableName = "relocation_tasks")
@@ -189,7 +205,20 @@ data class JobNotificationEntity(
     val isPush: Boolean = false
 )
 
-@Database(entities = [JobEntity::class, UserProfileEntity::class, CustomAlertEntity::class, VisaApplicationEntity::class, RelocationTaskEntity::class, JobNotificationEntity::class], version = 5, exportSchema = false)
+@Entity(tableName = "visa_documents")
+data class VisaDocumentEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val documentName: String,
+    val category: String, // "Passport", "Language Test", "ECA / Degree", "Police Clearance", "Medical", "CoS / LMIA Offer", "Biometrics", "Other"
+    val documentNumber: String = "",
+    val issuingAuthority: String = "",
+    val issueDate: String = "",
+    val expiryDate: String = "", // "YYYY-MM-DD"
+    val notes: String = "",
+    val isVerified: Boolean = false
+)
+
+@Database(entities = [JobEntity::class, UserProfileEntity::class, CustomAlertEntity::class, VisaApplicationEntity::class, RelocationTaskEntity::class, JobNotificationEntity::class, VisaDocumentEntity::class], version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun jobDao(): JobDao
 }

@@ -27,6 +27,7 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
     val allVisaApplications: Flow<List<VisaApplicationEntity>> = jobDao.getAllVisaApplicationsFlow()
     val allRelocationTasks: Flow<List<RelocationTaskEntity>> = jobDao.getAllRelocationTasksFlow()
     val allNotifications: Flow<List<JobNotificationEntity>> = jobDao.getAllNotificationsFlow()
+    val allVisaDocuments: Flow<List<VisaDocumentEntity>> = jobDao.getAllVisaDocumentsFlow()
 
     suspend fun initializeWithDefaultJobs() {
         try {
@@ -419,6 +420,27 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         )
     }
 
+    /**
+     * Add ALL available jobs: Inserts all curated global seed sponsor listings
+     * into Room and queries all active API endpoints concurrently.
+     */
+    suspend fun addAllAvailableJobs(): Pair<Int, ApiJobsAggregationResult> {
+        // 1. Insert all available verified default sponsor jobs
+        jobDao.insertJobs(DefaultJobs.list)
+        val defaultCount = DefaultJobs.list.size
+
+        // 2. Fetch from all live API keys
+        val apiResult = try {
+            fetchAllJobsFromAllApis(query = "Visa sponsorship", country = "All")
+        } catch (e: Exception) {
+            Log.e("JobRepository", "Error aggregating all API keys in addAllAvailableJobs", e)
+            ApiJobsAggregationResult()
+        }
+
+        val totalNowInDb = (jobDao.getAllJobsFlow().firstOrNull() ?: emptyList()).size
+        return Pair(totalNowInDb, apiResult)
+    }
+
     suspend fun toggleBookmark(job: JobEntity) {
         val updated = job.copy(isBookmarked = !job.isBookmarked)
         jobDao.updateJob(updated)
@@ -520,6 +542,8 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         jobDao.insertProfile(updated)
         FirebaseSyncManager.uploadProfileToFirebase(updated)
     }
+
+    fun getJobDao(): JobDao = jobDao
 
     suspend fun getUserProfile(): UserProfileEntity? {
         return jobDao.getUserProfile()
@@ -786,6 +810,91 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
         }
         for (task in defaultTasks) {
             jobDao.insertRelocationTask(task)
+        }
+    }
+
+    // Document Vault & Expiry methods
+    suspend fun saveVisaDocument(doc: VisaDocumentEntity) {
+        jobDao.insertVisaDocument(doc)
+    }
+
+    suspend fun updateVisaDocument(doc: VisaDocumentEntity) {
+        jobDao.updateVisaDocument(doc)
+    }
+
+    suspend fun deleteVisaDocument(id: Int) {
+        jobDao.deleteVisaDocumentById(id)
+    }
+
+    suspend fun clearAllVisaDocuments() {
+        jobDao.clearAllVisaDocuments()
+    }
+
+    suspend fun prePopulateVisaDocuments(targetCountry: String) {
+        val docs = listOf(
+            VisaDocumentEntity(
+                documentName = "International Passport",
+                category = "Passport",
+                documentNumber = "A12345678",
+                issuingAuthority = "Immigration & Passport Directorate",
+                issueDate = "2023-01-15",
+                expiryDate = "2033-01-15",
+                notes = "Must have at least 2 blank visa pages and 6 months validity.",
+                isVerified = true
+            ),
+            VisaDocumentEntity(
+                documentName = "Language Proficiency Certificate (IELTS UKVI / CELPIP)",
+                category = "Language Test",
+                documentNumber = "TRF-98217349",
+                issuingAuthority = "British Council / IDP / Paragon",
+                issueDate = "2025-06-10",
+                expiryDate = "2027-06-10",
+                notes = "Valid for 2 years from test date. Required score: Band 6.5+.",
+                isVerified = true
+            ),
+            VisaDocumentEntity(
+                documentName = "Educational Credential Assessment (ECA)",
+                category = "ECA / Degree",
+                documentNumber = "WES-8492019",
+                issuingAuthority = "World Education Services / ECCTIS",
+                issueDate = "2024-04-12",
+                expiryDate = "2029-04-12",
+                notes = "Valid for 5 years. Verifies Master's/Bachelor's degree equivalency.",
+                isVerified = true
+            ),
+            VisaDocumentEntity(
+                documentName = "Police Clearance Certificate (PCC)",
+                category = "Police Clearance",
+                documentNumber = "PCC-2026-4412",
+                issuingAuthority = "National Police Criminal Records Bureau",
+                issueDate = "2026-02-01",
+                expiryDate = "2026-08-01",
+                notes = "Must be less than 6 months old at time of visa submission.",
+                isVerified = false
+            ),
+            VisaDocumentEntity(
+                documentName = "Medical & TB Examination Certificate",
+                category = "Medical",
+                documentNumber = "MED-00918",
+                issuingAuthority = "IOM / Panel Approved Physician Clinic",
+                issueDate = "2026-03-10",
+                expiryDate = "2026-09-10",
+                notes = "Panel clinic health exam valid for 6 months.",
+                isVerified = false
+            ),
+            VisaDocumentEntity(
+                documentName = "Certificate of Sponsorship (CoS) / LMIA Offer",
+                category = "CoS / LMIA Offer",
+                documentNumber = "COS-PENDING",
+                issuingAuthority = "Sponsoring Employer / Ministry",
+                issueDate = "2026-08-01",
+                expiryDate = "2026-11-01",
+                notes = "Issued by verified sponsor upon formal contract acceptance.",
+                isVerified = false
+            )
+        )
+        for (doc in docs) {
+            jobDao.insertVisaDocument(doc)
         }
     }
 }

@@ -146,21 +146,26 @@ fun DashboardScreen(viewModel: JobViewModel) {
                             }
                         }
 
-                        // Quick Mode Switcher Dropdown
+                        // Quick Mode Switcher & Account Dropdown
+                        val authState by viewModel.authState.collectAsState()
                         var showModeMenu by remember { mutableStateOf(false) }
+                        val authenticatedUser = (authState as? com.example.auth.AuthState.Authenticated)?.user
+
                         Box(modifier = Modifier.padding(end = 12.dp)) {
                             Box(
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(androidx.compose.foundation.shape.CircleShape)
-                                    .background(Color(0xFFD0BCFF))
+                                    .background(
+                                        if (authenticatedUser != null) EmeraldGreen else Color(0xFFD0BCFF)
+                                    )
                                     .clickable { showModeMenu = true }
                                     .testTag("avatar_button"),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "JD",
-                                    color = Color(0xFF381E72),
+                                    text = authenticatedUser?.displayName?.take(2)?.uppercase() ?: "VM",
+                                    color = if (authenticatedUser != null) NavyDark else Color(0xFF381E72),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 13.sp
                                 )
@@ -170,6 +175,21 @@ fun DashboardScreen(viewModel: JobViewModel) {
                                 onDismissRequest = { showModeMenu = false },
                                 modifier = Modifier.background(NavyMedium)
                             ) {
+                                if (authenticatedUser != null) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Column {
+                                                Text(authenticatedUser.displayName, color = WhiteActive, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                                Text(authenticatedUser.email, color = SlateMuted, fontSize = 11.sp)
+                                            }
+                                        },
+                                        onClick = {
+                                            activeTab = "Profile" // Switch to Profile tab
+                                            showModeMenu = false
+                                        }
+                                    )
+                                    HorizontalDivider(color = NavyLight)
+                                }
                                 DropdownMenuItem(
                                     text = { Text("Jobseeker Mode", color = WhiteActive) },
                                     onClick = {
@@ -208,9 +228,11 @@ fun DashboardScreen(viewModel: JobViewModel) {
                     ) {
                         val tabs = listOf(
                             Triple("Discover", Icons.Default.Search, "Discover"),
-                            Triple("Match", Icons.Default.Person, "Profile Match"),
-                            Triple("Salaries", Icons.Default.Star, "Salaries"),
-                            Triple("Pathways", Icons.Default.Info, "Visa Paths"),
+                            Triple("Sponsors", Icons.Default.Verified, "Sponsors"),
+                            Triple("Family", Icons.Default.FamilyRestroom, "Family"),
+                            Triple("Interview", Icons.Default.RecordVoiceOver, "Interview"),
+                            Triple("Reviews", Icons.Default.RateReview, "Reviews"),
+                            Triple("Remittance", Icons.Default.CurrencyExchange, "Remit"),
                             Triple("Enterprise", Icons.Default.Settings, "Enterprise")
                         )
                         tabs.forEach { (tag, icon, label) ->
@@ -229,7 +251,9 @@ fun DashboardScreen(viewModel: JobViewModel) {
                                     Text(
                                         text = label,
                                         color = if (isSelected) EmeraldGreen else SlateMuted,
-                                        fontSize = 11.sp
+                                        fontSize = 10.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        maxLines = 1
                                     )
                                 },
                                 colors = NavigationBarItemDefaults.colors(
@@ -256,6 +280,11 @@ fun DashboardScreen(viewModel: JobViewModel) {
                     ) {
                         val tabs = listOf(
                             Triple("Discover", Icons.Default.Search, "Discover"),
+                            Triple("Sponsors", Icons.Default.Verified, "Sponsor Registry"),
+                            Triple("Family", Icons.Default.FamilyRestroom, "Family Rights"),
+                            Triple("Interview", Icons.Default.RecordVoiceOver, "Interview Sim"),
+                            Triple("Reviews", Icons.Default.RateReview, "Relocation Reviews"),
+                            Triple("Remittance", Icons.Default.CurrencyExchange, "Tax & Remittance"),
                             Triple("Match", Icons.Default.Person, "Profile Match"),
                             Triple("Salaries", Icons.Default.Star, "Salaries"),
                             Triple("Pathways", Icons.Default.Info, "Visa Paths"),
@@ -323,11 +352,20 @@ fun DashboardScreen(viewModel: JobViewModel) {
                         .fillMaxHeight()
                 ) {
                     when (activeTab) {
-                        "Discover" -> DiscoverTab(viewModel, isWideScreen)
+                        "Discover" -> DiscoverTab(viewModel, isWideScreen, onNavigateTab = { activeTab = it })
+                        "Sponsors" -> SponsorRegistryHub(onSelectSponsorForJobs = { companyName ->
+                            viewModel.performLiveScrapeSearch(companyName, "All")
+                            activeTab = "Discover"
+                        })
+                        "Family" -> SpouseDependantAdvisorHub()
+                        "Interview" -> ConsularInterviewSimulatorHub(viewModel)
+                        "Reviews" -> EmployerRelocationReviewsHub()
+                        "Remittance" -> TaxAndRemittanceCalculatorHub()
                         "Match" -> MatchTab(viewModel, isWideScreen)
                         "Salaries" -> SalariesTab(viewModel)
                         "Pathways" -> PathwaysTab(viewModel)
                         "Enterprise" -> EnterpriseTab(viewModel)
+                        "Profile" -> MatchTab(viewModel, isWideScreen)
                     }
                 }
             }
@@ -442,7 +480,11 @@ fun DashboardScreen(viewModel: JobViewModel) {
 }
 
 @Composable
-fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
+fun DiscoverTab(
+    viewModel: JobViewModel,
+    isWideScreen: Boolean = false,
+    onNavigateTab: (String) -> Unit = {}
+) {
     val jobs by viewModel.allJobs.collectAsStateWithLifecycle()
     val isSearching by viewModel.isSearching.collectAsStateWithLifecycle()
     val searchStatus by viewModel.searchStatus.collectAsStateWithLifecycle()
@@ -488,6 +530,7 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
     var showExportPdfDialog by remember { mutableStateOf(false) }
 
     var activeDetailJob by remember { mutableStateOf<JobEntity?>(null) }
+    var activeApplyJob by remember { mutableStateOf<JobEntity?>(null) }
     val context = LocalContext.current
 
     // Apply Filter Logic
@@ -558,6 +601,109 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
                     fontSize = 13.sp,
                     lineHeight = 18.sp
                 )
+            }
+        }
+
+        // Global Mobility & Immigration Tools Suite Quick Launcher
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp)
+        ) {
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onNavigateTab("Sponsors") }
+                        .border(1.dp, EmeraldGreen, RoundedCornerShape(12.dp)),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Verified, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Official Sponsor Registry", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onNavigateTab("Family") }
+                        .border(1.dp, Color(0xFFCE93D8), RoundedCornerShape(12.dp)),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.FamilyRestroom, contentDescription = null, tint = Color(0xFFCE93D8), modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Spouse & Family Rights", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onNavigateTab("Interview") }
+                        .border(1.dp, Color(0xFFF48FB1), RoundedCornerShape(12.dp)),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.RecordVoiceOver, contentDescription = null, tint = Color(0xFFF48FB1), modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Consular Interview Simulator", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onNavigateTab("Reviews") }
+                        .border(1.dp, Color(0xFFFFB74D), RoundedCornerShape(12.dp)),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.RateReview, contentDescription = null, tint = Color(0xFFFFB74D), modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Employer Reviews", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onNavigateTab("Remittance") }
+                        .border(1.dp, TealCyan, RoundedCornerShape(12.dp)),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.CurrencyExchange, contentDescription = null, tint = TealCyan, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Tax & Remittance Engine", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
             }
         }
 
@@ -1704,7 +1850,8 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
                                     verificationResult = verResult,
                                     onVerifyClick = { viewModel.verifyJobListing(job) },
                                     onBookmarkToggle = { viewModel.toggleBookmark(job) },
-                                    onViewDetails = { activeDetailJob = job }
+                                    onViewDetails = { activeDetailJob = job },
+                                    onApplyClick = { activeApplyJob = job }
                                 )
                             }
                         }
@@ -1899,7 +2046,8 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
                             verificationResult = verResult,
                             onVerifyClick = { viewModel.verifyJobListing(job) },
                             onBookmarkToggle = { viewModel.toggleBookmark(job) },
-                            onViewDetails = { activeDetailJob = job }
+                            onViewDetails = { activeDetailJob = job },
+                            onApplyClick = { activeApplyJob = job }
                         )
                     }
                 }
@@ -1919,6 +2067,15 @@ fun DiscoverTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
                 }
             )
         }
+    }
+
+    // Application Method Dialog
+    activeApplyJob?.let { job ->
+        ApplicationMethodDialog(
+            job = job,
+            viewModel = viewModel,
+            onDismiss = { activeApplyJob = null }
+        )
     }
 
     if (showExportPdfDialog) {
@@ -1989,7 +2146,8 @@ fun JobListItemCard(
     verificationResult: JobVerificationResult?,
     onVerifyClick: () -> Unit,
     onBookmarkToggle: () -> Unit,
-    onViewDetails: () -> Unit
+    onViewDetails: () -> Unit,
+    onApplyClick: (() -> Unit)? = null
 ) {
     Card(
         onClick = onViewDetails,
@@ -2202,6 +2360,45 @@ fun JobListItemCard(
                     fontSize = 11.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Direct Quick Action Row (Details & Apply)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onViewDetails,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = TealCyan),
+                    border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.5f)),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                    modifier = Modifier.weight(0.48f).height(34.dp).testTag("list_view_details_${job.id}")
+                ) {
+                    Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("View Details", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                }
+
+                Button(
+                    onClick = {
+                        if (onApplyClick != null) {
+                            onApplyClick()
+                        } else {
+                            onViewDetails()
+                        }
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen, contentColor = NavyDark),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                    modifier = Modifier.weight(0.52f).height(34.dp).testTag("list_apply_btn_${job.id}")
+                ) {
+                    Icon(Icons.Default.Send, contentDescription = null, tint = NavyDark, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Apply (Methods)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NavyDark)
+                }
+            }
         }
     }
 }
@@ -2221,6 +2418,8 @@ fun JobDetailContent(
     val isVerifyingJob by viewModel.isVerifyingJob.collectAsStateWithLifecycle()
     val verResult = jobVerifications[job.id]
     val isVerifying = isVerifyingJob[job.id] ?: false
+
+    var showApplicationMethodDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -2730,6 +2929,85 @@ fun JobDetailContent(
                 }
             }
 
+            // Application Methods Hub Card
+            Card(
+                colors = CardDefaults.cardColors(containerColor = NavyMedium),
+                border = BorderStroke(1.dp, EmeraldGreen.copy(alpha = 0.4f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Send,
+                            contentDescription = null,
+                            tint = EmeraldGreen,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Verified Application Methods",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(EmeraldGreen.copy(alpha = 0.2f))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "4 Channels",
+                                color = EmeraldGreen,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Apply via official employer portal, pre-formatted email, track in your visa pipeline, or review sponsorship visa documentation requirements.",
+                        color = SlateMuted,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(
+                        onClick = { showApplicationMethodDialog = true },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = EmeraldGreen,
+                            contentColor = NavyDark
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(38.dp)
+                            .testTag("open_application_methods_hub_btn")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = NavyDark
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Choose Application Method & Apply",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = NavyDark
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
@@ -2763,7 +3041,7 @@ fun JobDetailContent(
                 },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = CoralRed),
-                modifier = Modifier.weight(0.4f),
+                modifier = Modifier.weight(0.3f),
                 border = BorderStroke(1.dp, CoralRed.copy(alpha = 0.4f))
             ) {
                 Icon(Icons.Default.Warning, contentDescription = "Flag Fraud", modifier = Modifier.size(16.dp))
@@ -2771,21 +3049,44 @@ fun JobDetailContent(
                 Text("Flag", fontSize = 12.sp)
             }
 
-            // Apply / Link Button
-            Button(
+            // Copy Link Button
+            OutlinedButton(
                 onClick = {
                     clipboardManager.setText(AnnotatedString(job.applicationUrl))
-                    Toast.makeText(context, "Link Copied! Please apply via your browser.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Application link copied to clipboard!", Toast.LENGTH_SHORT).show()
+                },
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = TealCyan),
+                modifier = Modifier.weight(0.3f),
+                border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.5f))
+            ) {
+                Icon(Icons.Default.Share, contentDescription = "Copy Link", modifier = Modifier.size(14.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Copy", fontSize = 12.sp)
+            }
+
+            // Apply Now / Application Methods Primary CTA
+            Button(
+                onClick = {
+                    showApplicationMethodDialog = true
                 },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
-                modifier = Modifier.weight(0.6f)
+                modifier = Modifier.weight(0.4f).testTag("apply_methods_footer_btn")
             ) {
-                Icon(Icons.Default.Share, contentDescription = "Apply", tint = NavyDark, modifier = Modifier.size(16.dp))
+                Icon(Icons.Default.Send, contentDescription = "Apply", tint = NavyDark, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("Copy Application Link", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                Text("Apply Now", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 13.sp)
             }
         }
+    }
+
+    if (showApplicationMethodDialog) {
+        ApplicationMethodDialog(
+            job = job,
+            viewModel = viewModel,
+            onDismiss = { showApplicationMethodDialog = false }
+        )
     }
 }
 
@@ -2946,6 +3247,13 @@ fun ProfileSubScreen(profile: com.example.data.UserProfileEntity, viewModel: Job
             .verticalScroll(rememberScrollState())
             .padding(bottom = 24.dp)
     ) {
+        // Firebase Authentication & Cross-Session Google Cloud Sync Card
+        GoogleFirebaseAuthCard(
+            viewModel = viewModel
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         // LinkedIn OAuth2 & Professional Verification Card
         LinkedInOAuthCard(
             profile = profile,
@@ -5671,7 +5979,7 @@ fun parseBoldText(text: String): AnnotatedString {
 
 @Composable
 fun PathwaysTab(viewModel: JobViewModel) {
-    var pathwaysTabState by remember { mutableStateOf("Guidelines") } // "Guidelines", "Tracker", or "Relocation"
+    var pathwaysTabState by remember { mutableStateOf("Guidelines") }
 
     Column(
         modifier = Modifier
@@ -5679,23 +5987,27 @@ fun PathwaysTab(viewModel: JobViewModel) {
     ) {
         val pathwaysTabs = listOf(
             Triple("Guidelines", "Visa Pathways & Alerts", "guidelines_tab"),
+            Triple("Points", "Points & Eligibility", "points_tab"),
             Triple("Tracker", "My Visa Tracker", "tracker_tab"),
+            Triple("DocVault", "Document Vault", "docvault_tab"),
             Triple("Relocation", "Relocation Checklist", "relocation_tab")
         )
         val selectedIndex = pathwaysTabs.indexOfFirst { it.first == pathwaysTabState }.coerceAtLeast(0)
 
-        // TabRow selector at top
-        TabRow(
+        // ScrollableTabRow selector at top
+        ScrollableTabRow(
             selectedTabIndex = selectedIndex,
             containerColor = NavyDark,
             contentColor = EmeraldGreen,
+            edgePadding = 0.dp,
+            divider = { Divider(color = NavyLight) },
             modifier = Modifier.padding(bottom = 4.dp)
         ) {
             pathwaysTabs.forEach { (state, title, tag) ->
                 Tab(
                     selected = pathwaysTabState == state,
                     onClick = { pathwaysTabState = state },
-                    text = { Text(title, color = if (pathwaysTabState == state) EmeraldGreen else SlateMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    text = { Text(title, color = if (pathwaysTabState == state) EmeraldGreen else SlateMuted, fontSize = 11.sp, fontWeight = if (pathwaysTabState == state) FontWeight.Bold else FontWeight.Normal) },
                     modifier = Modifier.testTag(tag)
                 )
             }
@@ -5703,7 +6015,9 @@ fun PathwaysTab(viewModel: JobViewModel) {
 
         when (pathwaysTabState) {
             "Guidelines" -> PathwaysGuidelinesSubScreen(viewModel)
+            "Points" -> VisaPointsCalculatorScreen(viewModel)
             "Tracker" -> VisaTrackerSubScreen(viewModel)
+            "DocVault" -> VisaDocumentVaultScreen(viewModel)
             "Relocation" -> RelocationChecklistSubScreen(viewModel)
         }
     }
@@ -8739,7 +9053,7 @@ fun SalariesTab(viewModel: JobViewModel) {
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                listOf("Market Trends", "Salary Checker", "Net Salary & Relocation").forEach { tab ->
+                listOf("Market Trends", "Salary Checker", "Purchasing Power", "Relocation Net").forEach { tab ->
                     val isSelected = activeSubTab == tab
                     Box(
                         modifier = Modifier
@@ -8754,7 +9068,7 @@ fun SalariesTab(viewModel: JobViewModel) {
                             text = tab,
                             color = if (isSelected) Color.White else SlateMuted,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp,
+                            fontSize = 10.sp,
                             maxLines = 1
                         )
                     }
@@ -9791,7 +10105,11 @@ fun SalariesTab(viewModel: JobViewModel) {
                     }
                 }
             }
-        } else if (activeSubTab == "Net Salary & Relocation") {
+        } else if (activeSubTab == "Purchasing Power") {
+            item {
+                SalaryPurchasingPowerCalculator(viewModel)
+            }
+        } else if (activeSubTab == "Relocation Net" || activeSubTab == "Net Salary & Relocation") {
             item {
                 RelocationSalaryCalculatorCard(viewModel)
             }
@@ -11854,55 +12172,94 @@ fun AllApiJobsMasterCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Action Button to fetch all jobs
-            Button(
-                onClick = {
-                    viewModel.fetchAllJobsFromApiKeys(
-                        query = queryText.ifEmpty { "Visa sponsorship jobs" },
-                        country = searchCountryText
-                    )
-                },
-                enabled = !isFetchingAll,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(44.dp)
-                    .testTag("fetch_all_api_jobs_btn"),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = EmeraldGreen,
-                    contentColor = NavyDark,
-                    disabledContainerColor = EmeraldGreen.copy(alpha = 0.5f)
-                )
+            // Action Buttons: Add All Available Jobs & Live API Fetch
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                if (isFetchingAll) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        CircularProgressIndicator(
-                            color = NavyDark,
-                            modifier = Modifier.size(18.dp),
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Querying all connected API keys...",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            color = NavyDark
-                        )
+                // 1. Primary "ADD ALL AVAILABLE JOBS" Master CTA
+                Button(
+                    onClick = {
+                        viewModel.addAllAvailableJobs()
+                    },
+                    enabled = !isFetchingAll,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(46.dp)
+                        .testTag("add_all_available_jobs_btn"),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = EmeraldGreen,
+                        contentColor = NavyDark,
+                        disabledContainerColor = EmeraldGreen.copy(alpha = 0.5f)
+                    )
+                ) {
+                    if (isFetchingAll) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(
+                                color = NavyDark,
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Adding all available jobs from database & APIs...",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp,
+                                color = NavyDark
+                            )
+                        }
+                    } else {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = NavyDark
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "ADD ALL AVAILABLE JOBS",
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 13.sp,
+                                color = NavyDark
+                            )
+                        }
                     }
-                } else {
+                }
+
+                // 2. Secondary Filtered API Query Button
+                OutlinedButton(
+                    onClick = {
+                        viewModel.fetchAllJobsFromApiKeys(
+                            query = queryText.ifEmpty { "Visa sponsorship jobs" },
+                            country = searchCountryText
+                        )
+                    },
+                    enabled = !isFetchingAll,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .testTag("fetch_all_api_jobs_btn"),
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.6f)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = TealCyan
+                    )
+                ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.PlayArrow,
+                            imageVector = Icons.Default.Search,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = NavyDark
+                            modifier = Modifier.size(16.dp),
+                            tint = TealCyan
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Fetch & Add All Jobs from API Keys",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            color = NavyDark
+                            text = if (queryText.isNotBlank()) "Query APIs for '$queryText'" else "Query APIs for Active Search",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp,
+                            color = TealCyan
                         )
                     }
                 }

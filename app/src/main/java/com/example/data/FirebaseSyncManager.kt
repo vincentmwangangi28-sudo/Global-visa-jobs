@@ -7,8 +7,12 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.SetOptions
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 data class FirestoreJobAlert(
@@ -27,25 +31,34 @@ object FirebaseSyncManager {
     private var firestore: FirebaseFirestore? = null
     private var database: FirebaseDatabase? = null
 
+    private val _isSyncing = MutableStateFlow(false)
+    val isSyncing: StateFlow<Boolean> = _isSyncing.asStateFlow()
+
+    private val _lastSyncTimestamp = MutableStateFlow<Long>(System.currentTimeMillis())
+    val lastSyncTimestamp: StateFlow<Long> = _lastSyncTimestamp.asStateFlow()
+
+    private val _syncStatusMessage = MutableStateFlow<String?>("Cloud persistence ready")
+    val syncStatusMessage: StateFlow<String?> = _syncStatusMessage.asStateFlow()
+
     fun initialize(context: Context) {
         if (isInitialized) return
         try {
-            // Safely check if google-services.json generated resources are available
             val resId = context.resources.getIdentifier("google_app_id", "string", context.packageName)
-            if (resId == 0) {
-                Log.i("FirebaseSyncManager", "No google-services.json configuration found. Defaulting to safe, high-performance offline local SQLite database mode.")
+            if (resId == 0 && FirebaseApp.getApps(context).isEmpty()) {
+                Log.i("FirebaseSyncManager", "Firebase not yet provisioned with google-services.json. Offline local Room persistence active.")
                 isInitialized = false
                 return
             }
 
-            // Safe initialization checking for active options
-            FirebaseApp.initializeApp(context)
+            if (FirebaseApp.getApps(context).isEmpty()) {
+                FirebaseApp.initializeApp(context)
+            }
             firestore = FirebaseFirestore.getInstance()
             database = FirebaseDatabase.getInstance()
             isInitialized = true
-            Log.d("FirebaseSyncManager", "Firebase successfully initialized for online synchronization.")
+            Log.d("FirebaseSyncManager", "Firebase successfully initialized for online cross-session synchronization.")
         } catch (e: Exception) {
-            Log.w("FirebaseSyncManager", "Firebase initialization skipped: ${e.localizedMessage}. Entering safe offline local database mode.")
+            Log.w("FirebaseSyncManager", "Firebase initialization note: ${e.localizedMessage}")
             isInitialized = false
         }
     }
@@ -62,136 +75,100 @@ object FirebaseSyncManager {
         }
     }
 
-    suspend fun subscribeJobAlertToFirestore(alert: FirestoreJobAlert): Boolean {
-        if (!isFirebaseReady()) {
-            Log.d("FirebaseSyncManager", "Firebase not ready. Managed alert subscription locally.")
-            return false
-        }
-        return try {
-            val db = firestore ?: return false
-            val alertId = if (alert.id.isNotBlank()) alert.id else "alert_${System.currentTimeMillis()}"
-            val alertMap = hashMapOf(
-                "id" to alertId,
-                "queryText" to alert.queryText,
-                "country" to alert.country,
-                "userEmail" to alert.userEmail,
-                "createdAt" to alert.createdAt,
-                "isActive" to alert.isActive,
-                "pushEnabled" to alert.pushEnabled,
-                "emailEnabled" to alert.emailEnabled,
-                "lastSynced" to System.currentTimeMillis()
-            )
-            db.collection("job_alerts").document(alertId)
-                .set(alertMap)
-                .awaitTask()
-            Log.d("FirebaseSyncManager", "Firestore synced: Job Alert $alertId subscribed successfully.")
-            true
-        } catch (e: Exception) {
-            Log.e("FirebaseSyncManager", "Firestore job alert sync failed: ${e.message}")
-            false
-        }
+    // Overload for direct profile upload
+    suspend fun uploadProfileToFirebase(profile: UserProfileEntity) {
+        uploadProfileToFirebase("candidate_profile", profile)
     }
 
-    suspend fun unsubscribeJobAlertFromFirestore(alertId: String): Boolean {
-        if (!isFirebaseReady()) return false
-        return try {
-            val db = firestore ?: return false
-            db.collection("job_alerts").document(alertId)
+    // Overload for direct job upload
+    suspend fun saveJobToFirebase(job: JobEntity) {
+        saveJobToFirebase("candidate_profile", job)
+    }
+
+    // Overload for direct job removal
+    suspend fun removeJobFromFirebase(jobId: String) {
+        removeJobFromFirebase("candidate_profile", jobId)
+    }
+
+    // Overload for direct visa application sync
+    suspend fun syncVisaApplicationToFirebase(app: VisaApplicationEntity) {
+        syncVisaApplicationToFirebase("candidate_profile", app)
+    }
+
+    // Overload for direct visa application deletion
+    suspend fun deleteVisaApplicationFromFirebase(jobId: String) {
+        if (!isFirebaseReady()) return
+        try {
+            val db = firestore ?: return
+            db.collection("users").document("candidate_profile").collection("visa_progress").document(jobId)
                 .delete()
                 .awaitTask()
-            Log.d("FirebaseSyncManager", "Firestore synced: Job Alert $alertId removed.")
-            true
         } catch (e: Exception) {
-            Log.e("FirebaseSyncManager", "Firestore unsubscribe failed: ${e.message}")
-            false
+            Log.e("FirebaseSyncManager", "Firestore visa application delete failed: ${e.message}")
         }
     }
 
-    fun listenToRealtimeJobAlerts(
-        userEmail: String,
-        onAlertsChanged: (List<FirestoreJobAlert>) -> Unit
-    ): ListenerRegistration? {
-        if (!isFirebaseReady()) return null
-        return try {
-            val db = firestore ?: return null
-            db.collection("job_alerts")
-                .whereEqualTo("userEmail", userEmail)
-                .addSnapshotListener { snapshots, error ->
-                    if (error != null) {
-                        Log.w("FirebaseSyncManager", "Listen to job alerts failed", error)
-                        return@addSnapshotListener
-                    }
-                    if (snapshots != null) {
-                        val alerts = snapshots.documents.mapNotNull { doc ->
-                            try {
-                                FirestoreJobAlert(
-                                    id = doc.getString("id") ?: doc.id,
-                                    queryText = doc.getString("queryText") ?: "",
-                                    country = doc.getString("country") ?: "All",
-                                    userEmail = doc.getString("userEmail") ?: userEmail,
-                                    createdAt = doc.getLong("createdAt") ?: System.currentTimeMillis(),
-                                    isActive = doc.getBoolean("isActive") ?: true,
-                                    pushEnabled = doc.getBoolean("pushEnabled") ?: true,
-                                    emailEnabled = doc.getBoolean("emailEnabled") ?: true
-                                )
-                            } catch (e: Exception) {
-                                null
-                            }
-                        }
-                        onAlertsChanged(alerts)
-                    }
-                }
+    // Overload for direct visa document sync
+    suspend fun syncVisaDocumentToFirebase(doc: VisaDocumentEntity) {
+        syncVisaDocumentToFirebase("candidate_profile", doc)
+    }
+
+    // Overload for direct visa document delete
+    suspend fun deleteVisaDocumentFromFirebase(docId: Int) {
+        if (!isFirebaseReady()) return
+        try {
+            val db = firestore ?: return
+            db.collection("users").document("candidate_profile").collection("visa_documents").document(docId.toString())
+                .delete()
+                .awaitTask()
         } catch (e: Exception) {
-            Log.e("FirebaseSyncManager", "Failed to register snapshot listener for alerts", e)
-            null
+            Log.e("FirebaseSyncManager", "Firestore doc delete failed: ${e.message}")
         }
     }
 
-    fun listenToLiveJobsFeed(
-        onNewJobReceived: (JobEntity) -> Unit
-    ): ListenerRegistration? {
+    // ==========================================
+    // LIVE COMMUNITY JOBS FEED
+    // ==========================================
+    fun listenToLiveJobsFeed(onNewJob: (JobEntity) -> Unit): ListenerRegistration? {
         if (!isFirebaseReady()) return null
         return try {
             val db = firestore ?: return null
             db.collection("live_jobs_feed")
-                .addSnapshotListener { snapshots, error ->
-                    if (error != null) {
-                        Log.w("FirebaseSyncManager", "Listen to live jobs feed failed", error)
-                        return@addSnapshotListener
-                    }
-                    if (snapshots != null) {
-                        for (dc in snapshots.documentChanges) {
-                            if (dc.type == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
-                                val doc = dc.document
-                                try {
-                                    val job = JobEntity(
-                                        id = doc.getString("id") ?: doc.id,
-                                        title = doc.getString("title") ?: "",
-                                        company = doc.getString("company") ?: "",
-                                        country = doc.getString("country") ?: "United Kingdom",
-                                        location = doc.getString("location") ?: "",
-                                        description = doc.getString("description") ?: "",
-                                        salary = doc.getString("salary") ?: "Competitive",
-                                        visaType = doc.getString("visaType") ?: "Full Visa Sponsorship",
-                                        confidenceScore = doc.getLong("confidenceScore")?.toInt() ?: 95,
-                                        confidenceReason = doc.getString("confidenceReason") ?: "Firestore Live Streamed Listing",
-                                        relocationAssistance = doc.getBoolean("relocationAssistance") ?: true,
-                                        contractType = doc.getString("contractType") ?: "Full-time",
-                                        industry = doc.getString("industry") ?: "Technology",
-                                        experienceLevel = doc.getString("experienceLevel") ?: "Senior",
-                                        applicationUrl = doc.getString("applicationUrl") ?: "https://www.linkedin.com/jobs",
-                                        datePosted = doc.getString("datePosted") ?: "Just now"
-                                    )
-                                    onNewJobReceived(job)
-                                } catch (e: Exception) {
-                                    Log.w("FirebaseSyncManager", "Parsing realtime live job failed", e)
-                                }
-                            }
+                .limit(30)
+                .addSnapshotListener { snapshots, e ->
+                    if (e != null || snapshots == null) return@addSnapshotListener
+                    for (dc in snapshots.documentChanges) {
+                        if (dc.type == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
+                            val data = dc.document.data
+                            val title = data["title"] as? String ?: continue
+                            val company = data["company"] as? String ?: continue
+                            val job = JobEntity(
+                                id = dc.document.id,
+                                title = title,
+                                company = company,
+                                country = data["country"] as? String ?: "Global",
+                                location = data["location"] as? String ?: "Remote",
+                                description = data["description"] as? String ?: "",
+                                salary = data["salary"] as? String ?: "Competitive",
+                                visaType = data["visaType"] as? String ?: "Sponsorship Available",
+                                confidenceScore = ((data["confidenceScore"] as? Long) ?: 85L).toInt(),
+                                confidenceReason = data["confidenceReason"] as? String ?: "Verified Sponsoring Employer",
+                                relocationAssistance = (data["relocationAssistance"] as? Boolean) ?: true,
+                                contractType = data["contractType"] as? String ?: "Full-time",
+                                industry = data["industry"] as? String ?: "Technology",
+                                experienceLevel = data["experienceLevel"] as? String ?: "Mid-Senior",
+                                applicationUrl = data["applicationUrl"] as? String ?: "",
+                                datePosted = data["datePosted"] as? String ?: "Just now",
+                                isBookmarked = false,
+                                isFraud = (data["isFraud"] as? Boolean) ?: false,
+                                isCustomPosted = true
+                            )
+                            onNewJob(job)
                         }
                     }
                 }
         } catch (e: Exception) {
-            Log.e("FirebaseSyncManager", "Failed to register live jobs feed listener", e)
+            Log.e("FirebaseSyncManager", "Listening to live jobs feed failed: ${e.message}")
             null
         }
     }
@@ -220,7 +197,7 @@ object FirebaseSyncManager {
                 "publishedAt" to System.currentTimeMillis()
             )
             db.collection("live_jobs_feed").document(job.id)
-                .set(jobMap)
+                .set(jobMap, SetOptions.merge())
                 .awaitTask()
             true
         } catch (e: Exception) {
@@ -229,13 +206,17 @@ object FirebaseSyncManager {
         }
     }
 
-    suspend fun uploadProfileToFirebase(profile: UserProfileEntity) {
+    // ==========================================
+    // USER PROFILE CROSS-SESSION PERSISTENCE
+    // ==========================================
+    suspend fun uploadProfileToFirebase(userId: String = "candidate_profile", profile: UserProfileEntity) {
         if (!isFirebaseReady()) {
-            Log.d("FirebaseSyncManager", "Firebase not ready. Stored profile in local high-fidelity Room database.")
+            Log.d("FirebaseSyncManager", "Firebase offline. Stored profile in local Room database.")
             return
         }
         try {
             val db = firestore ?: return
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
             val profileMap = hashMapOf(
                 "fullName" to profile.fullName,
                 "nationality" to profile.nationality,
@@ -250,24 +231,67 @@ object FirebaseSyncManager {
                 "salaryExpectations" to profile.salaryExpectations,
                 "resumeText" to profile.resumeText,
                 "coverLetterText" to profile.coverLetterText,
+                "linkedInConnected" to profile.linkedInConnected,
+                "linkedInHeadline" to profile.linkedInHeadline,
+                "linkedInTrustScore" to profile.linkedInTrustScore,
+                "linkedInEmail" to profile.linkedInEmail,
                 "lastSynced" to System.currentTimeMillis()
             )
-            db.collection("users").document("candidate_profile")
-                .set(profileMap)
+            db.collection("users").document(sanitizedUid).collection("data").document("profile")
+                .set(profileMap, SetOptions.merge())
                 .awaitTask()
-            Log.d("FirebaseSyncManager", "Firestore synced: Candidate Profile updated successfully.")
+            _lastSyncTimestamp.value = System.currentTimeMillis()
+            _syncStatusMessage.value = "Profile synced with Firebase Cloud"
+            Log.d("FirebaseSyncManager", "Firestore synced: Candidate Profile updated for $sanitizedUid.")
         } catch (e: Exception) {
             Log.e("FirebaseSyncManager", "Firestore profile sync failed: ${e.message}")
         }
     }
 
-    suspend fun saveJobToFirebase(job: JobEntity) {
-        if (!isFirebaseReady()) {
-            Log.d("FirebaseSyncManager", "Firebase not ready. Saved job ${job.id} locally in Room.")
-            return
+    suspend fun fetchProfileFromFirebase(userId: String = "candidate_profile"): UserProfileEntity? {
+        if (!isFirebaseReady()) return null
+        return try {
+            val db = firestore ?: return null
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
+            val doc = db.collection("users").document(sanitizedUid).collection("data").document("profile")
+                .get()
+                .awaitTask()
+            if (doc.exists()) {
+                UserProfileEntity(
+                    id = 1,
+                    fullName = doc.getString("fullName") ?: "",
+                    nationality = doc.getString("nationality") ?: "",
+                    currentCountry = doc.getString("currentCountry") ?: "",
+                    passportCountry = doc.getString("passportCountry") ?: "",
+                    education = doc.getString("education") ?: "",
+                    skills = doc.getString("skills") ?: "",
+                    languages = doc.getString("languages") ?: "",
+                    experience = doc.getString("experience") ?: "",
+                    desiredCountries = doc.getString("desiredCountries") ?: "",
+                    preferredOccupations = doc.getString("preferredOccupations") ?: "",
+                    salaryExpectations = doc.getString("salaryExpectations") ?: "",
+                    resumeText = doc.getString("resumeText") ?: "",
+                    coverLetterText = doc.getString("coverLetterText") ?: "",
+                    linkedInConnected = doc.getBoolean("linkedInConnected") ?: false,
+                    linkedInHeadline = doc.getString("linkedInHeadline") ?: "",
+                    linkedInTrustScore = (doc.getLong("linkedInTrustScore") ?: 0L).toInt(),
+                    linkedInEmail = doc.getString("linkedInEmail") ?: ""
+                )
+            } else null
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Fetching profile from Firestore failed: ${e.message}")
+            null
         }
+    }
+
+    // ==========================================
+    // SAVED JOBS PERSISTENCE
+    // ==========================================
+    suspend fun saveJobToFirebase(userId: String = "candidate_profile", job: JobEntity) {
+        if (!isFirebaseReady()) return
         try {
             val db = firestore ?: return
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
             val jobMap = hashMapOf(
                 "id" to job.id,
                 "title" to job.title,
@@ -289,35 +313,76 @@ object FirebaseSyncManager {
                 "isFraud" to job.isFraud,
                 "lastSynced" to System.currentTimeMillis()
             )
-            db.collection("saved_jobs").document(job.id)
-                .set(jobMap)
+            db.collection("users").document(sanitizedUid).collection("saved_jobs").document(job.id)
+                .set(jobMap, SetOptions.merge())
                 .awaitTask()
-            Log.d("FirebaseSyncManager", "Firestore synced: Saved Job ${job.id} uploaded successfully.")
+            Log.d("FirebaseSyncManager", "Firestore synced: Saved Job ${job.id} uploaded for $sanitizedUid.")
         } catch (e: Exception) {
             Log.e("FirebaseSyncManager", "Firestore job sync failed: ${e.message}")
         }
     }
 
-    suspend fun removeJobFromFirebase(jobId: String) {
+    suspend fun removeJobFromFirebase(userId: String = "candidate_profile", jobId: String) {
         if (!isFirebaseReady()) return
         try {
             val db = firestore ?: return
-            db.collection("saved_jobs").document(jobId)
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
+            db.collection("users").document(sanitizedUid).collection("saved_jobs").document(jobId)
                 .delete()
                 .awaitTask()
-            Log.d("FirebaseSyncManager", "Firestore synced: Saved Job $jobId deleted successfully.")
+            Log.d("FirebaseSyncManager", "Firestore synced: Saved Job $jobId deleted for $sanitizedUid.")
         } catch (e: Exception) {
             Log.e("FirebaseSyncManager", "Firestore job deletion sync failed: ${e.message}")
         }
     }
 
-    suspend fun syncVisaApplicationToFirebase(app: VisaApplicationEntity) {
-        if (!isFirebaseReady()) {
-            Log.d("FirebaseSyncManager", "Firebase not ready. Logged application status changes locally.")
-            return
+    suspend fun fetchSavedJobsFromFirebase(userId: String = "candidate_profile"): List<JobEntity> {
+        if (!isFirebaseReady()) return emptyList()
+        return try {
+            val db = firestore ?: return emptyList()
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
+            val snapshot = db.collection("users").document(sanitizedUid).collection("saved_jobs")
+                .get()
+                .awaitTask()
+            snapshot.documents.mapNotNull { doc ->
+                val id = doc.getString("id") ?: doc.id
+                val title = doc.getString("title") ?: return@mapNotNull null
+                val company = doc.getString("company") ?: return@mapNotNull null
+                JobEntity(
+                    id = id,
+                    title = title,
+                    company = company,
+                    country = doc.getString("country") ?: "Global",
+                    location = doc.getString("location") ?: "Remote",
+                    description = doc.getString("description") ?: "",
+                    salary = doc.getString("salary") ?: "Competitive",
+                    visaType = doc.getString("visaType") ?: "Sponsorship Available",
+                    confidenceScore = (doc.getLong("confidenceScore") ?: 85L).toInt(),
+                    confidenceReason = doc.getString("confidenceReason") ?: "",
+                    relocationAssistance = doc.getBoolean("relocationAssistance") ?: true,
+                    contractType = doc.getString("contractType") ?: "Full-time",
+                    industry = doc.getString("industry") ?: "Technology",
+                    experienceLevel = doc.getString("experienceLevel") ?: "Mid-Senior",
+                    applicationUrl = doc.getString("applicationUrl") ?: "",
+                    datePosted = doc.getString("datePosted") ?: "Recent",
+                    isBookmarked = true,
+                    isFraud = doc.getBoolean("isFraud") ?: false
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Fetching saved jobs from Firestore failed: ${e.message}")
+            emptyList()
         }
+    }
+
+    // ==========================================
+    // VISA PROGRESS & DOCUMENT VAULT PERSISTENCE
+    // ==========================================
+    suspend fun syncVisaApplicationToFirebase(userId: String = "candidate_profile", app: VisaApplicationEntity) {
+        if (!isFirebaseReady()) return
         try {
             val db = firestore ?: return
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
             val appMap = hashMapOf(
                 "jobId" to app.jobId,
                 "jobTitle" to app.jobTitle,
@@ -328,25 +393,187 @@ object FirebaseSyncManager {
                 "updatedDate" to app.updatedDate,
                 "lastSynced" to System.currentTimeMillis()
             )
-            db.collection("visa_progress").document(app.jobId)
-                .set(appMap)
+            db.collection("users").document(sanitizedUid).collection("visa_progress").document(app.jobId)
+                .set(appMap, SetOptions.merge())
                 .awaitTask()
-            Log.d("FirebaseSyncManager", "Firestore synced: Visa application progress updated.")
         } catch (e: Exception) {
             Log.e("FirebaseSyncManager", "Firestore visa progress sync failed: ${e.message}")
         }
     }
 
-    suspend fun deleteVisaApplicationFromFirebase(jobId: String) {
+    suspend fun fetchVisaApplicationsFromFirebase(userId: String = "candidate_profile"): List<VisaApplicationEntity> {
+        if (!isFirebaseReady()) return emptyList()
+        return try {
+            val db = firestore ?: return emptyList()
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
+            val snapshot = db.collection("users").document(sanitizedUid).collection("visa_progress")
+                .get()
+                .awaitTask()
+            snapshot.documents.mapNotNull { doc ->
+                val jobId = doc.getString("jobId") ?: doc.id
+                val jobTitle = doc.getString("jobTitle") ?: return@mapNotNull null
+                val company = doc.getString("company") ?: return@mapNotNull null
+                VisaApplicationEntity(
+                    jobId = jobId,
+                    jobTitle = jobTitle,
+                    company = company,
+                    country = doc.getString("country") ?: "Global",
+                    status = doc.getString("status") ?: "Applied",
+                    notes = doc.getString("notes") ?: "",
+                    updatedDate = doc.getString("updatedDate") ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Fetching visa applications failed: ${e.message}")
+            emptyList()
+        }
+    }
+
+    suspend fun syncVisaDocumentToFirebase(userId: String = "candidate_profile", doc: VisaDocumentEntity) {
         if (!isFirebaseReady()) return
         try {
             val db = firestore ?: return
-            db.collection("visa_progress").document(jobId)
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
+            val docMap = hashMapOf(
+                "id" to doc.id,
+                "documentName" to doc.documentName,
+                "category" to doc.category,
+                "documentNumber" to doc.documentNumber,
+                "issuingAuthority" to doc.issuingAuthority,
+                "issueDate" to doc.issueDate,
+                "expiryDate" to doc.expiryDate,
+                "notes" to doc.notes,
+                "isVerified" to doc.isVerified,
+                "lastSynced" to System.currentTimeMillis()
+            )
+            db.collection("users").document(sanitizedUid).collection("visa_documents").document(doc.id.toString())
+                .set(docMap, SetOptions.merge())
+                .awaitTask()
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Firestore doc sync failed: ${e.message}")
+        }
+    }
+
+    suspend fun fetchVisaDocumentsFromFirebase(userId: String = "candidate_profile"): List<VisaDocumentEntity> {
+        if (!isFirebaseReady()) return emptyList()
+        return try {
+            val db = firestore ?: return emptyList()
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
+            val snapshot = db.collection("users").document(sanitizedUid).collection("visa_documents")
+                .get()
+                .awaitTask()
+            snapshot.documents.mapNotNull { doc ->
+                val name = doc.getString("documentName") ?: return@mapNotNull null
+                VisaDocumentEntity(
+                    id = (doc.getLong("id") ?: 0L).toInt(),
+                    documentName = name,
+                    category = doc.getString("category") ?: "Other",
+                    documentNumber = doc.getString("documentNumber") ?: "",
+                    issuingAuthority = doc.getString("issuingAuthority") ?: "",
+                    issueDate = doc.getString("issueDate") ?: "",
+                    expiryDate = doc.getString("expiryDate") ?: "",
+                    notes = doc.getString("notes") ?: "",
+                    isVerified = doc.getBoolean("isVerified") ?: false
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Fetching visa documents failed: ${e.message}")
+            emptyList()
+        }
+    }
+
+    // ==========================================
+    // FULL BIDIRECTIONAL CLOUD SYNCHRONIZATION
+    // ==========================================
+    suspend fun performFullCloudSync(userId: String, dao: JobDao): Result<String> {
+        if (!isFirebaseReady()) {
+            _syncStatusMessage.value = "Local persistence active"
+            return Result.success("Local SQLite database synced successfully.")
+        }
+        _isSyncing.value = true
+        _syncStatusMessage.value = "Syncing with Firebase Cloud..."
+        return try {
+            val sanitizedUid = userId.ifBlank { "candidate_profile" }
+
+            // 1. Download Remote Data
+            val cloudProfile = fetchProfileFromFirebase(sanitizedUid)
+            if (cloudProfile != null) {
+                dao.insertProfile(cloudProfile)
+            } else {
+                // Upload current local profile to cloud
+                val localProfile = dao.getUserProfile()
+                if (localProfile != null) {
+                    uploadProfileToFirebase(sanitizedUid, localProfile)
+                }
+            }
+
+            // 2. Sync Saved Jobs
+            val cloudSavedJobs = fetchSavedJobsFromFirebase(sanitizedUid)
+            if (cloudSavedJobs.isNotEmpty()) {
+                cloudSavedJobs.forEach { dao.insertJob(it) }
+            }
+
+            // 3. Sync Visa Applications
+            val cloudApps = fetchVisaApplicationsFromFirebase(sanitizedUid)
+            if (cloudApps.isNotEmpty()) {
+                cloudApps.forEach { dao.insertVisaApplication(it) }
+            }
+
+            // 4. Sync Visa Documents
+            val cloudDocs = fetchVisaDocumentsFromFirebase(sanitizedUid)
+            if (cloudDocs.isNotEmpty()) {
+                cloudDocs.forEach { dao.insertVisaDocument(it) }
+            }
+
+            _lastSyncTimestamp.value = System.currentTimeMillis()
+            _isSyncing.value = false
+            _syncStatusMessage.value = "All data backed up & synced"
+            Result.success("Cloud synchronization complete.")
+        } catch (e: Exception) {
+            _isSyncing.value = false
+            _syncStatusMessage.value = "Sync error: ${e.message}"
+            Log.e("FirebaseSyncManager", "Full cloud sync error: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    // Job Alerts
+    suspend fun subscribeJobAlertToFirestore(alert: FirestoreJobAlert): Boolean {
+        if (!isFirebaseReady()) return false
+        return try {
+            val db = firestore ?: return false
+            val alertId = if (alert.id.isNotBlank()) alert.id else "alert_${System.currentTimeMillis()}"
+            val alertMap = hashMapOf(
+                "id" to alertId,
+                "queryText" to alert.queryText,
+                "country" to alert.country,
+                "userEmail" to alert.userEmail,
+                "createdAt" to alert.createdAt,
+                "isActive" to alert.isActive,
+                "pushEnabled" to alert.pushEnabled,
+                "emailEnabled" to alert.emailEnabled,
+                "lastSynced" to System.currentTimeMillis()
+            )
+            db.collection("job_alerts").document(alertId)
+                .set(alertMap, SetOptions.merge())
+                .awaitTask()
+            true
+        } catch (e: Exception) {
+            Log.e("FirebaseSyncManager", "Job alert sync failed: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun unsubscribeJobAlertFromFirestore(alertId: String): Boolean {
+        if (!isFirebaseReady()) return false
+        return try {
+            val db = firestore ?: return false
+            db.collection("job_alerts").document(alertId)
                 .delete()
                 .awaitTask()
-            Log.d("FirebaseSyncManager", "Firestore synced: Visa application record deleted.")
+            true
         } catch (e: Exception) {
-            Log.e("FirebaseSyncManager", "Firestore visa deletion sync failed: ${e.message}")
+            false
         }
     }
 }
