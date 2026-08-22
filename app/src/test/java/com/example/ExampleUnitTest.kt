@@ -154,4 +154,40 @@ class ExampleUnitTest {
     assertNotNull(kenyaUk)
     assertTrue(kenyaUk?.hasDtaaTreaty == true)
   }
+
+  @Test
+  fun testRealTimeMobility_pulsesLoaded() {
+    val pulses = com.example.ui.RealTimeMobilityRepository.initialPulses
+    assertTrue(pulses.isNotEmpty())
+    val deepmindPulse = pulses.find { it.companyName.contains("DeepMind") }
+    assertNotNull(deepmindPulse)
+    assertTrue(deepmindPulse?.isFastTrack == true)
+    assertEquals("United Kingdom", deepmindPulse?.country)
+  }
+
+  @Test
+  fun testRealTimeMobility_embassySlots() {
+    val slots = com.example.ui.RealTimeMobilityRepository.sampleEmbassySlots
+    assertTrue(slots.isNotEmpty())
+    val nbo = slots.find { it.id.contains("nbo") }
+    assertNotNull(nbo)
+    assertEquals(com.example.ui.EmbassySlotStatus.SLOTS_OPEN_NOW, nbo?.status)
+  }
+
+  @Test
+  fun testRealTimeMobility_fxRates() {
+    val fx = com.example.ui.RealTimeMobilityRepository.sampleFxRates
+    assertTrue(fx.isNotEmpty())
+    val gbpKes = fx.find { it.currencyPair == "GBP/KES" }
+    assertNotNull(gbpKes)
+    assertTrue(gbpKes?.rate ?: 0.0 > 150.0)
+  }
+
+  @Test
+  fun testRealTimeMobility_communityChat() {
+    val chat = com.example.ui.RealTimeMobilityRepository.sampleCommunityChat
+    assertTrue(chat.isNotEmpty())
+    assertTrue(chat.any { it.isAiAdvisor })
+  }
 }
+

@@ -228,6 +228,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
                     ) {
                         val tabs = listOf(
                             Triple("Discover", Icons.Default.Search, "Discover"),
+                            Triple("Radar", Icons.Default.Sensors, "Live"),
                             Triple("Sponsors", Icons.Default.Verified, "Sponsors"),
                             Triple("Family", Icons.Default.FamilyRestroom, "Family"),
                             Triple("Interview", Icons.Default.RecordVoiceOver, "Interview"),
@@ -280,6 +281,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
                     ) {
                         val tabs = listOf(
                             Triple("Discover", Icons.Default.Search, "Discover"),
+                            Triple("Radar", Icons.Default.Sensors, "Live Radar"),
                             Triple("Sponsors", Icons.Default.Verified, "Sponsor Registry"),
                             Triple("Family", Icons.Default.FamilyRestroom, "Family Rights"),
                             Triple("Interview", Icons.Default.RecordVoiceOver, "Interview Sim"),
@@ -353,6 +355,10 @@ fun DashboardScreen(viewModel: JobViewModel) {
                 ) {
                     when (activeTab) {
                         "Discover" -> DiscoverTab(viewModel, isWideScreen, onNavigateTab = { activeTab = it })
+                        "Radar" -> RealTimeMobilityHub(onNavigateToJobSearch = { companyName ->
+                            viewModel.performLiveScrapeSearch(companyName, "All")
+                            activeTab = "Discover"
+                        })
                         "Sponsors" -> SponsorRegistryHub(onSelectSponsorForJobs = { companyName ->
                             viewModel.performLiveScrapeSearch(companyName, "All")
                             activeTab = "Discover"
@@ -604,6 +610,12 @@ fun DiscoverTab(
             }
         }
 
+        // Live Radar Pulse Top Ticker Banner
+        LiveRadarTopTickerBanner(
+            onClickOpenHub = { onNavigateTab("Radar") },
+            modifier = Modifier.padding(bottom = 10.dp)
+        )
+
         // Global Mobility & Immigration Tools Suite Quick Launcher
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -611,6 +623,25 @@ fun DiscoverTab(
                 .fillMaxWidth()
                 .padding(bottom = 10.dp)
         ) {
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onNavigateTab("Radar") }
+                        .border(1.dp, Color(0xFFFF5252), RoundedCornerShape(12.dp)),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Sensors, contentDescription = null, tint = Color(0xFFFF5252), modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Live Radar & Slots", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
             item {
                 Surface(
                     modifier = Modifier
