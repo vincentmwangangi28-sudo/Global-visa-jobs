@@ -230,8 +230,9 @@ fun DashboardScreen(viewModel: JobViewModel) {
                             Triple("Discover", Icons.Default.Search, "Discover"),
                             Triple("Radar", Icons.Default.Sensors, "Live"),
                             Triple("Sponsors", Icons.Default.Verified, "Sponsors"),
-                            Triple("Family", Icons.Default.FamilyRestroom, "Family"),
+                            Triple("Mentors", Icons.Default.Groups, "Mentors"),
                             Triple("Interview", Icons.Default.RecordVoiceOver, "Interview"),
+                            Triple("Family", Icons.Default.FamilyRestroom, "Family"),
                             Triple("Reviews", Icons.Default.RateReview, "Reviews"),
                             Triple("Remittance", Icons.Default.CurrencyExchange, "Remit"),
                             Triple("Enterprise", Icons.Default.Settings, "Enterprise")
@@ -283,8 +284,9 @@ fun DashboardScreen(viewModel: JobViewModel) {
                             Triple("Discover", Icons.Default.Search, "Discover"),
                             Triple("Radar", Icons.Default.Sensors, "Live Radar"),
                             Triple("Sponsors", Icons.Default.Verified, "Sponsor Registry"),
-                            Triple("Family", Icons.Default.FamilyRestroom, "Family Rights"),
+                            Triple("Mentors", Icons.Default.Groups, "Expat Mentors"),
                             Triple("Interview", Icons.Default.RecordVoiceOver, "Interview Sim"),
+                            Triple("Family", Icons.Default.FamilyRestroom, "Family Rights"),
                             Triple("Reviews", Icons.Default.RateReview, "Relocation Reviews"),
                             Triple("Remittance", Icons.Default.CurrencyExchange, "Tax & Remittance"),
                             Triple("Match", Icons.Default.Person, "Profile Match"),
@@ -363,6 +365,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
                             viewModel.performLiveScrapeSearch(companyName, "All")
                             activeTab = "Discover"
                         })
+                        "Mentors" -> ExpatMentorshipCommunityHub(viewModel)
                         "Family" -> SpouseDependantAdvisorHub()
                         "Interview" -> ConsularInterviewSimulatorHub(viewModel)
                         "Reviews" -> EmployerRelocationReviewsHub()
@@ -3685,6 +3688,7 @@ fun ResumeSubScreen(
     var activeTone by remember { mutableStateOf("Professional") } // "Professional", "Technical/Sponsor-aligned", "Creative Leader"
     var showPrintPreview by remember { mutableStateOf(false) }
     var expandTips by remember { mutableStateOf(false) }
+    var showCountryCvConverterDialog by remember { mutableStateOf(false) }
 
     val exportLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
         contract = androidx.activity.result.contract.ActivityResultContracts.CreateDocument("text/plain"),
@@ -3703,6 +3707,32 @@ fun ResumeSubScreen(
                     Toast.makeText(context, "Resume exported successfully!", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     Toast.makeText(context, "Failed to export: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    )
+
+    val exportPdfLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/pdf"),
+        onResult = { uri ->
+            uri?.let {
+                try {
+                    context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                        val activeText = if (activeSource == "Structured Resume") {
+                            getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
+                        } else {
+                            resumeRes ?: ""
+                        }
+                        com.example.util.AtsResumePdfGenerator.writeResumeToStream(
+                            candidateName = name,
+                            markdownContent = activeText,
+                            templateName = activeTemplate,
+                            outputStream = outputStream
+                        )
+                    }
+                    Toast.makeText(context, "PDF Resume exported successfully!", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Failed to export PDF: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -3793,17 +3823,198 @@ fun ResumeSubScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "AI ATS Resume Builder & Creator",
+            text = "AI ATS Resume Optimizer & Builder",
             color = WhiteActive,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
             modifier = Modifier.widthIn(max = 800.dp).fillMaxWidth()
         )
         Text(
-            text = "Design a highly professional, ATS-friendly resume. Toggle between editing your details and real-time layout rendering.",
+            text = "Design and optimize a high-scoring, ATS-friendly resume. Sync verified professional data with LinkedIn or tailor each section in real time.",
             color = SlateMuted,
             fontSize = 12.sp,
             modifier = Modifier.widthIn(max = 800.dp).fillMaxWidth().padding(bottom = 12.dp)
+        )
+
+        // Prominent "Sync with LinkedIn" Action Banner
+        Card(
+            modifier = Modifier
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .padding(bottom = 12.dp)
+                .border(1.5.dp, LinkedInBlue.copy(alpha = 0.85f), RoundedCornerShape(14.dp))
+                .clickable {
+                    viewModel.connectLinkedInSandbox(
+                        customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
+                        customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+                        customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
+                    )
+                    name = profile.fullName.ifBlank { "Vincent Mwangangi" }
+                    contactEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
+                    val mockData = com.example.auth.LinkedInOAuthService.createMockVerifiedProfile(
+                        customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
+                        customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+                        customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
+                    )
+                    viewModel.applyLinkedInImport(mockData, autoImportToProfile = true)
+
+                    education = mockData.educations.joinToString("\n") { "${it.degree} in ${it.fieldOfStudy}, ${it.school} (${it.startYear}-${it.endYear})" }
+                    skills = mockData.skills.joinToString(", ")
+                    skillsList.clear()
+                    skillsList.addAll(mockData.skills)
+                    experienceList.clear()
+                    mockData.positions.forEach { pos ->
+                        experienceList.add(
+                            WorkExperienceItem(
+                                id = java.util.UUID.randomUUID().toString(),
+                                title = pos.title,
+                                company = pos.company,
+                                location = pos.location,
+                                startDate = pos.startDate,
+                                endDate = pos.endDate,
+                                isCurrent = pos.isCurrent,
+                                achievements = pos.description
+                            )
+                        )
+                    }
+                    updateExperience()
+                    activeStep = 1
+                    Toast.makeText(context, "⚡ Synced professional data from LinkedIn successfully!", Toast.LENGTH_LONG).show()
+                }
+                .testTag("sync_with_linkedin_hero_card"),
+            colors = CardDefaults.cardColors(
+                containerColor = LinkedInBlue.copy(alpha = 0.12f)
+            ),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(LinkedInBlue),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "in",
+                            color = Color.White,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 22.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Sync with LinkedIn",
+                                color = WhiteActive,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(LinkedInBlue.copy(alpha = 0.25f))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = if (profile.linkedInConnected) "SYNCED ✓" else "1-CLICK IMPORT",
+                                    color = LinkedInBlue,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = if (profile.linkedInConnected)
+                                "Imported: ${profile.fullName.ifBlank { "Vincent Mwangangi" }} · Click to re-sync verified credentials"
+                            else
+                                "Quickly import verified professional work history, skills & education via OAuth mock logic",
+                            color = SlateMuted,
+                            fontSize = 11.5.sp,
+                            lineHeight = 15.sp
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Button(
+                    onClick = {
+                        viewModel.connectLinkedInSandbox(
+                            customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
+                            customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+                            customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
+                        )
+                        name = profile.fullName.ifBlank { "Vincent Mwangangi" }
+                        contactEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
+                        val mockData = com.example.auth.LinkedInOAuthService.createMockVerifiedProfile(
+                            customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
+                            customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+                            customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
+                        )
+                        viewModel.applyLinkedInImport(mockData, autoImportToProfile = true)
+
+                        education = mockData.educations.joinToString("\n") { "${it.degree} in ${it.fieldOfStudy}, ${it.school} (${it.startYear}-${it.endYear})" }
+                        skills = mockData.skills.joinToString(", ")
+                        skillsList.clear()
+                        skillsList.addAll(mockData.skills)
+                        experienceList.clear()
+                        mockData.positions.forEach { pos ->
+                            experienceList.add(
+                                WorkExperienceItem(
+                                    id = java.util.UUID.randomUUID().toString(),
+                                    title = pos.title,
+                                    company = pos.company,
+                                    location = pos.location,
+                                    startDate = pos.startDate,
+                                    endDate = pos.endDate,
+                                    isCurrent = pos.isCurrent,
+                                    achievements = pos.description
+                                )
+                            )
+                        }
+                        updateExperience()
+                        activeStep = 1
+                        Toast.makeText(context, "⚡ Synced professional data from LinkedIn successfully!", Toast.LENGTH_LONG).show()
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = LinkedInBlue,
+                        contentColor = Color.White
+                    ),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+                    modifier = Modifier.testTag("sync_with_linkedin_btn")
+                ) {
+                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = if (profile.linkedInConnected) "Re-Sync" else "Sync with LinkedIn",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+        }
+
+        // Country-Specific CV Format Converter Hero Card
+        CountrySpecificCvConverterCard(
+            viewModel = viewModel,
+            onOpenFullConverter = { showCountryCvConverterDialog = true },
+            modifier = Modifier
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .padding(bottom = 10.dp)
         )
 
         // Sub Mode Tab row
@@ -4708,67 +4919,109 @@ fun ResumeSubScreen(
                                 shape = RoundedCornerShape(10.dp)
                             ) {
                                 Column(modifier = Modifier.padding(12.dp)) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.PictureAsPdf, contentDescription = "PDF", tint = EmeraldGreen, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "Downloadable File Exporter (PDF & ATS):",
+                                            color = WhiteActive,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp
+                                        )
+                                    }
                                     Text(
-                                        text = "Downloadable File Exporter:",
-                                        color = WhiteActive,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp
-                                    )
-                                    Text(
-                                        text = "Generate and download a high-compliance plain-text formatted .TXT resume file ready for corporate submissions.",
+                                        text = "Generate and download a clean, high-compliance PDF resume rendered in your selected template (${activeTemplate}) or plain-text ATS file.",
                                         color = SlateMuted,
                                         fontSize = 11.sp,
-                                        modifier = Modifier.padding(bottom = 10.dp)
+                                        modifier = Modifier.padding(top = 4.dp, bottom = 10.dp)
                                     )
                                     
-                                    // Direct Local Download Button
+                                    // Direct Local PDF Download Button
                                     Button(
                                         onClick = {
                                             val resumeContent = getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
-                                            val filename = "${name.ifEmpty { "Candidate" }.replace(" ", "_")}_Resume.txt"
-                                            val saved = saveTextFileToDownloads(context, filename, resumeContent)
-                                            if (saved) {
-                                                Toast.makeText(context, "Downloaded successfully! Saved $filename to your Downloads folder.", Toast.LENGTH_LONG).show()
+                                            val res = com.example.util.AtsResumePdfGenerator.generateResumePdf(
+                                                context = context,
+                                                candidateName = name,
+                                                markdownContent = resumeContent,
+                                                templateName = activeTemplate
+                                            )
+                                            if (res != null) {
+                                                Toast.makeText(context, "PDF Downloaded! Saved ${res.fileName} to Downloads folder.", Toast.LENGTH_LONG).show()
+                                                val shareIntent = com.example.util.AtsResumePdfGenerator.createShareIntent(context, res.file, name)
+                                                context.startActivity(android.content.Intent.createChooser(shareIntent, "Save or Send PDF Resume"))
                                             } else {
-                                                Toast.makeText(context, "Failed to save to Downloads folder. Attempting fallback share...", Toast.LENGTH_SHORT).show()
-                                                val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-                                                    type = "text/plain"
-                                                    putExtra(android.content.Intent.EXTRA_SUBJECT, "${name.ifEmpty { "Applicant" }} - ATS Resume File")
-                                                    putExtra(android.content.Intent.EXTRA_TEXT, resumeContent)
-                                                }
-                                                context.startActivity(android.content.Intent.createChooser(shareIntent, "Save ATS Resume File"))
+                                                Toast.makeText(context, "Failed to generate PDF resume", Toast.LENGTH_SHORT).show()
                                             }
                                         },
-                                        modifier = Modifier.fillMaxWidth().testTag("download_resume_file_button"),
+                                        modifier = Modifier.fillMaxWidth().testTag("download_resume_pdf_button"),
                                         shape = RoundedCornerShape(8.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen)
                                     ) {
-                                        Icon(Icons.Default.Done, contentDescription = "Download", tint = NavyDark, modifier = Modifier.size(16.dp))
+                                        Icon(Icons.Default.PictureAsPdf, contentDescription = "Download PDF", tint = NavyDark, modifier = Modifier.size(16.dp))
                                         Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Save to Device Downloads (.txt)", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                        Text("Download Tailored PDF (.pdf)", color = NavyDark, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                     }
 
                                     Spacer(modifier = Modifier.height(8.dp))
 
-                                    // Share / Send Button
-                                    OutlinedButton(
-                                        onClick = {
-                                            val resumeContent = getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
-                                            val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-                                                type = "text/plain"
-                                                putExtra(android.content.Intent.EXTRA_SUBJECT, "${name.ifEmpty { "Applicant" }} - ATS Resume File")
-                                                putExtra(android.content.Intent.EXTRA_TEXT, resumeContent)
-                                            }
-                                            context.startActivity(android.content.Intent.createChooser(shareIntent, "Share ATS Resume File"))
-                                        },
-                                        modifier = Modifier.fillMaxWidth().testTag("share_resume_file_button"),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = ButtonDefaults.outlinedButtonColors(contentColor = EmeraldGreen),
-                                        border = BorderStroke(1.dp, EmeraldGreen)
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        Icon(Icons.Default.Share, contentDescription = "Share", modifier = Modifier.size(16.dp))
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Share / Send Resume", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                        // Save TXT
+                                        OutlinedButton(
+                                            onClick = {
+                                                val resumeContent = getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
+                                                val filename = "${name.ifEmpty { "Candidate" }.replace(" ", "_")}_Resume.txt"
+                                                val saved = saveTextFileToDownloads(context, filename, resumeContent)
+                                                if (saved) {
+                                                    Toast.makeText(context, "Saved $filename to Downloads.", Toast.LENGTH_LONG).show()
+                                                } else {
+                                                    val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                                        type = "text/plain"
+                                                        putExtra(android.content.Intent.EXTRA_SUBJECT, "${name.ifEmpty { "Applicant" }} - ATS Resume File")
+                                                        putExtra(android.content.Intent.EXTRA_TEXT, resumeContent)
+                                                    }
+                                                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Save ATS Resume File"))
+                                                }
+                                            },
+                                            modifier = Modifier.weight(1f).testTag("download_resume_file_button"),
+                                            shape = RoundedCornerShape(8.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = WhiteActive),
+                                            border = BorderStroke(1.dp, NavyMedium)
+                                        ) {
+                                            Icon(Icons.Default.Description, contentDescription = "TXT", modifier = Modifier.size(14.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("Save (.txt)", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                        }
+
+                                        // Share PDF
+                                        OutlinedButton(
+                                            onClick = {
+                                                val resumeContent = getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
+                                                val res = com.example.util.AtsResumePdfGenerator.generateResumePdf(
+                                                    context = context,
+                                                    candidateName = name,
+                                                    markdownContent = resumeContent,
+                                                    templateName = activeTemplate
+                                                )
+                                                if (res != null) {
+                                                    val shareIntent = com.example.util.AtsResumePdfGenerator.createShareIntent(context, res.file, name)
+                                                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Share Tailored Resume PDF"))
+                                                } else {
+                                                    Toast.makeText(context, "Failed to prepare PDF for sharing", Toast.LENGTH_SHORT).show()
+                                                }
+                                            },
+                                            modifier = Modifier.weight(1f).testTag("share_resume_file_button"),
+                                            shape = RoundedCornerShape(8.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = EmeraldGreen),
+                                            border = BorderStroke(1.dp, EmeraldGreen)
+                                        ) {
+                                            Icon(Icons.Default.Share, contentDescription = "Share", modifier = Modifier.size(14.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("Share PDF", fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                                        }
                                     }
                                 }
                             }
@@ -5205,7 +5458,7 @@ fun ResumeSubScreen(
                 }
             }
 
-            // 3. Document Action Bar (Copy/Clear)
+            // 3. Document Action Bar (Copy/Clear/PDF Download)
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -5219,6 +5472,56 @@ fun ResumeSubScreen(
                 )
                 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Download PDF Button
+                    FilledTonalButton(
+                        onClick = {
+                            val activeText = if (activeSource == "Structured Resume") {
+                                getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
+                            } else {
+                                resumeRes ?: ""
+                            }
+                            if (activeText.isNotEmpty()) {
+                                val res = com.example.util.AtsResumePdfGenerator.generateResumePdf(
+                                    context = context,
+                                    candidateName = name,
+                                    markdownContent = activeText,
+                                    templateName = activeTemplate
+                                )
+                                if (res != null) {
+                                    Toast.makeText(context, "PDF Downloaded! Saved ${res.fileName} to Downloads (${res.pageCount} pages)", Toast.LENGTH_LONG).show()
+                                    val shareIntent = com.example.util.AtsResumePdfGenerator.createShareIntent(context, res.file, name)
+                                    context.startActivity(android.content.Intent.createChooser(shareIntent, "Save or Send PDF Resume"))
+                                } else {
+                                    Toast.makeText(context, "Failed to generate PDF resume", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                Toast.makeText(context, "No resume content to export!", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        modifier = Modifier.testTag("download_ats_pdf_button"),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = EmeraldGreen,
+                            contentColor = NavyDark
+                        ),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PictureAsPdf,
+                            contentDescription = "Download Tailored PDF",
+                            tint = NavyDark,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "DOWNLOAD PDF",
+                            color = NavyDark,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
                     TextButton(
                         onClick = { showPrintPreview = true },
                         modifier = Modifier.testTag("a4_print_preview_button")
@@ -5231,7 +5534,7 @@ fun ResumeSubScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "A4 PRINT VIEW",
+                            text = "A4 VIEW",
                             color = Color(0xFFE8DEF8),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
@@ -5252,13 +5555,13 @@ fun ResumeSubScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowForward,
                             contentDescription = "Export ATS Plain-Text File",
-                            tint = EmeraldGreen,
+                            tint = SlateMuted,
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "EXPORT ATS TXT",
-                            color = EmeraldGreen,
+                            text = "TXT",
+                            color = SlateMuted,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -5307,7 +5610,7 @@ fun ResumeSubScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.85f)
+                    .fillMaxHeight(0.90f)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp)),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(12.dp)
@@ -5324,7 +5627,7 @@ fun ResumeSubScreen(
                     ) {
                         Column {
                             Text(
-                                text = "A4 Portrait Print Preview",
+                                text = "A4 Portrait Print & PDF Studio",
                                 color = Color.Black,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp
@@ -5339,16 +5642,45 @@ fun ResumeSubScreen(
                             Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.Black)
                         }
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // In-Dialog Template Switcher
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        listOf("ATS Standard", "Modern Executive", "Creative Tech").forEach { tmpl ->
+                            val isSel = activeTemplate == tmpl
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(if (isSel) Color(0xFF6750A4) else Color(0xFFF3EDF7))
+                                    .clickable { activeTemplate = tmpl }
+                                    .padding(vertical = 4.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = tmpl,
+                                    color = if (isSel) Color.White else Color(0xFF49454F),
+                                    fontSize = 9.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
                     Divider(color = Color.LightGray)
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     
                     Box(
                         modifier = Modifier
                             .weight(1f)
                             .verticalScroll(rememberScrollState())
                             .background(Color.White)
-                            .padding(vertical = 8.dp)
+                            .padding(vertical = 4.dp)
                     ) {
                         val activeText = if (activeSource == "Structured Resume") {
                             getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
@@ -5370,26 +5702,70 @@ fun ResumeSubScreen(
                     
                     Spacer(modifier = Modifier.height(10.dp))
                     
-                    Button(
-                        onClick = {
-                            val activeText = if (activeSource == "Structured Resume") {
-                                getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
-                            } else {
-                                resumeRes ?: ""
-                            }
-                            clipboard.setText(AnnotatedString(activeText))
-                            Toast.makeText(context, "Copied content to clipboard!", Toast.LENGTH_SHORT).show()
-                            showPrintPreview = false
-                        },
+                    // PDF Download & Action Buttons Row
+                    val activeText = if (activeSource == "Structured Resume") {
+                        getSimulatedMarkdown(name, skills, education, experience, profile, contactEmail, contactPhone)
+                    } else {
+                        resumeRes ?: ""
+                    }
+
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6750A4))
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = "Copy", tint = Color.White)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Copy Raw Text & Close", color = Color.White)
+                        Button(
+                            onClick = {
+                                if (activeText.isNotEmpty()) {
+                                    val res = com.example.util.AtsResumePdfGenerator.generateResumePdf(
+                                        context = context,
+                                        candidateName = name,
+                                        markdownContent = activeText,
+                                        templateName = activeTemplate
+                                    )
+                                    if (res != null) {
+                                        Toast.makeText(context, "PDF saved to Downloads! (${res.pageCount} pages)", Toast.LENGTH_LONG).show()
+                                        val shareIntent = com.example.util.AtsResumePdfGenerator.createShareIntent(context, res.file, name)
+                                        context.startActivity(android.content.Intent.createChooser(shareIntent, "Save or Send PDF Resume"))
+                                    } else {
+                                        Toast.makeText(context, "Failed to generate PDF", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                            modifier = Modifier.weight(1.2f).testTag("print_dialog_download_pdf_button"),
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Icon(Icons.Default.PictureAsPdf, contentDescription = "PDF", tint = NavyDark, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Download PDF (.pdf)", color = NavyDark, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                if (activeText.isNotEmpty()) {
+                                    clipboard.setText(AnnotatedString(activeText))
+                                    Toast.makeText(context, "Copied content to clipboard!", Toast.LENGTH_SHORT).show()
+                                    showPrintPreview = false
+                                }
+                            },
+                            modifier = Modifier.weight(0.8f),
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, Color(0xFF6750A4))
+                        ) {
+                            Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = Color(0xFF6750A4), modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Copy & Close", color = Color(0xFF6750A4), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
+        }
+
+        if (showCountryCvConverterDialog) {
+            CountrySpecificCvConverterDialog(
+                viewModel = viewModel,
+                onDismiss = { showCountryCvConverterDialog = false }
+            )
         }
     }
 }

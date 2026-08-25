@@ -12,3 +12,4 @@ val SlateMuted = Color(0xFF49454F)     // Low contrast medium-grey descriptions
 val AmberGold = Color(0xFFB58000)      // Visa confidence star / Alerts (Darker gold for light background readability)
 val CoralRed = Color(0xFFBA1A1A)       // Fraud warning / errors (Light theme error red)
 val TealCyan = Color(0xFF381E72)       // Tertiary deep lavender
+val LinkedInBlue = Color(0xFF0A66C2)   // Official LinkedIn Brand Blue
