@@ -1,6 +1,8 @@
 package com.example.ui
 
+import android.widget.Toast
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,8 +21,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -54,8 +58,14 @@ data class OfficialSponsor(
     val greenCardPrSupportPolicy: String,
     val historicalFilingsByYear: Map<String, Int>,
     val topSponsoredRoles: List<String>,
-    val description: String
-)
+    val description: String,
+    val visaQuotaStatus: String = "Quota Available (50+ spots open)",
+    val visaQuotaUpdatedAt: String = "Today, 09:30 AM",
+    val availableQuotaSpots: Int = 50
+) {
+    val isActiveSponsor: Boolean
+        get() = licenseStatus == SponsorLicenseStatus.ACTIVE_VERIFIED || licenseStatus == SponsorLicenseStatus.PREMIUM_FAST_TRACK
+}
 
 enum class SponsorLicenseStatus(val label: String, val color: Color) {
     ACTIVE_VERIFIED("Active & Fully Certified", EmeraldGreen),
@@ -86,7 +96,10 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Direct ILR (Indefinite Leave to Remain) application support after 5 years with full legal representation fee coverage",
             historicalFilingsByYear = mapOf("2023" to 220, "2024" to 290, "2025" to 330),
             topSponsoredRoles = listOf("Research Scientist (AI)", "Software Engineer", "Machine Learning Infrastructure", "Product Manager"),
-            description = "Pioneering AI research organization with extensive global sponsorship quotas, top-tier legal support, and expedited Certificate of Sponsorship processing."
+            description = "Pioneering AI research organization with extensive global sponsorship quotas, top-tier legal support, and expedited Certificate of Sponsorship processing.",
+            visaQuotaStatus = "Unallocated CoS Quota: 85 Certificates Available",
+            visaQuotaUpdatedAt = "Today, 08:45 AM",
+            availableQuotaSpots = 85
         ),
         OfficialSponsor(
             id = "sp_ca_002",
@@ -108,7 +121,10 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Full PR support under Canadian Experience Class (CEC) or Provincial Nominee Program (OINP/BC PNP) after 1 year",
             historicalFilingsByYear = mapOf("2023" to 310, "2024" to 390, "2025" to 420),
             topSponsoredRoles = listOf("Senior Full Stack Developer", "Ruby on Rails Architect", "Distributed Systems Engineer", "Engineering Manager"),
-            description = "High-volume Global Talent Stream sponsor in Canada allowing two-week visa processing and rapid permanent residency pathways."
+            description = "High-volume Global Talent Stream sponsor in Canada allowing two-week visa processing and rapid permanent residency pathways.",
+            visaQuotaStatus = "GTS Category B LMIA Expedited Quota: 120 Slots Active",
+            visaQuotaUpdatedAt = "Today, 09:15 AM",
+            availableQuotaSpots = 120
         ),
         OfficialSponsor(
             id = "sp_de_003",
@@ -130,7 +146,10 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Niederlassungserlaubnis (Permanent Settlement) support after 21 months with German B1 or 27 months with A1",
             historicalFilingsByYear = mapOf("2023" to 420, "2024" to 490, "2025" to 540),
             topSponsoredRoles = listOf("Cloud Solutions Architect", "Java/Kotlin Backend Engineer", "Database Specialist (HANA)", "Security Analyst"),
-            description = "Germany's largest software enterprise with streamlined fast-track immigration agreements with the Federal Foreign Office."
+            description = "Germany's largest software enterprise with streamlined fast-track immigration agreements with the Federal Foreign Office.",
+            visaQuotaStatus = "EU Blue Card (§18g) Quota: Open & Uncapped Allocation",
+            visaQuotaUpdatedAt = "Yesterday, 16:30",
+            availableQuotaSpots = 140
         ),
         OfficialSponsor(
             id = "sp_us_004",
@@ -152,7 +171,10 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Day-1 PERM Green Card filing policy for all international senior and staff hires",
             historicalFilingsByYear = mapOf("2023" to 580, "2024" to 630, "2025" to 680),
             topSponsoredRoles = listOf("Staff Software Engineer", "Payment Security Engineer", "Risk & Compliance Specialist", "Site Reliability Engineer"),
-            description = "Top US fintech with aggressive PERM green card sponsorship starting immediately upon onboarding and high O-1 conversion rates."
+            description = "Top US fintech with aggressive PERM green card sponsorship starting immediately upon onboarding and high O-1 conversion rates.",
+            visaQuotaStatus = "DOL Certified LCA & O-1 Cap-Exempt Allocation Active (65 spots)",
+            visaQuotaUpdatedAt = "Today, 07:10 AM",
+            availableQuotaSpots = 65
         ),
         OfficialSponsor(
             id = "sp_au_005",
@@ -174,7 +196,10 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Subclass 186 Permanent Residency nomination immediately after 2 years of TSS service",
             historicalFilingsByYear = mapOf("2023" to 170, "2024" to 210, "2025" to 240),
             topSponsoredRoles = listOf("Principal React/Frontend Engineer", "DevOps & Cloud Platform Engineer", "Security Operations", "Product Design Lead"),
-            description = "Accredited Australian sponsor receiving prioritized 5-day Department of Home Affairs processing for subclass 482 nominations."
+            description = "Accredited Australian sponsor receiving prioritized 5-day Department of Home Affairs processing for subclass 482 nominations.",
+            visaQuotaStatus = "Subclass 482 Fast-Track Quota: 40 Priority Spots Open",
+            visaQuotaUpdatedAt = "Today, 10:00 AM",
+            availableQuotaSpots = 40
         ),
         OfficialSponsor(
             id = "sp_nl_006",
@@ -196,7 +221,10 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Dutch Permanent Residence / EU Long-Term Residence application filing assistance at year 5",
             historicalFilingsByYear = mapOf("2023" to 610, "2024" to 710, "2025" to 780),
             topSponsoredRoles = listOf("Optics Research Engineer", "Firmware & Embedded C++ Engineer", "Mechatronics Systems Designer", "Quality & Metrology Lead"),
-            description = "World leader in lithography systems with direct IND expedited portal access for 2-week knowledge migrant visas and 30% tax ruling filings."
+            description = "World leader in lithography systems with direct IND expedited portal access for 2-week knowledge migrant visas and 30% tax ruling filings.",
+            visaQuotaStatus = "IND Knowledge Migrant Fast-Track: 95 Positions Open",
+            visaQuotaUpdatedAt = "Today, 06:20 AM",
+            availableQuotaSpots = 95
         ),
         OfficialSponsor(
             id = "sp_uk_007",
@@ -218,7 +246,10 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Full 5-year route support towards ILR settlement with standard clinical contract renewal",
             historicalFilingsByYear = mapOf("2023" to 980, "2024" to 1180, "2025" to 1240),
             topSponsoredRoles = listOf("Registered General Nurse (Band 5)", "Specialist Radiographer", "Physiotherapist", "Biomedical Scientist"),
-            description = "Official UK NHS trust sponsor exempt from the costly Immigration Health Surcharge (IHS) saving candidates £1,035/year per dependant."
+            description = "Official UK NHS trust sponsor exempt from the costly Immigration Health Surcharge (IHS) saving candidates £1,035/year per dependant.",
+            visaQuotaStatus = "Health & Care CoS Quota: 250 Allocated Spots Active",
+            visaQuotaUpdatedAt = "Today, 10:45 AM",
+            availableQuotaSpots = 250
         ),
         OfficialSponsor(
             id = "sp_jp_008",
@@ -240,26 +271,73 @@ object SponsorRegistryRepository {
             greenCardPrSupportPolicy = "Fast-track Japan Permanent Residence application in 1 year for candidates with 80+ HSP points",
             historicalFilingsByYear = mapOf("2023" to 110, "2024" to 130, "2025" to 150),
             topSponsoredRoles = listOf("Backend Engineer (Go)", "iOS/Android Mobile Engineer", "Machine Learning Engineer", "DevOps & Cloud SRE"),
-            description = "English-friendly Tokyo unicorn providing comprehensive 1-year fast-track permanent residency under the HSP points category."
+            description = "English-friendly Tokyo unicorn providing comprehensive 1-year fast-track permanent residency under the HSP points category.",
+            visaQuotaStatus = "MOJ Highly Skilled Professional Quota: 30 Slots Open",
+            visaQuotaUpdatedAt = "Today, 08:00 AM",
+            availableQuotaSpots = 30
         )
     )
 }
+
+data class QuotaUpdateAlert(
+    val sponsor: OfficialSponsor,
+    val oldQuotaStatus: String,
+    val newQuotaStatus: String,
+    val timestamp: String,
+    val spotsChanged: Int
+)
 
 @Composable
 fun SponsorRegistryHub(
     onSelectSponsorForJobs: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     var searchQuery by remember { mutableStateOf("") }
     var selectedCountryFilter by remember { mutableStateOf("All Countries") }
     var selectedTierFilter by remember { mutableStateOf("All Tiers") }
     var selectedSponsorForDetail by remember { mutableStateOf<OfficialSponsor?>(null) }
+    var sponsorList by remember { mutableStateOf(SponsorRegistryRepository.officialSponsors) }
+    var notifiedSponsorIds by remember { mutableStateOf(setOf<String>("sp_uk_001", "sp_ca_002")) }
+    var activeQuotaAlert by remember { mutableStateOf<QuotaUpdateAlert?>(null) }
 
     val countries = listOf("All Countries", "United Kingdom", "Canada", "Germany", "United States", "Australia", "Netherlands", "Japan")
     val tiers = listOf("All Tiers", "Tier 1 - Full Relocation", "Tier 2 - Visa Only")
 
-    val filteredSponsors = remember(searchQuery, selectedCountryFilter, selectedTierFilter) {
-        SponsorRegistryRepository.officialSponsors.filter { sponsor ->
+    val triggerQuotaUpdate: (String) -> Unit = { sponsorId ->
+        val sponsor = sponsorList.find { it.id == sponsorId }
+        if (sponsor != null) {
+            val oldQuota = sponsor.visaQuotaStatus
+            val spotsAdded = (25..60).random()
+            val newSpots = sponsor.availableQuotaSpots + spotsAdded
+            val newStatus = "NEW ALLOCATION: +$spotsAdded Priority CoS/LMIA Slots Issued ($newSpots Active Available)"
+            val updatedSponsor = sponsor.copy(
+                visaQuotaStatus = newStatus,
+                visaQuotaUpdatedAt = "Just now",
+                availableQuotaSpots = newSpots
+            )
+            sponsorList = sponsorList.map { if (it.id == sponsorId) updatedSponsor else it }
+
+            if (sponsor.isActiveSponsor && notifiedSponsorIds.contains(sponsorId)) {
+                activeQuotaAlert = QuotaUpdateAlert(
+                    sponsor = updatedSponsor,
+                    oldQuotaStatus = oldQuota,
+                    newQuotaStatus = newStatus,
+                    timestamp = "Just now",
+                    spotsChanged = spotsAdded
+                )
+            } else {
+                Toast.makeText(
+                    context,
+                    "Quota status updated for ${sponsor.name}! Turn on 'Notify me' to receive instant pop-up alerts.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    val filteredSponsors = remember(searchQuery, selectedCountryFilter, selectedTierFilter, sponsorList) {
+        sponsorList.filter { sponsor ->
             val matchesQuery = searchQuery.isBlank() ||
                     sponsor.name.contains(searchQuery, ignoreCase = true) ||
                     sponsor.industry.contains(searchQuery, ignoreCase = true) ||
@@ -282,36 +360,59 @@ fun SponsorRegistryHub(
         // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(EmeraldGreen.copy(alpha = 0.15f))
-                    .border(1.dp, EmeraldGreen, RoundedCornerShape(10.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Verified,
-                    contentDescription = null,
-                    tint = EmeraldGreen,
-                    modifier = Modifier.size(24.dp)
-                )
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(EmeraldGreen.copy(alpha = 0.15f))
+                        .border(1.dp, EmeraldGreen, RoundedCornerShape(10.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Verified,
+                        contentDescription = null,
+                        tint = EmeraldGreen,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "Official Sponsor Registry",
+                        color = WhiteActive,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Verified Home Office, LMIA, DOL & EU accredited employers",
+                        color = SlateMuted,
+                        fontSize = 12.sp
+                    )
+                }
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
-                Text(
-                    text = "Official Sponsor Registry",
-                    color = WhiteActive,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Verified Home Office, LMIA, DOL & EU accredited employers",
-                    color = SlateMuted,
-                    fontSize = 12.sp
-                )
+
+            // Quick Simulate Quota Alert Button
+            Button(
+                onClick = {
+                    val monitoredActive = sponsorList.filter { it.isActiveSponsor && notifiedSponsorIds.contains(it.id) }
+                    val target = if (monitoredActive.isNotEmpty()) monitoredActive.random() else sponsorList.first { it.isActiveSponsor }
+                    if (!notifiedSponsorIds.contains(target.id)) {
+                        notifiedSponsorIds = notifiedSponsorIds + target.id
+                    }
+                    triggerQuotaUpdate(target.id)
+                },
+                modifier = Modifier.testTag("simulate_quota_update_button"),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Icon(Icons.Default.Bolt, contentDescription = null, tint = NavyDark, modifier = Modifier.size(13.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Simulate Quota Alert", color = NavyDark, fontSize = 10.5.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -376,7 +477,7 @@ fun SponsorRegistryHub(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Statistics Summary Bar
+        // Statistics Summary Bar with Monitored Quota Badge
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
@@ -391,7 +492,7 @@ fun SponsorRegistryHub(
             ) {
                 StatItem(label = "Verified Sponsors", value = "${filteredSponsors.size}")
                 Box(modifier = Modifier.width(1.dp).height(24.dp).background(NavyLight))
-                StatItem(label = "Avg. Approval Rate", value = "98.8%")
+                StatItem(label = "Monitored Alerts", value = "${notifiedSponsorIds.size} Active")
                 Box(modifier = Modifier.width(1.dp).height(24.dp).background(NavyLight))
                 StatItem(label = "Avg. CoS Time", value = "10.4 Days")
             }
@@ -405,8 +506,36 @@ fun SponsorRegistryHub(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(filteredSponsors, key = { it.id }) { sponsor ->
+                val isNotified = notifiedSponsorIds.contains(sponsor.id)
                 SponsorRegistryCard(
                     sponsor = sponsor,
+                    isNotified = isNotified,
+                    onToggleNotify = { checked ->
+                        if (checked) {
+                            if (sponsor.isActiveSponsor) {
+                                notifiedSponsorIds = notifiedSponsorIds + sponsor.id
+                                Toast.makeText(
+                                    context,
+                                    "🔔 Quota alerts active for ${sponsor.name}! You will be alerted when their visa quota updates.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "⚠️ Alerts only trigger for Active certified sponsors (${sponsor.licenseStatus.label}).",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            notifiedSponsorIds = notifiedSponsorIds - sponsor.id
+                            Toast.makeText(
+                                context,
+                                "🔕 Quota alerts disabled for ${sponsor.name}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    onTriggerQuotaUpdate = { triggerQuotaUpdate(sponsor.id) },
                     onClick = { selectedSponsorForDetail = sponsor },
                     onSearchJobs = { onSelectSponsorForJobs(sponsor.name) }
                 )
@@ -414,10 +543,54 @@ fun SponsorRegistryHub(
         }
     }
 
+    // Quota Alert Trigger Dialog
+    activeQuotaAlert?.let { alert ->
+        SponsorQuotaAlertDialog(
+            alert = alert,
+            onDismiss = { activeQuotaAlert = null },
+            onSearchJobs = {
+                activeQuotaAlert = null
+                onSelectSponsorForJobs(alert.sponsor.name)
+            },
+            onViewDossier = {
+                activeQuotaAlert = null
+                selectedSponsorForDetail = alert.sponsor
+            }
+        )
+    }
+
     // Detail Dialog
     selectedSponsorForDetail?.let { sponsor ->
+        val isNotified = notifiedSponsorIds.contains(sponsor.id)
         SponsorDetailDossierDialog(
             sponsor = sponsor,
+            isNotified = isNotified,
+            onToggleNotify = { checked ->
+                if (checked) {
+                    if (sponsor.isActiveSponsor) {
+                        notifiedSponsorIds = notifiedSponsorIds + sponsor.id
+                        Toast.makeText(
+                            context,
+                            "🔔 Quota alerts active for ${sponsor.name}!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "⚠️ Alerts only available for Active sponsors.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    notifiedSponsorIds = notifiedSponsorIds - sponsor.id
+                    Toast.makeText(
+                        context,
+                        "🔕 Quota alerts disabled for ${sponsor.name}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+            onTriggerQuotaUpdate = { triggerQuotaUpdate(sponsor.id) },
             onDismiss = { selectedSponsorForDetail = null },
             onSearchJobs = {
                 selectedSponsorForDetail = null
@@ -438,6 +611,9 @@ private fun StatItem(label: String, value: String) {
 @Composable
 fun SponsorRegistryCard(
     sponsor: OfficialSponsor,
+    isNotified: Boolean,
+    onToggleNotify: (Boolean) -> Unit,
+    onTriggerQuotaUpdate: () -> Unit,
     onClick: () -> Unit,
     onSearchJobs: () -> Unit,
     modifier: Modifier = Modifier
@@ -534,6 +710,120 @@ fun SponsorRegistryCard(
                         color = EmeraldGreen,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Live Visa Quota Status Row
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                color = if (isNotified) EmeraldGreen.copy(alpha = 0.10f) else NavyDark,
+                border = if (isNotified) BorderStroke(1.dp, EmeraldGreen.copy(alpha = 0.4f)) else null
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 7.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Bolt,
+                            contentDescription = "Visa Quota Status",
+                            tint = if (sponsor.isActiveSponsor) EmeraldGreen else Color(0xFFFBC02D),
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Column {
+                            Text(
+                                text = sponsor.visaQuotaStatus,
+                                color = if (isNotified) EmeraldGreen else WhiteActive,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "Allocation refreshed: ${sponsor.visaQuotaUpdatedAt}",
+                                color = SlateMuted,
+                                fontSize = 9.5.sp
+                            )
+                        }
+                    }
+
+                    // Quick Quota Update Trigger for testing
+                    IconButton(
+                        onClick = onTriggerQuotaUpdate,
+                        modifier = Modifier.size(24.dp).testTag("trigger_quota_update_${sponsor.id}")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Simulate Quota Update",
+                            tint = TealCyan,
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // 'Notify me' Toggle Row
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
+                color = if (isNotified) EmeraldGreen.copy(alpha = 0.08f) else NavyDark.copy(alpha = 0.6f),
+                border = BorderStroke(1.dp, if (isNotified) EmeraldGreen.copy(alpha = 0.3f) else NavyLight)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = if (isNotified) Icons.Default.NotificationsActive else Icons.Outlined.Notifications,
+                            contentDescription = "Notify me",
+                            tint = if (isNotified) EmeraldGreen else SlateMuted,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = "Notify me",
+                                color = if (isNotified) EmeraldGreen else WhiteActive,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if (isNotified) "Alerting on visa quota updates" else "Alert when visa quota updates",
+                                color = if (isNotified) EmeraldGreen.copy(alpha = 0.8f) else SlateMuted,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+
+                    Switch(
+                        checked = isNotified,
+                        onCheckedChange = { onToggleNotify(it) },
+                        modifier = Modifier
+                            .scale(0.8f)
+                            .testTag("notify_me_toggle_${sponsor.id}"),
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = NavyDark,
+                            checkedTrackColor = EmeraldGreen,
+                            uncheckedThumbColor = SlateMuted,
+                            uncheckedTrackColor = NavyLight
+                        )
                     )
                 }
             }
@@ -639,6 +929,195 @@ fun SponsorRegistryCard(
 }
 
 @Composable
+fun SponsorQuotaAlertDialog(
+    alert: QuotaUpdateAlert,
+    onDismiss: () -> Unit,
+    onSearchJobs: () -> Unit,
+    onViewDossier: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(0.92f)
+                .wrapContentHeight()
+                .clip(RoundedCornerShape(20.dp))
+                .border(2.dp, EmeraldGreen, RoundedCornerShape(20.dp))
+                .testTag("visa_quota_alert_dialog"),
+            color = NavyDark
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            ) {
+                // Alert Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(EmeraldGreen.copy(alpha = 0.2f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.NotificationsActive,
+                                contentDescription = "Alert",
+                                tint = EmeraldGreen,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "VISA QUOTA ALERT",
+                                color = EmeraldGreen,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 1.sp
+                            )
+                            Text(
+                                text = "Live allocation update from Active sponsor",
+                                color = SlateMuted,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SlateMuted)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Sponsor Info Card
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = NavyMedium
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = alert.sponsor.name,
+                                color = WhiteActive,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = EmeraldGreen.copy(alpha = 0.15f)
+                            ) {
+                                Text(
+                                    text = alert.sponsor.licenseStatus.label,
+                                    color = EmeraldGreen,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "${alert.sponsor.country} • License: ${alert.sponsor.licenseNumber}",
+                            color = SlateMuted,
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Status Change Comparison
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = NavyMedium,
+                    border = BorderStroke(1.dp, EmeraldGreen.copy(alpha = 0.5f))
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Text(
+                            text = "UPDATED VISA QUOTA ALLOCATION",
+                            color = EmeraldGreen,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = alert.newQuotaStatus,
+                            color = WhiteActive,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            lineHeight = 18.sp
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.History, contentDescription = null, tint = SlateMuted, modifier = Modifier.size(12.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Previous: ${alert.oldQuotaStatus}",
+                                color = SlateMuted,
+                                fontSize = 10.5.sp
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = "💡 Advice: Active visa sponsorship allocations open expedited Certificate of Sponsorship (CoS) and LMIA filing queues. Early applicants have the highest approval priority.",
+                    color = SlateMuted,
+                    fontSize = 11.sp,
+                    lineHeight = 16.sp
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Action Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onViewDossier,
+                        modifier = Modifier.weight(1f).height(42.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, TealCyan)
+                    ) {
+                        Text("View Dossier", color = TealCyan, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    Button(
+                        onClick = onSearchJobs,
+                        modifier = Modifier.weight(1.2f).height(42.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen)
+                    ) {
+                        Icon(Icons.Default.Work, contentDescription = null, tint = NavyDark, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("View Open Jobs", color = NavyDark, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun MetricPill(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
@@ -674,6 +1153,9 @@ private fun MetricPill(
 @Composable
 fun SponsorDetailDossierDialog(
     sponsor: OfficialSponsor,
+    isNotified: Boolean = false,
+    onToggleNotify: (Boolean) -> Unit = {},
+    onTriggerQuotaUpdate: () -> Unit = {},
     onDismiss: () -> Unit,
     onSearchJobs: () -> Unit
 ) {
@@ -725,12 +1207,80 @@ fun SponsorDetailDossierDialog(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     item {
-                        // Official License Audit Banner
+                        // Live Visa Quota Status & Notify Me in Dossier
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(12.dp),
                             color = NavyMedium,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, EmeraldGreen)
+                            border = BorderStroke(1.dp, EmeraldGreen)
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Bolt, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text("Live Visa Quota Status", color = EmeraldGreen, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                    }
+                                    Text("Refreshed ${sponsor.visaQuotaUpdatedAt}", color = SlateMuted, fontSize = 10.sp)
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = sponsor.visaQuotaStatus,
+                                    color = WhiteActive,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(NavyDark)
+                                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = if (isNotified) Icons.Default.NotificationsActive else Icons.Outlined.Notifications,
+                                            contentDescription = null,
+                                            tint = if (isNotified) EmeraldGreen else SlateMuted,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "Notify me on Quota Updates",
+                                            color = if (isNotified) EmeraldGreen else WhiteActive,
+                                            fontSize = 11.5.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                    Switch(
+                                        checked = isNotified,
+                                        onCheckedChange = onToggleNotify,
+                                        modifier = Modifier.scale(0.75f),
+                                        colors = SwitchDefaults.colors(
+                                            checkedThumbColor = NavyDark,
+                                            checkedTrackColor = EmeraldGreen
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        // Official License Audit Banner
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = NavyMedium
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Row(
