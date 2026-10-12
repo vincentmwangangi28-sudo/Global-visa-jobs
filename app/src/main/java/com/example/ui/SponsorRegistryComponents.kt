@@ -301,7 +301,11 @@ fun SponsorRegistryHub(
     var notifiedSponsorIds by remember { mutableStateOf(setOf<String>("sp_uk_001", "sp_ca_002")) }
     var activeQuotaAlert by remember { mutableStateOf<QuotaUpdateAlert?>(null) }
 
-    val countries = listOf("All Countries", "United Kingdom", "Canada", "Germany", "United States", "Australia", "Netherlands", "Japan")
+    val countries = listOf(
+        "All Countries", "United Kingdom", "Canada", "Germany", "United States", 
+        "Australia", "Netherlands", "Japan", "Singapore", "Switzerland", "France", 
+        "Ireland", "New Zealand", "Denmark", "Sweden", "United Arab Emirates", "Saudi Arabia"
+    )
     val tiers = listOf("All Tiers", "Tier 1 - Full Relocation", "Tier 2 - Visa Only")
 
     val triggerQuotaUpdate: (String) -> Unit = { sponsorId ->

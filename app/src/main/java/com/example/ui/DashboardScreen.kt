@@ -501,8 +501,13 @@ fun DiscoverTab(
     var queryText by remember { mutableStateOf("") }
     var searchCountryText by remember { mutableStateOf("All") }
 
-    val countries = listOf("All", "Canada", "United Kingdom", "Australia", "Germany", "Sweden")
-    val industries = listOf("All", "Healthcare", "Technology", "Logistics", "Engineering", "Transportation")
+    val countries = listOf(
+        "All", "Canada", "United Kingdom", "Australia", "Germany", "Sweden", 
+        "United States", "Netherlands", "Ireland", "New Zealand", "Japan", 
+        "Singapore", "Denmark", "Switzerland", "France", "United Arab Emirates", 
+        "Saudi Arabia", "Norway", "Finland", "Poland", "Spain"
+    )
+    val industries = listOf("All", "Healthcare", "Technology", "Logistics", "Engineering", "Transportation", "Energy", "Hospitality", "Agriculture")
     val experiences = listOf("All", "Entry", "Mid", "Senior")
 
     val selectedCountry by viewModel.selectedCountry.collectAsStateWithLifecycle()

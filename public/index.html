@@ -761,6 +761,175 @@
     .footer-links a:hover {
       color: var(--emerald);
     }
+
+    /* Kanban Board & Pipeline */
+    .kanban-board {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 16px;
+      margin-top: 16px;
+      scrollbar-width: thin;
+    }
+    .kanban-column {
+      flex: 0 0 290px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      max-height: 720px;
+    }
+    .kanban-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .kanban-col-badge {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .kanban-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 2px;
+    }
+    .kanban-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .kanban-item:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+    }
+    .pipeline-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .pipeline-stat-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+    .pipeline-stat-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--emerald);
+    }
+    .pipeline-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Relocation Perk Pills */
+    .relocation-perks-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 8px 0 10px 0;
+    }
+    .perk-pill {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .quick-filter-pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0 14px 0;
+      scrollbar-width: none;
+    }
+    .quick-pill-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .quick-pill-btn:hover, .quick-pill-btn.active {
+      background: var(--emerald);
+      color: #064E3B;
+      border-color: var(--emerald);
+    }
+    .view-toggle-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .view-toggle-btn.active {
+      background: var(--emerald);
+      color: #064E3B;
+      border-color: var(--emerald);
+    }
+
+    /* Breakdown Grid in Modal */
+    .relocation-breakdown-box {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 14px;
+      margin: 14px 0;
+    }
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 580px) {
+      .breakdown-grid { grid-template-columns: 1fr; }
+    }
+    .breakdown-item {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-white);
+    }
+    .breakdown-check {
+      color: var(--emerald);
+      font-weight: 800;
+    }
   </style>
 </head>
 <body>
@@ -844,18 +1013,45 @@
         <p>Explore employers offering Certificate of Sponsorship (UK), EU Blue Card (Germany), LMIA (Canada), and H-1B / O-1 (USA).</p>
       </div>
 
+      <!-- Relocate.me / Otta Style Quick Filter Pills -->
+      <div class="quick-filter-pills" id="quickFilterPills">
+        <button class="quick-pill-btn active" onclick="applyQuickFilter('ALL', this)">🌐 All Opportunities</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('FULL_RELOCATION', this)">✈️ Full Relocation</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('HOUSING', this)">🏠 Housing Covered</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('FAST_TRACK', this)">⚡ Fast-Track Visa</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('FAMILY', this)">👨‍👩‍👧 Spousal Visa</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('HIGH_SALARY', this)">💰 High Compensation</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('TECH', this)">💻 Tech & Software</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('HEALTHCARE', this)">🩺 Healthcare & Care</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('ENGINEERING', this)">🚜 Engineering</button>
+      </div>
+
       <!-- Search & Filters -->
       <div class="search-filter-box">
         <div class="search-row">
           <input type="text" id="jobSearchInput" class="input-control" placeholder="Search title, tech stack (e.g. Kotlin, React, Nurse, Python)..." oninput="filterJobs()">
           <select id="countrySelect" class="input-control" onchange="filterJobs()">
-            <option value="ALL">All Countries</option>
+            <option value="ALL">All Countries (Global)</option>
             <option value="United Kingdom">United Kingdom (UK)</option>
             <option value="Germany">Germany (EU Blue Card)</option>
             <option value="Canada">Canada (LMIA / GTS)</option>
             <option value="United States">United States (H-1B / O-1)</option>
             <option value="Netherlands">Netherlands (Kennismigrant)</option>
             <option value="Australia">Australia (TSS 482)</option>
+            <option value="Ireland">Ireland (CSEP)</option>
+            <option value="New Zealand">New Zealand (Green List)</option>
+            <option value="Japan">Japan (HSP)</option>
+            <option value="Singapore">Singapore (COMPASS EP)</option>
+            <option value="Denmark">Denmark (Fast-Track)</option>
+            <option value="Sweden">Sweden (Work Permit)</option>
+            <option value="Switzerland">Switzerland (Third-Country Quota)</option>
+            <option value="France">France (Talent Passport)</option>
+            <option value="United Arab Emirates">UAE (Golden / Green Visa)</option>
+            <option value="Saudi Arabia">Saudi Arabia (Premium Residency)</option>
+            <option value="Spain">Spain (Highly Qualified)</option>
+            <option value="Norway">Norway (Skilled Worker)</option>
+            <option value="Finland">Finland (Specialist Permit)</option>
+            <option value="Poland">Poland (EU Blue Card)</option>
           </select>
           <select id="visaTypeSelect" class="input-control" onchange="filterJobs()">
             <option value="ALL">All Visa Routes</option>
@@ -868,7 +1064,14 @@
           <select id="relocationSelect" class="input-control" onchange="filterJobs()">
             <option value="ALL">All Benefits</option>
             <option value="YES">Full Relocation Included</option>
+            <option value="HOUSING">Paid Housing Included</option>
             <option value="VISA_ONLY">Visa Sponsorship Only</option>
+          </select>
+          <select id="sortSelect" class="input-control" onchange="filterJobs()">
+            <option value="DEFAULT">Sort: Recommended</option>
+            <option value="SALARY_HIGH">Salary: High to Low</option>
+            <option value="NEWEST">Latest Verified</option>
+            <option value="RELOCATION">Best Relocation Tier</option>
           </select>
           <button class="btn-primary" onclick="filterJobs()">Search Jobs</button>
         </div>
@@ -1012,18 +1215,43 @@
         <div class="two-col-grid">
           <div>
             <div style="margin-bottom: 14px;">
-              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Destination Country</label>
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Target Destination City & Country</label>
               <select id="calcCountry" class="input-control" onchange="calculateRelocation()">
-                <option value="UK">United Kingdom (£ GBP)</option>
-                <option value="DE">Germany (€ EUR)</option>
-                <option value="CA">Canada (C$ CAD)</option>
-                <option value="US">United States ($ USD)</option>
-                <option value="NL">Netherlands (€ EUR - 30% Ruling)</option>
+                <option value="UK_LDN">London, United Kingdom (£ GBP)</option>
+                <option value="UK_MAN">Manchester / Regional UK (£ GBP)</option>
+                <option value="DE_BER">Berlin, Germany (€ EUR)</option>
+                <option value="DE_MUN">Munich / Frankfurt, Germany (€ EUR)</option>
+                <option value="NL_AMS">Amsterdam, Netherlands (€ EUR - 30% Ruling)</option>
+                <option value="CA_TOR">Toronto, Canada (C$ CAD)</option>
+                <option value="CA_VAN">Vancouver, Canada (C$ CAD)</option>
+                <option value="US_NYC">New York City, USA ($ USD)</option>
+                <option value="US_SF">San Francisco / Silicon Valley ($ USD)</option>
+                <option value="US_ATX">Austin, Texas, USA ($ USD - No State Tax)</option>
+                <option value="AU_SYD">Sydney, Australia (A$ AUD)</option>
+                <option value="AU_MEL">Melbourne, Australia (A$ AUD)</option>
+                <option value="IE_DUB">Dublin, Ireland (€ EUR)</option>
+                <option value="SE_STO">Stockholm, Sweden (kr SEK)</option>
+                <option value="CH_ZUR">Zurich, Switzerland (CHF Fr. - Low Tax)</option>
+                <option value="SG_SIN">Singapore (S$ SGD - Low Tax)</option>
+                <option value="JP_TYO">Tokyo, Japan (¥ JPY)</option>
+                <option value="AE_DXB">Dubai, UAE (AED - 0% Tax Haven)</option>
+                <option value="FR_PAR">Paris, France (€ EUR)</option>
+                <option value="ES_MAD">Madrid, Spain (€ EUR - Beckham Law)</option>
+                <option value="DK_CPH">Copenhagen, Denmark (kr DKK)</option>
+                <option value="NO_OSL">Oslo, Norway (kr NOK)</option>
+                <option value="NZ_AKL">Auckland, New Zealand (NZ$ NZD)</option>
               </select>
             </div>
             <div style="margin-bottom: 14px;">
               <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Offered Annual Gross Salary</label>
-              <input type="number" id="calcGrossSalary" class="input-control" value="68000" step="1000" oninput="calculateRelocation()">
+              <input type="number" id="calcGrossSalary" class="input-control" value="75000" step="1000" oninput="calculateRelocation()">
+            </div>
+            <div style="margin-bottom: 14px;">
+              <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Housing Preference</label>
+              <select id="calcHousing" class="input-control" onchange="calculateRelocation()">
+                <option value="CENTER">City Center (1-Bed Apartment)</option>
+                <option value="OUTER">Suburban / Outer Zone (1-Bed Apartment)</option>
+              </select>
             </div>
             <div style="margin-bottom: 14px;">
               <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px;">Household Dependents Relocating</label>
@@ -1033,34 +1261,46 @@
                 <option value="2">Family with Children (2+ dependents)</option>
               </select>
             </div>
-            <button class="btn-primary" style="width: 100%;" onclick="calculateRelocation()">Calculate Relocation Budget</button>
+            <button class="btn-primary" style="width: 100%;" onclick="calculateRelocation()">Recalculate Budget</button>
           </div>
 
           <div class="result-box">
-            <h4 style="color: var(--emerald); margin-bottom: 16px; font-size: 16px;">Monthly Financial Breakdown</h4>
-            <div class="result-row">
-              <span style="color: var(--text-muted);">Gross Monthly Pay:</span>
-              <span id="resGross">£5,667</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h4 style="color: var(--emerald); font-size: 16px; margin: 0;">Monthly Financial Breakdown</h4>
+              <span id="resAffordabilityBadge" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">High Savings</span>
             </div>
             <div class="result-row">
-              <span style="color: var(--text-muted);">Income Tax & National Insurance:</span>
-              <span id="resTax" style="color: var(--danger);">-£1,586</span>
+              <span style="color: var(--text-muted);">Gross Monthly Pay:</span>
+              <span id="resGross">£6,250</span>
+            </div>
+            <div class="result-row">
+              <span style="color: var(--text-muted);">Taxes & Social Contributions:</span>
+              <span id="resTax" style="color: var(--danger);">-£1,750</span>
             </div>
             <div class="result-row">
               <span style="color: var(--text-muted);">Net Take-Home Pay:</span>
-              <span id="resNet" style="color: var(--teal); font-weight: 700;">£4,081</span>
+              <span id="resNet" style="color: var(--teal); font-weight: 700;">£4,500</span>
             </div>
             <div class="result-row">
-              <span style="color: var(--text-muted);">Estimated Rent & Utilities:</span>
-              <span id="resRent">-£1,650</span>
+              <span style="color: var(--text-muted);">Estimated Rent & Housing:</span>
+              <span id="resRent">-£1,700</span>
             </div>
             <div class="result-row">
-              <span style="color: var(--text-muted);">Groceries & Local Transit:</span>
-              <span id="resLiving">-£800</span>
+              <span style="color: var(--text-muted);">Groceries, Utilities & Transit:</span>
+              <span id="resLiving">-£850</span>
             </div>
             <div class="result-row">
-              <span>Estimated Monthly Savings:</span>
-              <span id="resSavings" style="color: var(--emerald);">+£1,631 / mo</span>
+              <span>Estimated Monthly Savings / Remittance:</span>
+              <span id="resSavings" style="color: var(--emerald);">+£1,950 / mo</span>
+            </div>
+            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">
+                <span>Discretionary Savings Rate</span>
+                <span id="resSavingsPct" style="color: var(--emerald); font-weight: 700;">43%</span>
+              </div>
+              <div style="width: 100%; height: 6px; background: var(--bg-card); border-radius: 3px; overflow: hidden;">
+                <div id="resSavingsBar" style="width: 43%; height: 100%; background: var(--emerald); border-radius: 3px; transition: width 0.3s;"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1153,60 +1393,52 @@
         <p>A step-by-step interactive tracker of your international employment migration journey from offer to arrival.</p>
       </div>
 
+      <!-- Destination Switcher -->
+      <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <label style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Select Target Immigration Route:</label>
+        <select id="roadmapCountrySelect" class="input-control" style="max-width: 440px;" onchange="switchRoadmapCountry()">
+          <option value="UK">🇬🇧 United Kingdom - Skilled Worker Visa (CoS)</option>
+          <option value="DE">🇩🇪 Germany - EU Blue Card (§18g) & Chancenkarte</option>
+          <option value="CA">🇨🇦 Canada - Global Talent Stream (GTS) & LMIA</option>
+          <option value="AU">🇦🇺 Australia - Employer TSS 482 & PR 186</option>
+          <option value="NL">🇳🇱 Netherlands - Highly Skilled Migrant (30% Ruling)</option>
+          <option value="US">🇺🇸 United States - H-1B Cap & O-1 Extraordinary</option>
+          <option value="AE">🇦🇪 UAE - Green & Golden Residence Visa</option>
+          <option value="IE">🇮🇪 Ireland - Critical Skills Employment Permit (CSEP)</option>
+        </select>
+      </div>
+
       <div class="tool-container">
         <div class="two-col-grid">
           <div>
-            <h3 style="font-size: 16px; color: var(--emerald); margin-bottom: 16px;">Interactive Immigration Milestones</h3>
-            <div class="timeline-wrapper">
-              <div class="timeline-step">
-                <strong style="color: var(--text-white); font-size: 14px;">1. Job Offer & Contract Signed</strong>
-                <p style="font-size: 12px; color: var(--text-muted);">Confirm job offer terms, sponsor license tier rating, and relocation allowance in employment contract.</p>
-              </div>
-              <div class="timeline-step">
-                <strong style="color: var(--text-white); font-size: 14px;">2. Certificate of Sponsorship (CoS) / LMIA Allocation</strong>
-                <p style="font-size: 12px; color: var(--text-muted);">Employer assigns defined CoS (UK) or LMIA / Global Talent Stream file with exact SOC occupation code.</p>
-              </div>
-              <div class="timeline-step">
-                <strong style="color: var(--text-white); font-size: 14px;">3. English Certification & Degree Verification</strong>
-                <p style="font-size: 12px; color: var(--text-muted);">ECCTIS / NARIC comparability certificate or IELTS Academic / General UKVI B1+ test score obtained.</p>
-              </div>
-              <div class="timeline-step">
-                <strong style="color: var(--text-white); font-size: 14px;">4. Online Visa Submission & IHS Payment</strong>
-                <p style="font-size: 12px; color: var(--text-muted);">Submit online visa application, pay Immigration Health Surcharge, and book biometric appointment.</p>
-              </div>
-              <div class="timeline-step future">
-                <strong style="color: var(--text-white); font-size: 14px;">5. VFS / TLS Biometrics & Passport Stamping</strong>
-                <p style="font-size: 12px; color: var(--text-muted);">Submit fingerprints and passport. Receive entry vignette sticker (90-day travel window).</p>
-              </div>
-              <div class="timeline-step future">
-                <strong style="color: var(--text-white); font-size: 14px;">6. Arrival, Housing & BRP / Anmeldung Registration</strong>
-                <p style="font-size: 12px; color: var(--text-muted);">Fly to destination country, pick up biometric residence permit (BRP) or complete city hall registration.</p>
-              </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; color: var(--emerald); margin: 0;">Interactive Immigration Milestones</h3>
+              <span id="roadmapDurationBadge" style="font-size: 11px; background: rgba(56, 189, 248, 0.15); color: var(--blue); padding: 3px 8px; border-radius: 6px; font-weight: 700;">Est: 3 - 6 Weeks</span>
+            </div>
+            <div class="timeline-wrapper" id="roadmapMilestonesContainer">
+              <!-- Rendered dynamically via switchRoadmapCountry -->
             </div>
           </div>
 
           <div class="result-box">
-            <h4 style="color: var(--teal); margin-bottom: 12px; font-size: 15px;">Required Documents Checklist</h4>
-            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">Check off the documents ready for your visa filing:</div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" checked style="accent-color: var(--emerald);"> Valid International Passport (6+ months validity)
-              </label>
-              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" checked style="accent-color: var(--emerald);"> Defined Certificate of Sponsorship (CoS) Reference Number
-              </label>
-              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" checked style="accent-color: var(--emerald);"> Proof of English Language Proficiency (IELTS / Degree)
-              </label>
-              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" style="accent-color: var(--emerald);"> Tuberculosis (TB) Medical Clearance Test (if applicable)
-              </label>
-              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" style="accent-color: var(--emerald);"> Criminal Record Police Certificate (for health/social roles)
-              </label>
-              <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                <input type="checkbox" style="accent-color: var(--emerald);"> Bank Statement Showing Maintenance Funds (£1,270 for 28 days)
-              </label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="color: var(--teal); margin: 0; font-size: 15px;">Required Documents & Compliance</h4>
+              <span id="readinessScoreBadge" style="font-size: 11px; font-weight: 700; color: var(--emerald); background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 6px;">71% Ready</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Check off verified documents to estimate your visa lodgement readiness:</div>
+            
+            <div id="roadmapChecklistContainer" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Rendered dynamically via switchRoadmapCountry -->
+            </div>
+
+            <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 6px;">
+                <span>Application Readiness Score</span>
+                <span id="readinessProgressText" style="color: var(--emerald); font-weight: 700;">5 of 7 Completed</span>
+              </div>
+              <div style="width: 100%; height: 6px; background: var(--bg-card); border-radius: 3px; overflow: hidden;">
+                <div id="readinessProgressBar" style="width: 71%; height: 100%; background: var(--emerald); border-radius: 3px; transition: width 0.3s;"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1437,26 +1669,119 @@ International Engineering Candidate
     <!-- 11. MY SAVED JOBS & APPLICATION TRACKER -->
     <section id="section-tracker" style="display: none;">
       <div class="section-header">
-        <h2><span>📋</span> Saved Jobs & Visa Application Pipeline</h2>
-        <p>Track your saved visa sponsorship jobs, interview stages, and Certificate of Sponsorship updates.</p>
+        <h2><span>📋</span> International Visa Application Pipeline & Tracker</h2>
+        <p>Manage your entire global job search journey — from shortlisted jobs and interviews to Certificate of Sponsorship (CoS) issuance and embassy filing.</p>
+      </div>
+
+      <!-- Pipeline Stats Cards -->
+      <div class="pipeline-stats-row">
+        <div class="pipeline-stat-card">
+          <div class="pipeline-stat-val" id="statTotalTracked">0</div>
+          <div class="pipeline-stat-label">Total Tracked</div>
+        </div>
+        <div class="pipeline-stat-card">
+          <div class="pipeline-stat-val" style="color: #60A5FA;" id="statShortlisted">0</div>
+          <div class="pipeline-stat-label">Shortlisted</div>
+        </div>
+        <div class="pipeline-stat-card">
+          <div class="pipeline-stat-val" style="color: #FBBF24;" id="statApplied">0</div>
+          <div class="pipeline-stat-label">Applied</div>
+        </div>
+        <div class="pipeline-stat-card">
+          <div class="pipeline-stat-val" style="color: #A78BFA;" id="statInterviewing">0</div>
+          <div class="pipeline-stat-label">Interviewing</div>
+        </div>
+        <div class="pipeline-stat-card">
+          <div class="pipeline-stat-val" style="color: #34D399;" id="statOffer">0</div>
+          <div class="pipeline-stat-label">Offers Received</div>
+        </div>
+        <div class="pipeline-stat-card">
+          <div class="pipeline-stat-val" style="color: #F472B6;" id="statVisaProcessing">0</div>
+          <div class="pipeline-stat-label">Visa / CoS Filed</div>
+        </div>
       </div>
 
       <div class="tool-container">
+        <!-- Controls Bar -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
-          <div style="font-size: 14px; color: var(--text-muted);">
-            Active Applications Tracked: <strong id="trackerCountText" style="color: var(--emerald);">0</strong>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="view-toggle-btn active" id="btnViewKanban" onclick="setTrackerView('kanban')">📊 Kanban Board</button>
+            <button class="view-toggle-btn" id="btnViewList" onclick="setTrackerView('list')">📋 List View</button>
           </div>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn-primary" style="font-size: 12px; padding: 6px 14px;" onclick="exportTrackerData()">Export CSV</button>
-            <button class="btn-download-top" style="font-size: 12px; padding: 6px 14px; background: transparent; border-color: var(--border-accent);" onclick="clearAllSaved()">Clear All</button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-primary" style="font-size: 12px; padding: 6px 14px; background: linear-gradient(135deg, var(--teal), var(--emerald));" onclick="openAddExternalJobModal()">➕ Track External Job</button>
+            <button class="btn-primary" style="font-size: 12px; padding: 6px 14px;" onclick="exportTrackerData()">📥 Export CSV</button>
+            <button class="btn-download-top" style="font-size: 12px; padding: 6px 14px; background: transparent; border-color: var(--border-accent);" onclick="clearAllSaved()">🗑️ Clear</button>
           </div>
         </div>
 
-        <div id="trackerListContainer" class="job-grid">
-          <!-- Rendered dynamically from localStorage -->
+        <!-- Kanban Board Container -->
+        <div id="trackerKanbanContainer" class="kanban-board">
+          <!-- Rendered dynamically via renderSavedTracker -->
+        </div>
+
+        <!-- List View Container (Hidden when Kanban is active) -->
+        <div id="trackerListContainer" class="job-grid" style="display: none;">
+          <!-- Rendered dynamically via renderSavedTracker -->
         </div>
       </div>
     </section>
+
+    <!-- Modal: Track External Job -->
+    <div class="modal-overlay" id="addExternalJobModal" onclick="closeAddExternalJobModal(event)">
+      <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeAddExternalJobModal()">&times;</button>
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--emerald); margin-bottom: 4px;">Track External Visa Application</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Add any job applied via LinkedIn, Indeed, or directly on company portals to your unified immigration pipeline.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Job Title *</label>
+            <input type="text" id="extJobTitle" class="input-control" placeholder="e.g. Senior Software Engineer">
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Company Name *</label>
+            <input type="text" id="extCompanyName" class="input-control" placeholder="e.g. Revolut, Amazon, NHS Trust">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Country *</label>
+              <input type="text" id="extCountry" class="input-control" placeholder="e.g. United Kingdom">
+            </div>
+            <div>
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">City</label>
+              <input type="text" id="extCity" class="input-control" placeholder="e.g. London">
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Visa Route</label>
+              <input type="text" id="extVisaType" class="input-control" placeholder="e.g. UK Skilled Worker (CoS)">
+            </div>
+            <div>
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Offered / Target Salary</label>
+              <input type="text" id="extSalary" class="input-control" placeholder="e.g. £70,000">
+            </div>
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Initial Stage</label>
+            <select id="extStage" class="input-control">
+              <option value="saved">📌 Shortlisted / Saved</option>
+              <option value="applied" selected>📤 Applied</option>
+              <option value="interviewing">💬 Interviewing</option>
+              <option value="offer">🎉 Offer Received</option>
+              <option value="visa_processing">🛂 Visa / CoS in Progress</option>
+              <option value="relocated">✈️ Relocated</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Private Notes / CoS Reference</label>
+            <textarea id="extNotes" class="input-control" rows="2" placeholder="e.g. Interview scheduled for Thursday. Recruiter: Sarah..."></textarea>
+          </div>
+          <button class="btn-primary" style="margin-top: 6px;" onclick="saveExternalJob()">Add to Pipeline</button>
+        </div>
+      </div>
+    </div>
 
     <!-- 12. DOWNLOAD APK HUB -->
     <section id="section-download" style="display: none;">
@@ -1504,17 +1829,35 @@ International Engineering Candidate
       <div id="modalCompany" style="color: var(--teal); font-weight: 600; font-size: 14px; margin-bottom: 12px;"></div>
       <div id="modalSalary" style="font-size: 16px; font-weight: 800; color: var(--emerald); margin-bottom: 16px;"></div>
 
-      <div style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 16px 0; margin-bottom: 16px;">
-        <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">Visa & Relocation Assistance:</h4>
-        <p id="modalRelocation" style="font-size: 13px; color: var(--text-white);"></p>
+      <!-- Relocate.me Style Relocation Package Breakdown -->
+      <div class="relocation-breakdown-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h4 style="font-size: 13px; color: var(--emerald); font-weight: 800; margin: 0;">✈️ Relocation Package Breakdown</h4>
+          <span style="font-size: 11px; background: rgba(16, 185, 129, 0.15); color: var(--emerald); padding: 2px 6px; border-radius: 4px; font-weight: 700;">100% Employer Funded</span>
+        </div>
+        <div id="modalRelocationText" style="font-size: 13px; color: var(--text-white); margin-bottom: 10px;"></div>
+        <div class="breakdown-grid" id="modalBreakdownGrid">
+          <div class="breakdown-item"><span class="breakdown-check">✓</span> <span>Flight Tickets (Candidate + Dependents)</span></div>
+          <div class="breakdown-item"><span class="breakdown-check">✓</span> <span>Paid Corporate Apartment (30-60 Days)</span></div>
+          <div class="breakdown-item"><span class="breakdown-check">✓</span> <span>Government Visa & CoS Filing Fees</span></div>
+          <div class="breakdown-item"><span class="breakdown-check">✓</span> <span>Dedicated Immigration Law Firm (Fragomen / EY)</span></div>
+          <div class="breakdown-item"><span class="breakdown-check">✓</span> <span>Spousal Work Authorization Sponsorship</span></div>
+          <div class="breakdown-item"><span class="breakdown-check">✓</span> <span>Relocation Stipend & Settling-in Grant</span></div>
+        </div>
       </div>
 
       <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">Role Description & Scope:</h4>
       <p id="modalDescription" style="font-size: 13px; color: var(--text-white); line-height: 1.6; margin-bottom: 20px;"></p>
 
-      <div style="display: flex; gap: 10px;">
-        <button class="btn-primary" style="flex: 1;" onclick="applyForJob()">1-Click Apply with Visa Profile</button>
-        <button class="btn-download-top" style="background: transparent; border-color: var(--border-accent);" id="modalSaveBtn" onclick="toggleSaveCurrentJob()">⭐ Bookmark</button>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-primary" style="flex: 1;" onclick="applyForJob()">🚀 1-Click Apply with Visa Profile</button>
+          <button class="btn-download-top" style="background: transparent; border-color: var(--border-accent);" id="modalSaveBtn" onclick="toggleSaveCurrentJob()">⭐ Bookmark</button>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="view-toggle-btn" style="flex: 1; text-align: center;" onclick="shortcutDraftCoverLetter()">✍️ Draft Visa Cover Letter</button>
+          <button class="view-toggle-btn" style="flex: 1; text-align: center;" onclick="shortcutEstimateSalary()">💰 Estimate Take-Home Pay</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1973,6 +2316,270 @@ International Engineering Candidate
         relocation: "Swedish Migration Fast-Track + Family Relocation",
         tags: ["Kubernetes", "AWS", "Terraform", "Go", "Cloud"],
         description: "Certified Swedish Migration Agency fast-track sponsor. Design cloud-native multi-tenant infrastructures with comprehensive family relocation."
+      },
+      {
+        id: "job-19",
+        title: "Principal Quantitative Risk Engine Architect",
+        company: "UBS Group AG",
+        country: "Switzerland",
+        city: "Zurich",
+        visaType: "Swiss Work Permit (B/L Quota)",
+        salary: "CHF 165,000 - 210,000 / yr",
+        relocation: "Direct Federal Cantonal Third-Country Quota Allocation + Family Relocation",
+        tags: ["C++", "Python", "Risk Engines", "Quantitative Finance", "FinTech"],
+        description: "Develop ultra-low-latency financial risk models and portfolio simulations. Sponsoring Swiss Cantonal Third-Country Visa quotas with comprehensive relocation."
+      },
+      {
+        id: "job-20",
+        title: "Industrial Automation & PLC Robotics Specialist",
+        company: "ABB Switzerland Ltd",
+        country: "Switzerland",
+        city: "Baden / Zurich",
+        visaType: "Swiss Work Permit (Federal Quota)",
+        salary: "CHF 130,000 - 155,000 / yr",
+        relocation: "Relocation Bonus + Language Classes + Immigration Assistance",
+        tags: ["PLC", "Robotics", "SCADA", "Automation", "Engineering"],
+        description: "Implement robotic manufacturing cells across pharmaceutical and precision engineering plants. Sponsoring third-country work permits under Swiss STEM provisions."
+      },
+      {
+        id: "job-21",
+        title: "Staff Computer Vision AI Engineer",
+        company: "Mistral AI Paris",
+        country: "France",
+        city: "Paris",
+        visaType: "French Talent Passport (Passeport Talent)",
+        salary: "€88,000 - €115,000 + Equity",
+        relocation: "4-Year Multi-Year Talent Passport + Direct Family Work Authorization",
+        tags: ["PyTorch", "Transformers", "LLMs", "C++", "AI"],
+        description: "Train foundational multimodal reasoning models. Direct Passeport Talent - Salarié Qualifié sponsorship with fast-track processing and spouse open work permit."
+      },
+      {
+        id: "job-22",
+        title: "Senior Flight Dynamics & Spacecraft Systems Engineer",
+        company: "Airbus Defence & Space",
+        country: "France",
+        city: "Toulouse",
+        visaType: "French Talent Passport (Chercheur / Ingénieur)",
+        salary: "€72,000 - €90,000",
+        relocation: "Relocation Concierge + Housing Allowance in Toulouse",
+        tags: ["Aerospace", "Flight Dynamics", "Matlab", "Simulink", "Spacecraft"],
+        description: "Design autonomous orbital guidance and geostationary telecommunications satellites. Certified French Talent Passport sponsor with full family relocation."
+      },
+      {
+        id: "job-23",
+        title: "Specialist Consultant Anesthesiologist",
+        company: "Mater Private Network & HSE",
+        country: "Ireland",
+        city: "Dublin / Cork",
+        visaType: "Ireland Critical Skills Permit (CSEP)",
+        salary: "€140,000 - €185,000 / yr",
+        relocation: "€12,000 Relocation Grant + Medical Council Registration Support",
+        tags: ["Anesthesia", "Intensive Care", "Critical Care", "Hospital", "Healthcare"],
+        description: "Lead surgical anesthesia and intensive care recovery suites. Direct CSEP sponsorship with expedited 21-month Stamp 4 Permanent Residence eligibility."
+      },
+      {
+        id: "job-24",
+        title: "Geotechnical Tunnel & Rail Civil Engineer",
+        company: "Egis Rail & Transport",
+        country: "Ireland",
+        city: "Dublin",
+        visaType: "Critical Skills Permit (CSEP)",
+        salary: "€78,000 - €96,000 / yr",
+        relocation: "Complete Visa Assistance + Flight Stipend",
+        tags: ["Geotechnical", "Tunnels", "Rail", "Civil Engineering", "AutoCAD"],
+        description: "Drive Dublin MetroLink and cross-island railway infrastructure upgrades. Fast-track DETE Critical Skills employment permit with full spouse right to work."
+      },
+      {
+        id: "job-25",
+        title: "Senior Structural Bridge & Seismic Design Engineer",
+        company: "Beca Group Ltd",
+        country: "New Zealand",
+        city: "Wellington / Auckland",
+        visaType: "NZ Green List Tier 1 (Straight to Residence)",
+        salary: "NZ$125,000 - 150,000 / yr",
+        relocation: "Direct Residence Visa Grant + Relocation Support",
+        tags: ["Seismic Design", "Bridges", "Structural", "Civil Engineering", "ETABS"],
+        description: "Design earthquake-resilient bridge spans and civic transport networks. Tier 1 Green List occupation qualifying for immediate New Zealand Permanent Residency."
+      },
+      {
+        id: "job-26",
+        title: "Certified Heavy Machinery & Diesel Fleet Technician",
+        company: "Fulton Hogan New Zealand",
+        country: "New Zealand",
+        city: "Christchurch",
+        visaType: "NZ Accredited Employer Work Visa (AEWV)",
+        salary: "NZ$82,000 - 98,000 / yr",
+        relocation: "Tools Allowance + Relocation Grant + Residence Pathway",
+        tags: ["Diesel Mechanic", "Heavy Equipment", "Fleet", "Excavator", "Hydraulics"],
+        description: "Maintain civil earthmoving fleets and highway construction equipment. Accredited Employer Work Visa with clear pathway to residence under Sector Agreement."
+      },
+      {
+        id: "job-27",
+        title: "Autonomous Driving Perception Software Engineer",
+        company: "Sony Mobility Inc.",
+        country: "Japan",
+        city: "Tokyo / Shinagawa",
+        visaType: "Japan Highly Skilled Professional (HSP)",
+        salary: "¥10,000,000 - 15,000,000 / yr",
+        relocation: "Full Relocation Package + Tokyo Housing Support + Japanese Language Classes",
+        tags: ["C++", "ROS2", "Perception", "Robotics", "Autonomous Vehicles"],
+        description: "Create AI perception and vision pipelines for next-gen electric mobility. HSP Visa sponsorship with fast-track permanent residency in as little as 12 months."
+      },
+      {
+        id: "job-28",
+        title: "Lead Game Engine Architect (Unreal Engine 5)",
+        company: "Capcom Global Studios",
+        country: "Japan",
+        city: "Osaka",
+        visaType: "Japan Engineer Visa / HSP",
+        salary: "¥8,500,000 - 13,000,000 / yr",
+        relocation: "Bilingual Relocation Agent + Flight + Housing Allowance",
+        tags: ["Unreal Engine 5", "C++", "Graphics", "DirectX 12", "Gaming"],
+        description: "Develop proprietary real-time physics and photorealistic rendering engines for global AAA titles. Sponsoring Japanese engineering work visas."
+      },
+      {
+        id: "job-29",
+        title: "Senior Quantitative Low-Latency C++ Engineer",
+        company: "Grab Financial Group",
+        country: "Singapore",
+        city: "Singapore",
+        visaType: "Singapore Employment Pass (COMPASS Tier 1)",
+        salary: "S$160,000 - 220,000 / yr",
+        relocation: "S$15,000 Relocation Allowance + COMPASS 40-Point Bonus",
+        tags: ["C++", "Low Latency", "Distributed Systems", "FinTech", "High Frequency"],
+        description: "Architect distributed payments routing engines handling millions of daily Southeast Asian transactions. Pre-assessed for Singapore COMPASS approval."
+      },
+      {
+        id: "job-30",
+        title: "Marine & Port Logistics Automation Architect",
+        company: "PSA International",
+        country: "Singapore",
+        city: "Singapore",
+        visaType: "Singapore Employment Pass (EP)",
+        salary: "S$135,000 - 175,000 / yr",
+        relocation: "Housing Allowance + Full Family Relocation",
+        tags: ["Automation", "Port Logistics", "IoT", "Supply Chain", "Container Operations"],
+        description: "Transform operations at Tuas Mega Port with autonomous guided vehicle dispatching algorithms. Verified Ministry of Manpower sponsor."
+      },
+      {
+        id: "job-31",
+        title: "High-Yield Precision Agronomist & Greenhouse Director",
+        company: "Nordic Greens A/S",
+        country: "Denmark",
+        city: "Odense",
+        visaType: "Danish Positive List Scheme",
+        salary: "52,000 - 64,000 DKK / mo",
+        relocation: "Settlement Allowance + Housing Finder Service",
+        tags: ["Agronomy", "Greenhouse", "Hydroponics", "Agriculture", "Crop Science"],
+        description: "Oversee automated climate-controlled vertical tomato and berry greenhouses. Sponsoring under Danish Positive List for Skilled Workers with fast-track visa."
+      },
+      {
+        id: "job-32",
+        title: "Senior Battery Cell Chemical & Thermal Engineer",
+        company: "Northvolt Ett",
+        country: "Sweden",
+        city: "Skellefteå / Stockholm",
+        visaType: "Swedish Work Permit (Fast-Track)",
+        salary: "65,000 - 80,000 SEK / mo",
+        relocation: "Full Relocation + Apartment Assistance + Family Relocation",
+        tags: ["Battery", "Electrochemistry", "EV", "Thermal", "Renewables"],
+        description: "Develop sustainable lithium-ion cells for electric vehicles. Migration Agency fast-track certified sponsor with direct path to Swedish permanent residency."
+      },
+      {
+        id: "job-33",
+        title: "Renewable Green Hydrogen & Ammonia Facility Lead",
+        company: "NEOM Green Hydrogen Company",
+        country: "Saudi Arabia",
+        city: "NEOM / Tabuk",
+        visaType: "Saudi Premium Residency / Iqama Sponsorship",
+        salary: "55,000 - 80,000 SAR / mo (Tax-Free)",
+        relocation: "100% Tax-Free Salary + Luxury Villa in NEOM + Full Family Relocation",
+        tags: ["Hydrogen", "Renewables", "Solar", "Electrolysis", "Energy"],
+        description: "Direct world-scale 4GW solar and wind powered green ammonia electrolysis complex. Giga-project priority sponsorship with zero tax and executive villa."
+      },
+      {
+        id: "job-34",
+        title: "Enterprise Cybersecurity Incident Response Specialist",
+        company: "Aramco Digital Cyber Defense",
+        country: "Saudi Arabia",
+        city: "Dhahran",
+        visaType: "Saudi Work Visa (Iqama)",
+        salary: "42,000 - 60,000 SAR / mo (Tax-Free)",
+        relocation: "Furnished Housing Compound + Education Allowance + Annual Flights",
+        tags: ["Cybersecurity", "SOC", "Incident Response", "Threat Intelligence", "Security"],
+        description: "Defend national critical infrastructure against advanced cyber threats. Full expat compound living with family schooling and 100% tax-free income."
+      },
+      {
+        id: "job-35",
+        title: "Executive Sous Chef (Michelin-Starred Fine Dining)",
+        company: "Atlantis The Royal Resort",
+        country: "United Arab Emirates",
+        city: "Dubai (Palm Jumeirah)",
+        visaType: "UAE Employment Residence Visa",
+        salary: "24,000 - 32,000 AED / mo (Tax-Free)",
+        relocation: "Expat Residence + Health Insurance + Flight Home Annually",
+        tags: ["Culinary", "Chef", "Fine Dining", "Hospitality", "Michelin"],
+        description: "Direct international culinary operations in flagship fine-dining restaurants. Full UAE work residency sponsorship with tax-free pay and luxury housing."
+      },
+      {
+        id: "job-36",
+        title: "Subsea Pipeline Integrity & Corrosion Specialist",
+        company: "Equinor ASA",
+        country: "Norway",
+        city: "Stavanger / Bergen",
+        visaType: "Norwegian Skilled Worker Residence Permit (UDI)",
+        salary: "850,000 - 1,100,000 NOK / yr",
+        relocation: "Complete Visa Concierge + Moving Services + 6-Week Vacation",
+        tags: ["Subsea", "Pipelines", "Offshore", "Materials Science", "Energy"],
+        description: "Monitor integrity of North Sea offshore energy pipelines. UDI certified employer sponsorship with eligibility for Norwegian permanent residence in 3 years."
+      },
+      {
+        id: "job-37",
+        title: "Embedded Linux & 5G Baseband Systems Engineer",
+        company: "Nokia Bell Labs",
+        country: "Finland",
+        city: "Espoo / Oulu",
+        visaType: "Finnish Specialist Residence Permit (Fast-Track 14-Day)",
+        salary: "€65,000 - €82,000 / yr",
+        relocation: "14-Day Fast-Track D-Visa + English Environment + Family Support",
+        tags: ["Embedded Linux", "C++", "5G", "Telecom", "Kernel"],
+        description: "Architect massive MIMO 5G and 6G baseband processing firmware. 14-day express fast-track specialist permit with automatic spouse work authorization."
+      },
+      {
+        id: "job-38",
+        title: "Senior Core Engine Rendering & Ray Tracing Developer",
+        company: "CD PROJEKT RED",
+        country: "Poland",
+        city: "Warsaw / Krakow",
+        visaType: "Poland EU Blue Card / Work Permit Type A",
+        salary: "180,000 - 240,000 PLN / yr",
+        relocation: "Full Relocation Bonus + Dedicated Immigration Team + Private Healthcare",
+        tags: ["Rendering", "Ray Tracing", "C++", "Vulkan", "DirectX", "Gaming"],
+        description: "Design next-gen AAA photorealistic ray-tracing engines for open-world titles. Polish Single Permit and EU Blue Card sponsorship with English-speaking studio."
+      },
+      {
+        id: "job-39",
+        title: "Senior Logistics & Dynamic Route Optimization Engineer",
+        company: "Glovo Technologies",
+        country: "Spain",
+        city: "Barcelona",
+        visaType: "Spain Highly Qualified Professional (Altamente Cualificado)",
+        salary: "€72,000 - €90,000 / yr",
+        relocation: "20-Day Fast-Track UGE Visa + Beckham Law 24% Flat Tax Ruling",
+        tags: ["Optimization", "Algorithms", "Python", "Go", "Logistics", "Delivery"],
+        description: "Build dispatching and route-matching algorithms across 25 international countries. Sponsoring under Spain's fast-track UGE framework with 24% Beckham Law tax perks."
+      },
+      {
+        id: "job-40",
+        title: "Senior Dairy Herd & Pasture Operations Manager",
+        company: "Fonterra Co-operative Group",
+        country: "New Zealand",
+        city: "Hamilton / Waikato",
+        visaType: "NZ Accredited Employer Work Visa (Sector Agreement)",
+        salary: "NZ$85,000 - 105,000 / yr",
+        relocation: "On-Farm Executive Accommodation + Vehicle + Visa Processing",
+        tags: ["Dairy", "Agriculture", "Pasture", "Herd Management", "Livestock"],
+        description: "Lead 800+ cow rotary dairy farm operations with pasture nutrition planning. AEWV sponsorship with clear pathway to New Zealand residence."
       }
     ];
 
@@ -2030,6 +2637,26 @@ International Engineering Candidate
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function getRelocationPerks(j) {
+      const perks = [];
+      const text = (j.relocation + ' ' + j.description).toLowerCase();
+      if (text.includes('flight')) perks.push('✈️ Flights Paid');
+      if (text.includes('apartment') || text.includes('housing') || text.includes('villa')) perks.push('🏠 Housing Covered');
+      if (text.includes('fast-track') || text.includes('2-week') || text.includes('express') || text.includes('immediate')) perks.push('⚡ Fast-Track Visa');
+      if (text.includes('family') || text.includes('spouse') || text.includes('partner')) perks.push('👨‍👩‍👧 Spousal Visa');
+      if (text.includes('stipend') || text.includes('bonus') || text.includes('allowance') || text.includes('moving')) perks.push('📦 Relocation Bonus');
+      if (perks.length === 0) perks.push('📑 100% Legal & CoS');
+      return perks;
+    }
+
+    let currentQuickFilter = 'ALL';
+    function applyQuickFilter(filterType, btn) {
+      currentQuickFilter = filterType;
+      document.querySelectorAll('.quick-pill-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      filterJobs();
+    }
+
     // Render Jobs
     function renderJobs(jobs) {
       const container = document.getElementById('jobGridContainer');
@@ -2039,7 +2666,8 @@ International Engineering Candidate
         return;
       }
       container.innerHTML = jobs.map(j => {
-        const isSaved = savedJobIds.includes(j.id);
+        const isSaved = isJobInPipeline(j.id);
+        const perks = getRelocationPerks(j);
         return `
           <div class="job-card" onclick="openJobModal('${j.id}')">
             <div>
@@ -2051,6 +2679,9 @@ International Engineering Candidate
               <h3 class="job-title">${j.title}</h3>
               <div class="company-name">${j.company}</div>
               <div class="salary-box">${j.salary}</div>
+              <div class="relocation-perks-row">
+                ${perks.map(p => `<span class="perk-pill">${p}</span>`).join('')}
+              </div>
               <div class="job-tags">
                 ${j.tags.map(t => `<span class="tech-tag">${t}</span>`).join('')}
               </div>
@@ -2060,7 +2691,7 @@ International Engineering Candidate
                 Visa Details &rarr;
               </button>
               <button class="btn-apply-fast" type="button" onclick="event.stopPropagation(); openJobModal('${j.id}')">
-                ${isSaved ? '★ Saved' : 'Quick Apply'}
+                ${isSaved ? '★ In Pipeline' : 'Quick Apply'}
               </button>
             </div>
           </div>
@@ -2376,13 +3007,59 @@ International Engineering Candidate
       const country = document.getElementById('countrySelect')?.value || 'ALL';
       const visaType = document.getElementById('visaTypeSelect')?.value || 'ALL';
       const relocation = document.getElementById('relocationSelect')?.value || 'ALL';
+      const sort = document.getElementById('sortSelect')?.value || 'DEFAULT';
 
-      const filtered = JOBS_DATA.filter(j => {
-        const matchesQuery = j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.tags.some(t => t.toLowerCase().includes(q));
+      let filtered = JOBS_DATA.filter(j => {
+        const matchesQuery = !q || j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.tags.some(t => t.toLowerCase().includes(q)) || j.city.toLowerCase().includes(q);
         const matchesCountry = country === 'ALL' || j.country === country;
-        const matchesVisa = visaType === 'ALL' || j.visaType === visaType;
-        return matchesQuery && matchesCountry && matchesVisa;
+        const matchesVisa = visaType === 'ALL' || j.visaType.toLowerCase().includes(visaType.toLowerCase());
+
+        // Relocation Benefit filter
+        let matchesRelo = true;
+        if (relocation === 'YES') {
+          matchesRelo = j.relocation.toLowerCase().includes('full') || j.relocation.toLowerCase().includes('flight') || j.relocation.toLowerCase().includes('moving');
+        } else if (relocation === 'HOUSING') {
+          matchesRelo = j.relocation.toLowerCase().includes('apartment') || j.relocation.toLowerCase().includes('housing') || j.relocation.toLowerCase().includes('villa');
+        } else if (relocation === 'VISA_ONLY') {
+          matchesRelo = j.relocation.toLowerCase().includes('visa only') || !j.relocation.toLowerCase().includes('flight');
+        }
+
+        // Quick pill filter
+        let matchesQuick = true;
+        const combinedText = (j.title + ' ' + j.relocation + ' ' + j.description + ' ' + j.tags.join(' ')).toLowerCase();
+        if (currentQuickFilter === 'FULL_RELOCATION') {
+          matchesQuick = j.relocation.toLowerCase().includes('full') || j.relocation.toLowerCase().includes('flight');
+        } else if (currentQuickFilter === 'HOUSING') {
+          matchesQuick = j.relocation.toLowerCase().includes('housing') || j.relocation.toLowerCase().includes('apartment') || j.relocation.toLowerCase().includes('villa');
+        } else if (currentQuickFilter === 'FAST_TRACK') {
+          matchesQuick = combinedText.includes('fast-track') || combinedText.includes('gts') || combinedText.includes('express') || combinedText.includes('immediate');
+        } else if (currentQuickFilter === 'FAMILY') {
+          matchesQuick = combinedText.includes('family') || combinedText.includes('spouse') || combinedText.includes('partner');
+        } else if (currentQuickFilter === 'HIGH_SALARY') {
+          matchesQuick = j.salary.includes('1') || j.salary.includes('9') || j.salary.includes('8') || j.salary.includes('70') || j.salary.includes('80');
+        } else if (currentQuickFilter === 'TECH') {
+          matchesQuick = j.tags.some(t => ['Kotlin', 'Compose', 'AWS', 'Kubernetes', 'Go', 'Rust', 'Python', 'AI', 'C++', 'Java'].includes(t));
+        } else if (currentQuickFilter === 'HEALTHCARE') {
+          matchesQuick = combinedText.includes('nurse') || combinedText.includes('hospital') || combinedText.includes('clinical') || combinedText.includes('medical');
+        } else if (currentQuickFilter === 'ENGINEERING') {
+          matchesQuick = combinedText.includes('engineer') || combinedText.includes('hydrogen') || combinedText.includes('battery') || combinedText.includes('port') || combinedText.includes('agronomist');
+        }
+
+        return matchesQuery && matchesCountry && matchesVisa && matchesRelo && matchesQuick;
       });
+
+      // Sorting
+      if (sort === 'SALARY_HIGH') {
+        filtered.sort((a, b) => {
+          const numA = parseInt(a.salary.replace(/[^0-9]/g, '')) || 0;
+          const numB = parseInt(b.salary.replace(/[^0-9]/g, '')) || 0;
+          return numB - numA;
+        });
+      } else if (sort === 'NEWEST') {
+        filtered.reverse();
+      } else if (sort === 'RELOCATION') {
+        filtered.sort((a, b) => getRelocationPerks(b).length - getRelocationPerks(a).length);
+      }
 
       renderJobs(filtered);
       checkFirstSearchToast();
@@ -2434,23 +3111,26 @@ International Engineering Candidate
 
     // Modal
     function openJobModal(jobId) {
-      const job = JOBS_DATA.find(j => j.id === jobId);
+      const job = JOBS_DATA.find(j => j.id === jobId) || getPipeline().find(p => p.id === jobId);
       if (!job) return;
       currentSelectedJob = job;
 
       document.getElementById('modalTitle').innerText = job.title;
       document.getElementById('modalCompany').innerText = `${job.company} • ${job.city}, ${job.country}`;
       document.getElementById('modalSalary').innerText = job.salary;
-      document.getElementById('modalRelocation').innerText = job.relocation;
-      document.getElementById('modalDescription').innerText = job.description;
+      document.getElementById('modalDescription').innerText = job.description || 'Verified licensed employer hiring under international work authorization guidelines.';
+      
+      const reloText = document.getElementById('modalRelocationText');
+      if (reloText) reloText.innerText = job.relocation || 'Full visa sponsorship with dedicated legal support.';
+
       document.getElementById('modalBadges').innerHTML = `
         <span class="visa-pill">${job.visaType}</span>
         <span class="relocation-pill">A-Rated Licensed Sponsor</span>
       `;
 
-      const isSaved = savedJobIds.includes(job.id);
+      const isInPipe = isJobInPipeline(job.id);
       const saveBtn = document.getElementById('modalSaveBtn');
-      if (saveBtn) saveBtn.innerText = isSaved ? '★ Saved' : '⭐ Bookmark';
+      if (saveBtn) saveBtn.innerText = isInPipe ? '★ In Pipeline' : '⭐ Bookmark';
 
       document.getElementById('jobModal').style.display = 'flex';
     }
@@ -2460,97 +3140,372 @@ International Engineering Candidate
       document.getElementById('jobModal').style.display = 'none';
     }
 
-    function toggleSaveCurrentJob() {
+    function shortcutDraftCoverLetter() {
       if (!currentSelectedJob) return;
-      const idx = savedJobIds.indexOf(currentSelectedJob.id);
-      if (idx > -1) {
-        savedJobIds.splice(idx, 1);
-      } else {
-        savedJobIds.push(currentSelectedJob.id);
+      closeJobModal();
+      switchTab('coverletter');
+      const empInput = document.getElementById('clEmployer');
+      const posInput = document.getElementById('clPosition');
+      const strInput = document.getElementById('clStrengths');
+      if (empInput) empInput.value = currentSelectedJob.company;
+      if (posInput) posInput.value = `${currentSelectedJob.title} (${currentSelectedJob.visaType})`;
+      if (strInput && currentSelectedJob.tags) strInput.value = currentSelectedJob.tags.join(', ');
+      generateCoverLetter();
+    }
+
+    function shortcutEstimateSalary() {
+      if (!currentSelectedJob) return;
+      closeJobModal();
+      switchTab('calculator');
+      
+      const countrySelect = document.getElementById('calcCountry');
+      const grossInput = document.getElementById('calcGrossSalary');
+      
+      if (countrySelect) {
+        if (currentSelectedJob.country.includes('Kingdom')) countrySelect.value = 'UK_LDN';
+        else if (currentSelectedJob.country.includes('Germany')) countrySelect.value = 'DE_BER';
+        else if (currentSelectedJob.country.includes('Canada')) countrySelect.value = 'CA_TOR';
+        else if (currentSelectedJob.country.includes('States')) countrySelect.value = 'US_SF';
+        else if (currentSelectedJob.country.includes('Netherlands')) countrySelect.value = 'NL_AMS';
+        else if (currentSelectedJob.country.includes('Australia')) countrySelect.value = 'AU_SYD';
+        else if (currentSelectedJob.country.includes('Ireland')) countrySelect.value = 'IE_DUB';
+        else if (currentSelectedJob.country.includes('Sweden')) countrySelect.value = 'SE_STO';
+        else if (currentSelectedJob.country.includes('Singapore')) countrySelect.value = 'SG_SIN';
+        else if (currentSelectedJob.country.includes('Japan')) countrySelect.value = 'JP_TYO';
+        else if (currentSelectedJob.country.includes('Emirates')) countrySelect.value = 'AE_DXB';
       }
-      localStorage.setItem('gvj_saved_jobs', JSON.stringify(savedJobIds));
-      updateSavedCounter();
-      const saveBtn = document.getElementById('modalSaveBtn');
-      if (saveBtn) saveBtn.innerText = savedJobIds.includes(currentSelectedJob.id) ? '★ Saved' : '⭐ Bookmark';
-      renderJobs(JOBS_DATA);
-    }
 
-    function updateSavedCounter() {
-      const count = savedJobIds.length;
-      const badge = document.getElementById('savedCountBadge');
-      if (badge) badge.innerText = count;
-      const trackerCount = document.getElementById('trackerCountText');
-      if (trackerCount) trackerCount.innerText = count;
-    }
-
-    function renderSavedTracker() {
-      const container = document.getElementById('trackerListContainer');
-      if (!container) return;
-      const savedJobs = JOBS_DATA.filter(j => savedJobIds.includes(j.id));
-      if (savedJobs.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">You haven't bookmarked any jobs yet. Browse "Visa Jobs" and tap Quick Apply or Bookmark to track them here.</div>`;
-        return;
+      // Try extract gross number
+      const numMatch = currentSelectedJob.salary.match(/\d+[\d,]*/);
+      if (numMatch && grossInput) {
+        const val = parseInt(numMatch[0].replace(/,/g, ''));
+        if (val > 1000) grossInput.value = val;
       }
-      container.innerHTML = savedJobs.map(j => `
-        <div class="job-card" onclick="openJobModal('${j.id}')">
-          <div>
-            <div class="job-badge-row">
-              <span class="visa-pill">Application Active</span>
-              <span class="country-tag">📍 ${j.city}, ${j.country}</span>
-            </div>
-            <h3 class="job-title">${j.title}</h3>
-            <div class="company-name">${j.company}</div>
-            <div class="salary-box">${j.salary}</div>
-          </div>
-          <div class="card-footer-actions">
-            <span style="font-size: 12px; color: var(--emerald); font-weight: 600;">Status: Ready for Biometrics</span>
-            <button class="btn-apply-fast" style="background: var(--danger); color: #FFF;" onclick="event.stopPropagation(); removeSavedJob('${j.id}')">Remove</button>
-          </div>
-        </div>
-      `).join('');
+      calculateRelocation();
     }
 
-    function removeSavedJob(id) {
-      savedJobIds = savedJobIds.filter(x => x !== id);
+    // ==========================================
+    // Unified Pipeline & Tracker System (Kanban)
+    // ==========================================
+    const PIPELINE_STAGES = [
+      { id: 'saved', label: '📌 Shortlisted', color: '#60A5FA' },
+      { id: 'applied', label: '📤 Applied', color: '#FBBF24' },
+      { id: 'interviewing', label: '💬 Interviewing', color: '#A78BFA' },
+      { id: 'offer', label: '🎉 Offer Received', color: '#34D399' },
+      { id: 'visa_processing', label: '🛂 Visa / CoS Filed', color: '#F472B6' },
+      { id: 'relocated', label: '✈️ Relocated', color: '#10B981' }
+    ];
+
+    function getPipeline() {
+      let pipeline = JSON.parse(localStorage.getItem('gvj_pipeline') || '[]');
+      // Migrate legacy savedJobIds if pipeline is empty
+      if (pipeline.length === 0 && savedJobIds.length > 0) {
+        pipeline = savedJobIds.map(id => {
+          const j = JOBS_DATA.find(x => x.id === id);
+          return {
+            id,
+            title: j ? j.title : 'Saved Role',
+            company: j ? j.company : 'Company',
+            country: j ? j.country : 'International',
+            city: j ? j.city : 'City',
+            visaType: j ? j.visaType : 'Visa Sponsorship',
+            salary: j ? j.salary : 'Market',
+            stage: 'applied',
+            notes: 'Applied via Global Visa Jobs Portal',
+            date: new Date().toISOString().split('T')[0],
+            isExternal: false
+          };
+        });
+        localStorage.setItem('gvj_pipeline', JSON.stringify(pipeline));
+      }
+      return pipeline;
+    }
+
+    function savePipeline(list) {
+      localStorage.setItem('gvj_pipeline', JSON.stringify(list));
+      savedJobIds = list.map(x => x.id);
       localStorage.setItem('gvj_saved_jobs', JSON.stringify(savedJobIds));
       updateSavedCounter();
       renderSavedTracker();
       renderJobs(JOBS_DATA);
     }
 
-    function clearAllSaved() {
-      if (confirm('Clear all saved applications?')) {
-        savedJobIds = [];
-        localStorage.removeItem('gvj_saved_jobs');
-        updateSavedCounter();
-        renderSavedTracker();
-        renderJobs(JOBS_DATA);
+    function isJobInPipeline(id) {
+      return getPipeline().some(p => p.id === id);
+    }
+
+    function toggleSaveCurrentJob() {
+      if (!currentSelectedJob) return;
+      const pipeline = getPipeline();
+      const existingIdx = pipeline.findIndex(p => p.id === currentSelectedJob.id);
+      if (existingIdx > -1) {
+        pipeline.splice(existingIdx, 1);
+      } else {
+        pipeline.push({
+          id: currentSelectedJob.id,
+          title: currentSelectedJob.title,
+          company: currentSelectedJob.company,
+          country: currentSelectedJob.country,
+          city: currentSelectedJob.city,
+          visaType: currentSelectedJob.visaType,
+          salary: currentSelectedJob.salary,
+          stage: 'saved',
+          notes: 'Saved for review',
+          date: new Date().toISOString().split('T')[0],
+          isExternal: false
+        });
+      }
+      savePipeline(pipeline);
+      const saveBtn = document.getElementById('modalSaveBtn');
+      if (saveBtn) saveBtn.innerText = isJobInPipeline(currentSelectedJob.id) ? '★ In Pipeline' : '⭐ Bookmark';
+    }
+
+    function applyForJob() {
+      if (!currentSelectedJob) return;
+      const pipeline = getPipeline();
+      const item = pipeline.find(p => p.id === currentSelectedJob.id);
+      if (item) {
+        item.stage = 'applied';
+      } else {
+        pipeline.push({
+          id: currentSelectedJob.id,
+          title: currentSelectedJob.title,
+          company: currentSelectedJob.company,
+          country: currentSelectedJob.country,
+          city: currentSelectedJob.city,
+          visaType: currentSelectedJob.visaType,
+          salary: currentSelectedJob.salary,
+          stage: 'applied',
+          notes: '1-Click application sent with verified immigration credentials',
+          date: new Date().toISOString().split('T')[0],
+          isExternal: false
+        });
+      }
+      savePipeline(pipeline);
+      alert(`🎉 Application registered for ${currentSelectedJob.title} at ${currentSelectedJob.company}! Moved to "Applied" in your Visa Pipeline.`);
+      closeJobModal();
+    }
+
+    let currentTrackerView = 'kanban';
+    function setTrackerView(viewType) {
+      currentTrackerView = viewType;
+      const btnK = document.getElementById('btnViewKanban');
+      const btnL = document.getElementById('btnViewList');
+      const contK = document.getElementById('trackerKanbanContainer');
+      const contL = document.getElementById('trackerListContainer');
+
+      if (viewType === 'kanban') {
+        if (btnK) btnK.classList.add('active');
+        if (btnL) btnL.classList.remove('active');
+        if (contK) contK.style.display = 'flex';
+        if (contL) contL.style.display = 'none';
+      } else {
+        if (btnK) btnK.classList.remove('active');
+        if (btnL) btnL.classList.add('active');
+        if (contK) contK.style.display = 'none';
+        if (contL) contL.style.display = 'grid';
+      }
+      renderSavedTracker();
+    }
+
+    function updateSavedCounter() {
+      const pipeline = getPipeline();
+      const count = pipeline.length;
+      const badge = document.getElementById('savedCountBadge');
+      if (badge) badge.innerText = count;
+
+      // Update pipeline stats
+      const counts = {
+        total: count,
+        saved: pipeline.filter(p => p.stage === 'saved').length,
+        applied: pipeline.filter(p => p.stage === 'applied').length,
+        interviewing: pipeline.filter(p => p.stage === 'interviewing').length,
+        offer: pipeline.filter(p => p.stage === 'offer').length,
+        visa_processing: pipeline.filter(p => p.stage === 'visa_processing').length
+      };
+
+      if (document.getElementById('statTotalTracked')) document.getElementById('statTotalTracked').innerText = counts.total;
+      if (document.getElementById('statShortlisted')) document.getElementById('statShortlisted').innerText = counts.saved;
+      if (document.getElementById('statApplied')) document.getElementById('statApplied').innerText = counts.applied;
+      if (document.getElementById('statInterviewing')) document.getElementById('statInterviewing').innerText = counts.interviewing;
+      if (document.getElementById('statOffer')) document.getElementById('statOffer').innerText = counts.offer;
+      if (document.getElementById('statVisaProcessing')) document.getElementById('statVisaProcessing').innerText = counts.visa_processing;
+    }
+
+    function moveApplicationStage(jobId, newStage) {
+      const pipeline = getPipeline();
+      const item = pipeline.find(p => p.id === jobId);
+      if (item) {
+        item.stage = newStage;
+        savePipeline(pipeline);
       }
     }
 
+    function updateApplicationNotes(jobId, notes) {
+      const pipeline = getPipeline();
+      const item = pipeline.find(p => p.id === jobId);
+      if (item) {
+        item.notes = notes;
+        savePipeline(pipeline);
+      }
+    }
+
+    function removePipelineJob(id) {
+      const pipeline = getPipeline().filter(p => p.id !== id);
+      savePipeline(pipeline);
+    }
+
+    function clearAllSaved() {
+      if (confirm('Clear all applications in your tracker?')) {
+        savePipeline([]);
+      }
+    }
+
+    function renderSavedTracker() {
+      const pipeline = getPipeline();
+      updateSavedCounter();
+
+      const kanbanCont = document.getElementById('trackerKanbanContainer');
+      const listCont = document.getElementById('trackerListContainer');
+
+      if (pipeline.length === 0) {
+        const emptyMsg = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted); width: 100%;">Your visa application pipeline is empty. Browse "Visa Jobs" to bookmark or 1-click apply, or tap "➕ Track External Job".</div>`;
+        if (kanbanCont) kanbanCont.innerHTML = emptyMsg;
+        if (listCont) listCont.innerHTML = emptyMsg;
+        return;
+      }
+
+      // 1. Render Kanban View
+      if (kanbanCont) {
+        kanbanCont.innerHTML = PIPELINE_STAGES.map(stage => {
+          const items = pipeline.filter(p => (p.stage || 'applied') === stage.id);
+          return `
+            <div class="kanban-column">
+              <div class="kanban-col-header">
+                <span style="color: ${stage.color};">${stage.label}</span>
+                <span class="kanban-col-badge">${items.length}</span>
+              </div>
+              <div class="kanban-card-list">
+                ${items.map(item => `
+                  <div class="kanban-item" onclick="openJobModal('${item.id}')">
+                    <div style="font-size: 11px; color: var(--teal); font-weight: 700; margin-bottom: 2px;">${item.company}</div>
+                    <div style="font-size: 14px; font-weight: 800; color: var(--text-white); margin-bottom: 4px;">${item.title}</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">📍 ${item.city}, ${item.country}</div>
+                    <div style="font-size: 12px; font-weight: 700; color: var(--emerald); margin-bottom: 8px;">${item.salary}</div>
+                    
+                    <!-- Quick Stage Selector -->
+                    <div style="margin-bottom: 8px;" onclick="event.stopPropagation()">
+                      <select class="input-control" style="font-size: 11px; padding: 4px 6px; background: var(--bg-dark);" onchange="moveApplicationStage('${item.id}', this.value)">
+                        ${PIPELINE_STAGES.map(s => `<option value="${s.id}" ${s.id === item.stage ? 'selected' : ''}>Move to: ${s.label}</option>`).join('')}
+                      </select>
+                    </div>
+
+                    <!-- Notes -->
+                    <div style="margin-bottom: 8px;" onclick="event.stopPropagation()">
+                      <input type="text" class="input-control" style="font-size: 11px; padding: 4px 6px; background: rgba(0,0,0,0.2);" value="${item.notes || ''}" placeholder="Private note / CoS ref..." onblur="updateApplicationNotes('${item.id}', this.value)">
+                    </div>
+
+                    <div class="kanban-meta-row">
+                      <span>Date: ${item.date || 'Active'}</span>
+                      <button style="background: none; border: none; color: var(--danger); font-size: 11px; cursor: pointer;" onclick="event.stopPropagation(); removePipelineJob('${item.id}')">✕ Remove</button>
+                    </div>
+                  </div>
+                `).join('')}
+                ${items.length === 0 ? `<div style="text-align: center; color: var(--text-dim); font-size: 12px; padding: 24px 0;">No jobs in this stage</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 2. Render List View
+      if (listCont) {
+        listCont.innerHTML = pipeline.map(item => `
+          <div class="job-card" onclick="openJobModal('${item.id}')">
+            <div>
+              <div class="job-badge-row">
+                <span class="visa-pill">${item.visaType}</span>
+                <span class="country-tag">📍 ${item.city}, ${item.country}</span>
+              </div>
+              <h3 class="job-title">${item.title}</h3>
+              <div class="company-name">${item.company}</div>
+              <div class="salary-box">${item.salary}</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Notes: <em>${item.notes || 'None recorded'}</em></div>
+            </div>
+            <div class="card-footer-actions" onclick="event.stopPropagation()">
+              <select class="input-control" style="max-width: 160px; font-size: 11px; padding: 4px;" onchange="moveApplicationStage('${item.id}', this.value)">
+                ${PIPELINE_STAGES.map(s => `<option value="${s.id}" ${s.id === item.stage ? 'selected' : ''}>${s.label}</option>`).join('')}
+              </select>
+              <button class="btn-apply-fast" style="background: var(--danger); color: #FFF;" onclick="removePipelineJob('${item.id}')">Remove</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Modal: External Job
+    function openAddExternalJobModal() {
+      document.getElementById('addExternalJobModal').style.display = 'flex';
+    }
+
+    function closeAddExternalJobModal(e) {
+      if (e && e.target && e.target.id !== 'addExternalJobModal' && !e.target.classList.contains('modal-close')) return;
+      document.getElementById('addExternalJobModal').style.display = 'none';
+    }
+
+    function saveExternalJob() {
+      const title = document.getElementById('extJobTitle')?.value.trim();
+      const company = document.getElementById('extCompanyName')?.value.trim();
+      const country = document.getElementById('extCountry')?.value.trim() || 'International';
+      const city = document.getElementById('extCity')?.value.trim() || 'Global';
+      const visaType = document.getElementById('extVisaType')?.value.trim() || 'Work Permit Sponsorship';
+      const salary = document.getElementById('extSalary')?.value.trim() || 'Competitive';
+      const stage = document.getElementById('extStage')?.value || 'applied';
+      const notes = document.getElementById('extNotes')?.value.trim() || '';
+
+      if (!title || !company) {
+        alert('Please enter both a Job Title and Company Name.');
+        return;
+      }
+
+      const pipeline = getPipeline();
+      const newJob = {
+        id: 'ext-' + Date.now(),
+        title,
+        company,
+        country,
+        city,
+        visaType,
+        salary,
+        stage,
+        notes,
+        date: new Date().toISOString().split('T')[0],
+        isExternal: true
+      };
+      pipeline.unshift(newJob);
+      savePipeline(pipeline);
+
+      document.getElementById('extJobTitle').value = '';
+      document.getElementById('extCompanyName').value = '';
+      document.getElementById('extCountry').value = '';
+      document.getElementById('extCity').value = '';
+      document.getElementById('extNotes').value = '';
+      closeAddExternalJobModal();
+      alert(`🎉 Added "${title}" at ${company} to your Visa Pipeline!`);
+    }
+
     function exportTrackerData() {
-      const savedJobs = JOBS_DATA.filter(j => savedJobIds.includes(j.id));
-      let csv = "Job Title,Company,Country,City,Visa Type,Salary\n";
-      savedJobs.forEach(j => {
-        csv += `"${j.title}","${j.company}","${j.country}","${j.city}","${j.visaType}","${j.salary}"\n`;
+      const pipeline = getPipeline();
+      let csv = "Job Title,Company,Country,City,Visa Route,Salary,Pipeline Stage,Notes,Date\n";
+      pipeline.forEach(p => {
+        csv += `"${p.title}","${p.company}","${p.country}","${p.city}","${p.visaType}","${p.salary}","${p.stage}","${(p.notes || '').replace(/"/g, '""')}","${p.date}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'global-visa-applications.csv';
+      a.download = 'global-visa-pipeline-report.csv';
       a.click();
-    }
-
-    function applyForJob() {
-      if (!currentSelectedJob) return;
-      if (!savedJobIds.includes(currentSelectedJob.id)) {
-        savedJobIds.push(currentSelectedJob.id);
-        localStorage.setItem('gvj_saved_jobs', JSON.stringify(savedJobIds));
-        updateSavedCounter();
-      }
-      alert(`🎉 Application initiated for ${currentSelectedJob.title} at ${currentSelectedJob.company}! Your profile has been sent to the immigration team and saved in your tracker.`);
-      closeJobModal();
     }
 
     // Points Calculator
@@ -2581,33 +3536,315 @@ International Engineering Candidate
       }
     }
 
-    // Relocation Calculator
+    // ============================================================
+    // Comprehensive 21-City Relocation & Net Take-Home Calculator
+    // ============================================================
+    const CITY_COSTS = {
+      UK_LDN: { curr: '£', rate: 0.28, rentCenter: 2150, rentOuter: 1550, living: 850, transit: 180, name: 'London, UK' },
+      UK_MAN: { curr: '£', rate: 0.26, rentCenter: 1350, rentOuter: 950, living: 650, transit: 90, name: 'Manchester, UK' },
+      DE_BER: { curr: '€', rate: 0.36, rentCenter: 1550, rentOuter: 1050, living: 750, transit: 99, name: 'Berlin, Germany' },
+      DE_MUN: { curr: '€', rate: 0.38, rentCenter: 1850, rentOuter: 1300, living: 850, transit: 110, name: 'Munich, Germany' },
+      NL_AMS: { curr: '€', rate: 0.22, rentCenter: 2100, rentOuter: 1500, living: 850, transit: 120, name: 'Amsterdam (30% Ruling)' },
+      CA_TOR: { curr: 'C$', rate: 0.29, rentCenter: 2500, rentOuter: 1850, living: 950, transit: 156, name: 'Toronto, Canada' },
+      CA_VAN: { curr: 'C$', rate: 0.28, rentCenter: 2600, rentOuter: 1950, living: 980, transit: 165, name: 'Vancouver, Canada' },
+      US_NYC: { curr: '$', rate: 0.32, rentCenter: 3800, rentOuter: 2600, living: 1400, transit: 132, name: 'New York City, USA' },
+      US_SF: { curr: '$', rate: 0.33, rentCenter: 3200, rentOuter: 2400, living: 1350, transit: 120, name: 'San Francisco, USA' },
+      US_ATX: { curr: '$', rate: 0.23, rentCenter: 2100, rentOuter: 1550, living: 1050, transit: 80, name: 'Austin, Texas' },
+      AU_SYD: { curr: 'A$', rate: 0.29, rentCenter: 3100, rentOuter: 2200, living: 1100, transit: 190, name: 'Sydney, Australia' },
+      AU_MEL: { curr: 'A$', rate: 0.28, rentCenter: 2400, rentOuter: 1750, living: 1000, transit: 160, name: 'Melbourne, Australia' },
+      IE_DUB: { curr: '€', rate: 0.33, rentCenter: 2200, rentOuter: 1650, living: 900, transit: 140, name: 'Dublin, Ireland' },
+      SE_STO: { curr: 'kr', rate: 0.31, rentCenter: 16000, rentOuter: 11000, living: 8500, transit: 1020, name: 'Stockholm, Sweden' },
+      CH_ZUR: { curr: 'CHF', rate: 0.18, rentCenter: 2600, rentOuter: 1850, living: 1400, transit: 110, name: 'Zurich, Switzerland' },
+      SG_SIN: { curr: 'S$', rate: 0.14, rentCenter: 3600, rentOuter: 2400, living: 1300, transit: 140, name: 'Singapore' },
+      JP_TYO: { curr: '¥', rate: 0.24, rentCenter: 180000, rentOuter: 115000, living: 95000, transit: 15000, name: 'Tokyo, Japan' },
+      AE_DXB: { curr: 'AED', rate: 0.00, rentCenter: 7500, rentOuter: 4800, living: 3500, transit: 350, name: 'Dubai, UAE (0% Tax)' },
+      FR_PAR: { curr: '€', rate: 0.27, rentCenter: 1750, rentOuter: 1200, living: 800, transit: 86, name: 'Paris, France' },
+      ES_MAD: { curr: '€', rate: 0.24, rentCenter: 1400, rentOuter: 950, living: 650, transit: 65, name: 'Madrid, Spain' },
+      DK_CPH: { curr: 'kr', rate: 0.36, rentCenter: 13500, rentOuter: 9500, living: 6500, transit: 850, name: 'Copenhagen, Denmark' },
+      NO_OSL: { curr: 'kr', rate: 0.32, rentCenter: 16500, rentOuter: 11500, living: 7500, transit: 890, name: 'Oslo, Norway' },
+      NZ_AKL: { curr: 'NZ$', rate: 0.27, rentCenter: 2400, rentOuter: 1700, living: 950, transit: 180, name: 'Auckland, New Zealand' }
+    };
+
     function calculateRelocation() {
-      const country = document.getElementById('calcCountry')?.value || 'UK';
-      const gross = parseFloat(document.getElementById('calcGrossSalary')?.value || '68000');
+      const cityKey = document.getElementById('calcCountry')?.value || 'UK_LDN';
+      const gross = parseFloat(document.getElementById('calcGrossSalary')?.value || '75000');
+      const housingPref = document.getElementById('calcHousing')?.value || 'CENTER';
+      const dependents = parseInt(document.getElementById('calcDependents')?.value || '0');
+
+      const data = CITY_COSTS[cityKey] || CITY_COSTS.UK_LDN;
+      const curr = data.curr;
       const monthlyGross = gross / 12;
 
-      let taxRate = 0.28;
-      let rent = 1650;
-      let living = 800;
-      let curr = '£';
-
-      if (country === 'UK') { taxRate = 0.28; rent = 1650; living = 800; curr = '£'; }
-      else if (country === 'DE') { taxRate = 0.36; rent = 1400; living = 750; curr = '€'; }
-      else if (country === 'CA') { taxRate = 0.29; rent = 2100; living = 950; curr = 'C$'; }
-      else if (country === 'US') { taxRate = 0.27; rent = 2400; living = 1100; curr = '$'; }
-      else if (country === 'NL') { taxRate = 0.22; rent = 1800; living = 850; curr = '€'; }
-
-      const tax = monthlyGross * taxRate;
+      // Adjust tax deduction for dependents
+      const adjustedTaxRate = Math.max(0, data.rate - (dependents * 0.02));
+      const tax = monthlyGross * adjustedTaxRate;
       const net = monthlyGross - tax;
-      const savings = net - (rent + living);
 
-      document.getElementById('resGross').innerText = `${curr}${Math.round(monthlyGross).toLocaleString()}`;
-      document.getElementById('resTax').innerText = `-${curr}${Math.round(tax).toLocaleString()}`;
-      document.getElementById('resNet').innerText = `${curr}${Math.round(net).toLocaleString()}`;
-      document.getElementById('resRent').innerText = `-${curr}${Math.round(rent).toLocaleString()}`;
-      document.getElementById('resLiving').innerText = `-${curr}${Math.round(living).toLocaleString()}`;
-      document.getElementById('resSavings').innerText = `+${curr}${Math.round(savings).toLocaleString()} / mo`;
+      // Housing calculation
+      const baseRent = housingPref === 'CENTER' ? data.rentCenter : data.rentOuter;
+      const rent = baseRent * (1 + (dependents * 0.3));
+
+      // Living groceries & transit
+      const living = (data.living * (1 + (dependents * 0.4))) + (data.transit * (1 + Math.min(1, dependents)));
+      const totalExpenses = rent + living;
+      const savings = net - totalExpenses;
+      const savingsPct = Math.max(0, Math.min(100, Math.round((savings / net) * 100)));
+
+      if (document.getElementById('resGross')) document.getElementById('resGross').innerText = `${curr}${Math.round(monthlyGross).toLocaleString()}`;
+      if (document.getElementById('resTax')) document.getElementById('resTax').innerText = `-${curr}${Math.round(tax).toLocaleString()} (${Math.round(adjustedTaxRate * 100)}%)`;
+      if (document.getElementById('resNet')) document.getElementById('resNet').innerText = `${curr}${Math.round(net).toLocaleString()}`;
+      if (document.getElementById('resRent')) document.getElementById('resRent').innerText = `-${curr}${Math.round(rent).toLocaleString()}`;
+      if (document.getElementById('resLiving')) document.getElementById('resLiving').innerText = `-${curr}${Math.round(living).toLocaleString()}`;
+      
+      const resSavings = document.getElementById('resSavings');
+      if (resSavings) {
+        if (savings >= 0) {
+          resSavings.innerText = `+${curr}${Math.round(savings).toLocaleString()} / mo`;
+          resSavings.style.color = "var(--emerald)";
+        } else {
+          resSavings.innerText = `-${curr}${Math.round(Math.abs(savings)).toLocaleString()} / mo`;
+          resSavings.style.color = "var(--danger)";
+        }
+      }
+
+      if (document.getElementById('resSavingsPct')) document.getElementById('resSavingsPct').innerText = `${savingsPct}% of Net`;
+      if (document.getElementById('resSavingsBar')) document.getElementById('resSavingsBar').style.width = `${savingsPct}%`;
+
+      const badge = document.getElementById('resAffordabilityBadge');
+      if (badge) {
+        if (savingsPct >= 40) {
+          badge.innerText = '⭐️ Top Tier Savings';
+          badge.style.color = 'var(--emerald)';
+          badge.style.background = 'rgba(16, 185, 129, 0.15)';
+        } else if (savingsPct >= 20) {
+          badge.innerText = '✓ Balanced Budget';
+          badge.style.color = 'var(--teal)';
+          badge.style.background = 'rgba(56, 189, 248, 0.15)';
+        } else {
+          badge.innerText = '⚠️ Tight Living Margin';
+          badge.style.color = 'var(--warning)';
+          badge.style.background = 'rgba(245, 158, 11, 0.15)';
+        }
+      }
+    }
+
+    // ============================================================
+    // Country Roadmap & Dynamic Document Checklist
+    // ============================================================
+    const ROADMAP_DATA = {
+      UK: {
+        duration: 'Est: 3 - 6 Weeks',
+        milestones: [
+          { title: '1. Employment Offer & Contract Signed', desc: 'Secure unconditional offer from Home Office A-Rated sponsor meeting £38,700 or Shortage rate.' },
+          { title: '2. Defined Certificate of Sponsorship (CoS)', desc: 'UK sponsor applies and allocates defined CoS code within 2-5 working days.' },
+          { title: '3. Degree & English Language (B1)', desc: 'Ecctis comparability verification or IELTS UKVI (Academic/General) score.' },
+          { title: '4. Visa Lodgement & IHS Fee Payment', desc: 'Submit application online; pay £719-£1,420 application + £1,035/yr IHS.' },
+          { title: '5. TLS/VFS Biometrics Appointment', desc: 'Fingerprints and passport submission; vignette issued in 3 weeks.' },
+          { title: '6. UK Arrival & BRP / eVisa Verification', desc: 'Arrive in UK, collect BRP card or activate online share code, start employment.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Valid International Passport (6+ mo validity, 2 blank pages)' },
+          { key: 'cos', label: 'Home Office Defined Certificate of Sponsorship (CoS) reference' },
+          { key: 'english', label: 'Proof of English (IELTS UKVI B1 / Ecctis Degree confirmation)' },
+          { key: 'tb', label: 'Tuberculosis (TB) Test Certificate (if residing in listed countries)' },
+          { key: 'funds', label: 'Bank Statement showing £1,270 maintenance funds for 28 days' },
+          { key: 'police', label: 'Criminal Record Police Certificate (for healthcare/education)' },
+          { key: 'contract', label: 'Counter-signed UK Employment Agreement & Relocation Letter' }
+        ]
+      },
+      DE: {
+        duration: 'Est: 4 - 8 Weeks',
+        milestones: [
+          { title: '1. German Employment Contract', desc: 'Contract meeting EU Blue Card minimum salary (€45,300 or €41,041 STEM shortage).' },
+          { title: '2. Anabin University Degree Recognition', desc: 'Verify your foreign degree is rated H+ on German Anabin database or obtain ZAB Statement.' },
+          { title: '3. National Visa (D) Application Appointment', desc: 'Book appointment with German Embassy/Consulate; prepare Blue Card file.' },
+          { title: '4. Consular Interview & Biometrics', desc: 'Submit authenticated documents and obtain 6-month national entry visa.' },
+          { title: '5. Arrival & City Hall Registration (Anmeldung)', desc: 'Register local apartment address at Bürgeramt within 14 days of arrival.' },
+          { title: '6. Ausländerbehörde Blue Card Issuance', desc: 'Obtain electronic residence permit; eligible for German PR after 21 months.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Valid Passport (valid at least 6 months after planned departure)' },
+          { key: 'contract', label: 'Erklärung zum Beschäftigungsverhältnis (Official German Job Form)' },
+          { key: 'anabin', label: 'Anabin printouts (H+ university and degree equivalence rating)' },
+          { key: 'health', label: 'Incoming Travel Health Insurance & German statutory confirmation' },
+          { key: 'resume', label: 'Chronological CV in German/English & reference certificates' },
+          { key: 'degree', label: 'Original Degree Certificates & Apostilled certified translations' }
+        ]
+      },
+      CA: {
+        duration: 'Est: 2 - 4 Weeks (GTS Fast-Track)',
+        milestones: [
+          { title: '1. Canadian Job Offer from GTS Employer', desc: 'Offer from designated employer under Category A or high-wage Category B.' },
+          { title: '2. Positive LMIA / GTS Approval', desc: 'Employment and Social Development Canada (ESDC) issues positive decision in 10 days.' },
+          { title: '3. 2-Week Global Talent Stream Work Permit', desc: 'IRCC prioritizes application under 2-week service standard for tech talent.' },
+          { title: '4. Biometrics Submission (VAC)', desc: 'Provide fingerprints at local Canada Visa Application Centre.' },
+          { title: '5. Port of Entry Work Permit Issuance', desc: 'Receive work permit letter, fly to Canada, and obtain physical permit at airport border.' },
+          { title: '6. SIN Number & Express Entry CRS Boost', desc: 'Obtain Social Insurance Number; gain +50 to +200 points toward Canadian PR.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Valid Passport for entire duration of proposed employment' },
+          { key: 'lmia', label: 'Positive LMIA decision letter or LMIA-exempt job offer number' },
+          { key: 'wes', label: 'Educational Credential Assessment (ECA) report by WES Canada' },
+          { key: 'ielts', label: 'IELTS General / CELPIP language test score results' },
+          { key: 'police', label: 'Police Clearance Certificates from all countries lived 6+ months' },
+          { key: 'medical', label: 'Immigration Medical Exam (IME) from approved panel physician' }
+        ]
+      },
+      AU: {
+        duration: 'Est: 4 - 7 Weeks',
+        milestones: [
+          { title: '1. Standard Business Sponsorship Nomination', desc: 'Australian employer lodges Subclass 482 TSS sponsorship and nomination with DHA.' },
+          { title: '2. Skills Assessment & 2-Year Experience Check', desc: 'Demonstrate at least 2 years full-time relevant experience in nominated ANZSCO code.' },
+          { title: '3. Visa Application Lodgement (Subclass 482)', desc: 'Lodge visa application with Australian Department of Home Affairs.' },
+          { title: '4. Health & Character Clearance', desc: 'Complete Bupa/Panel physician health examination and AFP/overseas police clearances.' },
+          { title: '5. Visa Grant with Full Work Rights', desc: 'Receive TSS 482 visa with work authorization; family granted unrestricted work/study.' },
+          { title: '6. Direct Pathway to Permanent Residency (PR 186)', desc: 'Transition to Subclass 186 Employer Nomination PR after 2 years with employer.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Current Valid Passport' },
+          { key: 'nomination', label: 'Approved Subclass 482 Employer Nomination reference' },
+          { key: 'experience', label: 'Employment reference letters showing 2+ years specialized experience' },
+          { key: 'pte', label: 'PTE Academic (score 36+) or IELTS (score 5.0+) English test' },
+          { key: 'police', label: 'National Police Certificates for each country resided' },
+          { key: 'ovhc', label: 'Overseas Visitor Health Cover (OVHC) active policy certificate' }
+        ]
+      },
+      NL: {
+        duration: 'Est: 2 - 3 Weeks',
+        milestones: [
+          { title: '1. Employment with IND-Recognized Sponsor', desc: 'Contract meeting Highly Skilled Migrant salary threshold (€5,688/mo or €4,171 if under 30).' },
+          { title: '2. IND Fast-Track Application Lodged', desc: 'Immigration & Naturalisation Service (IND) processes corporate application in 2 weeks.' },
+          { title: '3. MVV Entry Visa Vignette', desc: 'Collect provisional residence sticker from Dutch Embassy if applicable.' },
+          { title: '4. 30% Tax Ruling Application', desc: 'Employer applies for 30% ruling exemption, giving 30% of gross salary tax-free.' },
+          { title: '5. Gemeente Registration & BSN Number', desc: 'Register at city hall, receive citizen service number (BSN), and open bank account.' },
+          { title: '6. IND Residence Card Collection', desc: 'Pick up 5-year Dutch residence permit at IND desk.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Valid Passport' },
+          { key: 'contract', label: 'Dutch Employment Contract meeting IND Highly Skilled salary' },
+          { key: 'sponsor', label: 'IND Recognized Sponsor Registration confirmation' },
+          { key: 'degrees', label: 'Legalized & Apostilled Degree Certificates' },
+          { key: 'ruling', label: 'Dutch Tax Authority 30% Ruling application form' }
+        ]
+      },
+      US: {
+        duration: 'Est: 3 - 8 Weeks (with Premium Processing)',
+        milestones: [
+          { title: '1. LCA Approval from Dept of Labor', desc: 'Employer files Labor Condition Application (Form ETA 9035) confirming prevailing wage.' },
+          { title: '2. Form I-129 Petition Filing with USCIS', desc: 'File petition with USCIS under H-1B transfer, cap-exempt, or O-1 Extraordinary Ability.' },
+          { title: '3. USCIS 15-Day Premium Processing', desc: 'Receive Form I-797 Approval Notice within 15 calendar days.' },
+          { title: '4. Form DS-160 & Consular Visa Stamping', desc: 'Book interview at US Embassy/Consulate; submit biometrics and passport.' },
+          { title: '5. Port of Entry Inspection & I-94 Issuance', desc: 'Travel to USA; receive electronic I-94 admitting status as specialized worker.' },
+          { title: '6. Social Security Number & EB-2/EB-3 Green Card', desc: 'Apply for SSN card; initiate employer-sponsored PERM green card process.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Passport valid for at least 6 months beyond intended stay' },
+          { key: 'i797', label: 'Original Form I-797 Notice of Action (USCIS Approval)' },
+          { key: 'lca', label: 'Certified Labor Condition Application (LCA Form ETA 9035)' },
+          { key: 'ds160', label: 'DS-160 Confirmation Page & Visa Application fee receipt' },
+          { key: 'degree', label: 'US Bachelor equivalent evaluation credential report' }
+        ]
+      },
+      AE: {
+        duration: 'Est: 1 - 2 Weeks',
+        milestones: [
+          { title: '1. Ministry of Human Resources (MOHRE) Offer', desc: 'Receive formal standard MOHRE employment offer and electronic work permit.' },
+          { title: '2. Entry Permit Issuance', desc: 'Employer applies for 60-day e-Visa entry permit into UAE.' },
+          { title: '3. Medical Fitness Screening in UAE', desc: 'Arrive in UAE and complete blood test and chest X-ray at preventive medical center.' },
+          { title: '4. Emirates ID Biometrics Stamping', desc: 'Submit fingerprints and photo at Federal Authority for Identity & Citizenship.' },
+          { title: '5. Residence Visa Stamping & 0% Tax Status', desc: '2 or 10-year residency visa stamped electronically on passport with 0% personal tax.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Valid Passport (6+ months validity)' },
+          { key: 'attested_degree', label: 'UAE Embassy Attested & MOFA authenticated Degree Certificate' },
+          { key: 'medical_ae', label: 'UAE Medical Fitness Test clearance certificate' },
+          { key: 'offer_mohre', label: 'Countersigned MOHRE Job Offer Letter' }
+        ]
+      },
+      IE: {
+        duration: 'Est: 3 - 5 Weeks',
+        milestones: [
+          { title: '1. Critical Skills Job Offer', desc: 'Job offer with salary over €38,000 for critical shortage role (or €64,000 for any role).' },
+          { title: '2. DETE Critical Skills Employment Permit (CSEP)', desc: 'Department of Enterprise issues employment permit directly.' },
+          { title: '3. Irish Entry Visa (Employment Visa D)', desc: 'Lodge visa application online via AVATS and submit passport to visa office.' },
+          { title: '4. Arrival & IRP Card Registration', desc: 'Register with Garda National Immigration Bureau (GNIB) / Burgh Quay to get IRP card.' },
+          { title: '5. Stamp 4 Fast-Track (PR Pathway)', desc: 'Eligible for unrestricted Stamp 4 residency after just 21 months of employment.' }
+        ],
+        documents: [
+          { key: 'passport', label: 'Valid Passport' },
+          { key: 'csep', label: 'Approved DETE Critical Skills Employment Permit' },
+          { key: 'contract', label: 'Signed Irish Employment Contract' },
+          { key: 'degree', label: 'Certified Degree Qualifications' },
+          { key: 'insurance', label: 'Private Medical Insurance Policy' }
+        ]
+      }
+    };
+
+    function switchRoadmapCountry() {
+      const countryKey = document.getElementById('roadmapCountrySelect')?.value || 'UK';
+      const data = ROADMAP_DATA[countryKey] || ROADMAP_DATA.UK;
+
+      // Update duration
+      if (document.getElementById('roadmapDurationBadge')) {
+        document.getElementById('roadmapDurationBadge').innerText = data.duration;
+      }
+
+      // Render milestones
+      const mCont = document.getElementById('roadmapMilestonesContainer');
+      if (mCont) {
+        mCont.innerHTML = data.milestones.map((m, idx) => `
+          <div class="timeline-step ${idx >= 4 ? 'future' : ''}">
+            <strong style="color: var(--text-white); font-size: 14px;">${m.title}</strong>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">${m.desc}</p>
+          </div>
+        `).join('');
+      }
+
+      // Render checklist
+      const savedDocs = JSON.parse(localStorage.getItem(`gvj_docs_${countryKey}`) || '{}');
+      const cCont = document.getElementById('roadmapChecklistContainer');
+      if (cCont) {
+        cCont.innerHTML = data.documents.map(doc => {
+          const isChecked = savedDocs[doc.key] !== undefined ? savedDocs[doc.key] : true;
+          return `
+            <label style="font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-white);">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} style="accent-color: var(--emerald);" onchange="toggleChecklistDoc('${countryKey}', '${doc.key}', this.checked)">
+              <span>${doc.label}</span>
+            </label>
+          `;
+        }).join('');
+      }
+
+      updateRoadmapReadinessScore(countryKey);
+    }
+
+    function toggleChecklistDoc(countryKey, docKey, isChecked) {
+      const savedDocs = JSON.parse(localStorage.getItem(`gvj_docs_${countryKey}`) || '{}');
+      savedDocs[docKey] = isChecked;
+      localStorage.setItem(`gvj_docs_${countryKey}`, JSON.stringify(savedDocs));
+      updateRoadmapReadinessScore(countryKey);
+    }
+
+    function updateRoadmapReadinessScore(countryKey) {
+      const data = ROADMAP_DATA[countryKey] || ROADMAP_DATA.UK;
+      const savedDocs = JSON.parse(localStorage.getItem(`gvj_docs_${countryKey}`) || '{}');
+      
+      let checkedCount = 0;
+      data.documents.forEach(doc => {
+        const isChecked = savedDocs[doc.key] !== undefined ? savedDocs[doc.key] : true;
+        if (isChecked) checkedCount++;
+      });
+
+      const total = data.documents.length;
+      const pct = Math.round((checkedCount / total) * 100);
+
+      const scoreBadge = document.getElementById('readinessScoreBadge');
+      const progressText = document.getElementById('readinessProgressText');
+      const progressBar = document.getElementById('readinessProgressBar');
+
+      if (scoreBadge) scoreBadge.innerText = `${pct}% Ready`;
+      if (progressText) progressText.innerText = `${checkedCount} of ${total} Verified`;
+      if (progressBar) progressBar.style.width = `${pct}%`;
     }
 
     // Visa Fees Calculator
@@ -2892,6 +4129,7 @@ Generated via Global Visa Jobs AI ATS Resume Builder
       calculateRelocation();
       calculateVisaFees();
       updateSavedCounter();
+      switchRoadmapCountry();
     });
   </script>
 </body>
