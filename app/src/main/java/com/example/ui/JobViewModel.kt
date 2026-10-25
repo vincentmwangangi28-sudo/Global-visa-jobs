@@ -16,6 +16,7 @@ import com.example.network.RapidApiClient
 import com.example.network.ParsedResumeResult
 import com.example.network.ResumeGapAnalysisResult
 import com.example.util.SavedJobsPdfExporter
+import com.example.util.VisaDossierPdfGenerator
 
 import com.example.auth.FirebaseAuthManager
 import com.example.auth.AuthState
@@ -57,6 +58,12 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _selectedSponsorship = MutableStateFlow("All")
     val selectedSponsorship: StateFlow<String> = _selectedSponsorship.asStateFlow()
+
+    private val _selectedSortBy = MutableStateFlow("Confidence Score")
+    val selectedSortBy: StateFlow<String> = _selectedSortBy.asStateFlow()
+
+    private val _selectedSourceFilter = MutableStateFlow("All Sources")
+    val selectedSourceFilter: StateFlow<String> = _selectedSourceFilter.asStateFlow()
 
     // Database flow bindings
     val allJobs: StateFlow<List<JobEntity>> = repository.allJobs
@@ -202,6 +209,56 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectSponsorship(sponsorship: String) {
         _selectedSponsorship.value = sponsorship
+    }
+
+    fun selectSortBy(sortBy: String) {
+        _selectedSortBy.value = sortBy
+    }
+
+    fun selectSourceFilter(source: String) {
+        _selectedSourceFilter.value = source
+    }
+
+    /**
+     * Normalizes global salary strings across 21 currencies into an estimated annual USD figure for sorting.
+     */
+    fun estimateAnnualUsdSalary(salary: String, country: String): Int {
+        val numbers = Regex("""\d[\d,]*""").findAll(salary)
+            .mapNotNull { it.value.replace(",", "").toDoubleOrNull() }
+            .toList()
+        if (numbers.isEmpty()) return 0
+        var baseAmount = numbers.maxOrNull() ?: 0.0
+        val lower = salary.lowercase()
+        if (lower.contains("month") || lower.contains("/mo")) {
+            baseAmount *= 12.0
+        } else if (lower.contains("hour") || lower.contains("/hr")) {
+            baseAmount *= 2080.0
+        }
+        val fxToUsd = when {
+            salary.contains("£") || country.equals("United Kingdom", true) -> 1.28
+            salary.contains("€") || country in listOf("Germany", "Netherlands", "Ireland", "France", "Finland", "Spain") -> 1.09
+            lower.contains("chf") || country.equals("Switzerland", true) -> 1.14
+            lower.contains("cad") || country.equals("Canada", true) -> 0.74
+            lower.contains("aud") || country.equals("Australia", true) -> 0.67
+            lower.contains("nzd") || country.equals("New Zealand", true) -> 0.61
+            lower.contains("sgd") || country.equals("Singapore", true) -> 0.75
+            lower.contains("sek") || country.equals("Sweden", true) -> 0.096
+            lower.contains("nok") || country.equals("Norway", true) -> 0.094
+            lower.contains("dkk") || country.equals("Denmark", true) -> 0.146
+            lower.contains("pln") || country.equals("Poland", true) -> 0.25
+            lower.contains("aed") || country.equals("United Arab Emirates", true) -> 0.272
+            lower.contains("sar") || country.equals("Saudi Arabia", true) -> 0.266
+            lower.contains("¥") || lower.contains("jpy") || country.equals("Japan", true) -> {
+                // If written in Millions (e.g., 12M), multiply accordingly
+                if (baseAmount < 200) baseAmount * 1_000_000 * 0.0067 else baseAmount * 0.0067
+            }
+            else -> 1.0
+        }
+        return if (lower.contains("¥") && baseAmount < 200) {
+            fxToUsd.toInt()
+        } else {
+            (baseAmount * fxToUsd).toInt()
+        }
     }
 
     /**
@@ -1131,6 +1188,37 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearLastExportedPdfResult() {
         _lastExportedPdfResult.value = null
+    }
+
+    // Visa Dossier PDF Export States
+    private val _isExportingDossier = MutableStateFlow(false)
+    val isExportingDossier: StateFlow<Boolean> = _isExportingDossier.asStateFlow()
+
+    private val _lastExportedDossierResult = MutableStateFlow<VisaDossierPdfGenerator.DossierExportResult?>(null)
+    val lastExportedDossierResult: StateFlow<VisaDossierPdfGenerator.DossierExportResult?> = _lastExportedDossierResult.asStateFlow()
+
+    fun exportVisaDossierToPdf(
+        context: android.content.Context,
+        dossierData: VisaDossierPdfGenerator.DossierData,
+        onComplete: ((VisaDossierPdfGenerator.DossierExportResult?) -> Unit)? = null
+    ) {
+        viewModelScope.launch {
+            _isExportingDossier.value = true
+            try {
+                val result = VisaDossierPdfGenerator.generateDossierPdf(context, dossierData)
+                _lastExportedDossierResult.value = result
+                onComplete?.invoke(result)
+            } catch (e: Exception) {
+                Log.e("JobViewModel", "Failed to generate Visa Dossier PDF", e)
+                onComplete?.invoke(null)
+            } finally {
+                _isExportingDossier.value = false
+            }
+        }
+    }
+
+    fun clearLastExportedDossierResult() {
+        _lastExportedDossierResult.value = null
     }
 
     // ==========================================

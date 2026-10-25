@@ -514,6 +514,8 @@ fun DiscoverTab(
     val selectedIndustry by viewModel.selectedIndustry.collectAsStateWithLifecycle()
     val selectedExperience by viewModel.selectedExperience.collectAsStateWithLifecycle()
     val selectedSponsorship by viewModel.selectedSponsorship.collectAsStateWithLifecycle()
+    val selectedSortBy by viewModel.selectedSortBy.collectAsStateWithLifecycle()
+    val selectedSourceFilter by viewModel.selectedSourceFilter.collectAsStateWithLifecycle()
     val jobVerifications by viewModel.jobVerifications.collectAsStateWithLifecycle()
     val isVerifyingJob by viewModel.isVerifyingJob.collectAsStateWithLifecycle()
     val linkedInJobCount by viewModel.linkedInJobCount.collectAsStateWithLifecycle()
@@ -542,16 +544,19 @@ fun DiscoverTab(
 
     var filterSavedOnly by remember { mutableStateOf(false) }
     var showExportPdfDialog by remember { mutableStateOf(false) }
+    var showDiscoverDossierDialog by remember { mutableStateOf(false) }
 
     var activeDetailJob by remember { mutableStateOf<JobEntity?>(null) }
     var activeApplyJob by remember { mutableStateOf<JobEntity?>(null) }
     val context = LocalContext.current
 
-    // Apply Filter Logic
+    // Apply Filter & Worldwide Sort Logic
     val filteredJobs = jobs.filter { job ->
         val matchQuery = queryText.isEmpty() ||
                 job.title.contains(queryText, ignoreCase = true) ||
                 job.company.contains(queryText, ignoreCase = true) ||
+                job.country.contains(queryText, ignoreCase = true) ||
+                job.visaType.contains(queryText, ignoreCase = true) ||
                 job.description.contains(queryText, ignoreCase = true)
 
         val matchCountry = selectedCountry == "All" || job.country.equals(selectedCountry, ignoreCase = true)
@@ -565,9 +570,24 @@ fun DiscoverTab(
             "High Confidence" -> job.confidenceScore >= 90
             else -> true
         }
+        val isLiveScraped = job.id.startsWith("scraped_") || job.id.startsWith("live_") || job.id.startsWith("indeed_") || job.id.startsWith("google_") || job.id.startsWith("multi_") || job.isCustomPosted
+        val matchSource = when (selectedSourceFilter) {
+            "Verified Registry" -> !isLiveScraped
+            "Live Scraped / API" -> isLiveScraped
+            else -> true
+        }
         val matchSaved = !filterSavedOnly || job.isBookmarked
 
-        matchQuery && matchCountry && matchIndustry && matchExp && matchSponsorship && matchSaved
+        matchQuery && matchCountry && matchIndustry && matchExp && matchSponsorship && matchSource && matchSaved
+    }.let { list ->
+        when (selectedSortBy) {
+            "Salary (Highest USD)" -> list.sortedByDescending { viewModel.estimateAnnualUsdSalary(it.salary, it.country) }
+            "Country (A → Z)" -> list.sortedWith(compareBy<JobEntity> { it.country }.thenByDescending { it.confidenceScore })
+            "Company (A → Z)" -> list.sortedWith(compareBy<JobEntity> { it.company }.thenByDescending { it.confidenceScore })
+            "Relocation Paid First" -> list.sortedWith(compareByDescending<JobEntity> { it.relocationAssistance }.thenByDescending { it.confidenceScore })
+            "Newest Posted First" -> list.sortedByDescending { it.datePosted }
+            else -> list.sortedByDescending { it.confidenceScore }
+        }
     }
 
     Column(
@@ -722,6 +742,26 @@ fun DiscoverTab(
                         Icon(Icons.Default.RateReview, contentDescription = null, tint = Color(0xFFFFB74D), modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("Employer Reviews", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { showDiscoverDossierDialog = true }
+                        .border(1.dp, AmberGold, RoundedCornerShape(12.dp))
+                        .testTag("discover_quick_visa_dossier_btn"),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Share, contentDescription = null, tint = AmberGold, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Official Visa Dossier PDF", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -1701,6 +1741,29 @@ fun DiscoverTab(
                 }
             }
 
+            // Sort By Dropdown (Worldwide Multi-Criterion Sorting)
+            FilterBadgeDropdown(
+                label = "Sort By",
+                selected = selectedSortBy,
+                options = listOf(
+                    "Confidence Score",
+                    "Salary (Highest USD)",
+                    "Country (A → Z)",
+                    "Company (A → Z)",
+                    "Relocation Paid First",
+                    "Newest Posted First"
+                ),
+                onSelected = { viewModel.selectSortBy(it) }
+            )
+
+            // Source Filter Dropdown
+            FilterBadgeDropdown(
+                label = "Source",
+                selected = selectedSourceFilter,
+                options = listOf("All Sources", "Verified Registry", "Live Scraped / API"),
+                onSelected = { viewModel.selectSourceFilter(it) }
+            )
+
             // Country Filter Dropdown
             FilterBadgeDropdown(
                 label = "Country",
@@ -1734,31 +1797,41 @@ fun DiscoverTab(
             )
         }
 
-        // Active filters summary
-        if (selectedCountry != "All" || selectedIndustry != "All" || selectedExperience != "All" || selectedSponsorship != "All") {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 6.dp)
-            ) {
+        // Worldwide Index & Sort Summary Banner
+        val distinctCountriesCount = filteredJobs.map { it.country }.distinct().size
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 6.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(NavyMedium.copy(alpha = 0.7f))
+                .padding(horizontal = 10.dp, vertical = 6.dp)
+                .testTag("worldwide_jobs_summary_bar")
+        ) {
+            Text(
+                text = "🌍 Displaying ${filteredJobs.size} verified jobs across $distinctCountriesCount countries • Sorted by $selectedSortBy",
+                color = EmeraldGreen,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
+            )
+            if (selectedCountry != "All" || selectedIndustry != "All" || selectedExperience != "All" || selectedSponsorship != "All" || selectedSourceFilter != "All Sources" || queryText.isNotEmpty()) {
                 Text(
-                    text = "Active Filters applied. showing ${filteredJobs.size} results.",
-                    color = EmeraldGreen,
-                    fontSize = 11.sp,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = "Clear All",
+                    text = "Reset",
                     color = CoralRed,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable {
+                            queryText = ""
                             viewModel.selectCountry("All")
                             viewModel.selectIndustry("All")
                             viewModel.selectExperience("All")
                             viewModel.selectSponsorship("All")
+                            viewModel.selectSourceFilter("All Sources")
                         }
-                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
                 )
             }
         }
@@ -2123,6 +2196,13 @@ fun DiscoverTab(
             onDismiss = { showExportPdfDialog = false }
         )
     }
+
+    if (showDiscoverDossierDialog) {
+        ExportVisaDossierDialog(
+            viewModel = viewModel,
+            onDismiss = { showDiscoverDossierDialog = false }
+        )
+    }
 }
 
 @Composable
@@ -2459,6 +2539,7 @@ fun JobDetailContent(
     val isVerifying = isVerifyingJob[job.id] ?: false
 
     var showApplicationMethodDialog by remember { mutableStateOf(false) }
+    var showJobDossierDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -3049,6 +3130,74 @@ fun JobDetailContent(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Official Visa & Relocation Eligibility Dossier Card for this specific Job
+            Card(
+                colors = CardDefaults.cardColors(containerColor = NavyMedium),
+                border = BorderStroke(1.dp, AmberGold.copy(alpha = 0.5f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            tint = AmberGold,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Official Visa & Relocation Eligibility Dossier",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Surface(
+                            color = AmberGold.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(4.dp)
+                        ) {
+                            Text(
+                                text = "A4 PDF",
+                                color = AmberGold,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Generate an attorney-grade immigration brief pre-filled for ${job.company} (${job.country}) including statutory salary floor verification and 70-point sponsorship scoring.",
+                        color = SlateMuted,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Button(
+                        onClick = { showJobDossierDialog = true },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AmberGold,
+                            contentColor = NavyDark
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(36.dp)
+                            .testTag("job_detail_build_dossier_btn")
+                    ) {
+                        Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Build Visa Dossier PDF for this Job",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
+
             Text(
                 text = "Job Description",
                 color = EmeraldGreen,
@@ -3125,6 +3274,14 @@ fun JobDetailContent(
             job = job,
             viewModel = viewModel,
             onDismiss = { showApplicationMethodDialog = false }
+        )
+    }
+
+    if (showJobDossierDialog) {
+        ExportVisaDossierDialog(
+            viewModel = viewModel,
+            onDismiss = { showJobDossierDialog = false },
+            initialJob = job
         )
     }
 }
@@ -3225,6 +3382,7 @@ fun MatchTab(viewModel: JobViewModel, isWideScreen: Boolean = false) {
 @Composable
 fun CareerToolsSubScreen(viewModel: JobViewModel) {
     var showPdfExportDialog by remember { mutableStateOf(false) }
+    var showDossierDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -3233,12 +3391,23 @@ fun CareerToolsSubScreen(viewModel: JobViewModel) {
             .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        VisaDossierExportCard(
+            viewModel = viewModel,
+            onOpenDossierDialog = { showDossierDialog = true }
+        )
         SavedJobsPdfExportCard(
             viewModel = viewModel,
             onOpenExportDialog = { showPdfExportDialog = true }
         )
         VisaInterviewPrepCard(viewModel)
         RecruiterColdEmailCard(viewModel)
+    }
+
+    if (showDossierDialog) {
+        ExportVisaDossierDialog(
+            viewModel = viewModel,
+            onDismiss = { showDossierDialog = false }
+        )
     }
 
     if (showPdfExportDialog) {
