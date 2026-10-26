@@ -33,6 +33,9 @@
   <meta name="twitter:title" content="Global Visa Jobs - Visa Sponsorship">
   <meta name="twitter:description" content="Browse verified global visa sponsorship jobs in the UK, Germany, Canada, US & EU. Use points tests, sponsor lists, and relocation tools.">
   
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22 width=%2232%22 height=%2232%22><text y=%2226%22 font-size=%2226%22>🌐</text></svg>">
 
   <!-- Schema.org Structured Data for Bing and Google Rich Results -->
@@ -137,19 +140,19 @@
 
   <style>
     :root {
-      --bg-dark: #0A0F1D;
+      --bg-dark: #0B0F17;
       --bg-card: #111827;
-      --bg-card-hover: #1E293B;
-      --border-color: #1F293D;
+      --bg-card-hover: #182235;
+      --border-color: #1E293B;
       --border-accent: #334155;
       --emerald: #10B981;
-      --emerald-dark: #064E3B;
-      --teal: #06B6D4;
-      --blue: #38BDF8;
-      --blue-accent: #0284C7;
-      --purple: #A855F7;
-      --indigo: #6366F1;
-      --text-white: #F9FAFB;
+      --emerald-dark: rgba(16, 185, 129, 0.12);
+      --teal: #94A3B8;
+      --blue: #E2E8F0;
+      --blue-accent: #0F766E;
+      --purple: #64748B;
+      --indigo: #475569;
+      --text-white: #F8FAFC;
       --text-muted: #94A3B8;
       --text-dim: #64748B;
       --danger: #EF4444;
@@ -159,7 +162,11 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    h1, h2, h3, h4, .logo-title, .job-title {
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: -0.02em;
     }
     body {
       background-color: var(--bg-dark);
@@ -167,12 +174,13 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      line-height: 1.5;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* Header */
     header {
-      background: rgba(17, 24, 39, 0.96);
+      background: rgba(11, 15, 23, 0.94);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
@@ -197,63 +205,64 @@
       color: var(--text-white);
     }
     .logo-badge {
-      background: linear-gradient(135deg, var(--emerald), var(--teal));
-      color: #064E3B;
-      font-weight: 900;
-      font-size: 16px;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      background: #0F766E;
+      color: #F8FAFC;
+      font-weight: 800;
+      font-size: 14px;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
     .logo-title {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text-white);
     }
     .logo-title span {
-      background: linear-gradient(135deg, var(--emerald), var(--teal));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--emerald);
     }
 
     /* Nav Tabs */
     .nav-tabs {
       display: flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(10, 15, 29, 0.8);
+      gap: 2px;
+      background: #0F172A;
       padding: 4px;
-      border-radius: 10px;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
       overflow-x: auto;
       max-width: 100%;
     }
     .nav-tab-btn {
       background: transparent;
-      border: none;
+      border: 1px solid transparent;
       color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 8px 12px;
-      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 6px 11px;
+      border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
+      gap: 5px;
+      transition: all 0.15s ease;
       white-space: nowrap;
     }
     .nav-tab-btn:hover {
       color: var(--text-white);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.04);
     }
     .nav-tab-btn.active {
-      background: var(--emerald-dark);
-      color: var(--emerald);
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      background: #1E293B;
+      color: var(--text-white);
+      font-weight: 600;
+      border: 1px solid var(--border-accent);
     }
     .header-actions {
       display: flex;
@@ -290,10 +299,10 @@
 
     /* Banner Ribbon */
     .verification-ribbon {
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.12));
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 12px;
-      padding: 12px 18px;
+      background: #111827;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px 16px;
       margin-bottom: 24px;
       display: flex;
       align-items: center;
@@ -305,16 +314,15 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
-      color: var(--text-white);
+      color: var(--text-muted);
     }
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background: var(--emerald);
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--emerald);
     }
 
     /* Section Headers */
@@ -1216,49 +1224,49 @@
 
       <nav class="nav-tabs" role="tablist">
         <button class="nav-tab-btn active" id="tabBtn-jobs" onclick="switchTab('jobs')">
-          <span>🛂</span> Visa Jobs
+          Visa Jobs
         </button>
         <button class="nav-tab-btn" id="tabBtn-points" onclick="switchTab('points')">
-          <span>⚖️</span> Points Test
+          Points Calculator
         </button>
         <button class="nav-tab-btn" id="tabBtn-sponsors" onclick="switchTab('sponsors')">
-          <span>🏢</span> Sponsors Registry
+          Sponsor Registry
         </button>
         <button class="nav-tab-btn" id="tabBtn-calculator" onclick="switchTab('calculator')">
-          <span>💰</span> Salary & Tax
+          Salary &amp; Tax
         </button>
         <button class="nav-tab-btn" id="tabBtn-fees" onclick="switchTab('fees')">
-          <span>🏷️</span> Visa Cost Estimator
+          Visa Fees
         </button>
         <button class="nav-tab-btn" id="tabBtn-timeline" onclick="switchTab('timeline')">
-          <span>🗺️</span> Relocation Roadmap
+          Relocation Roadmap
         </button>
         <button class="nav-tab-btn" id="tabBtn-soc" onclick="switchTab('soc')">
-          <span>🔍</span> Shortage Occupations (SOC)
+          Occupation Codes
         </button>
         <button class="nav-tab-btn" id="tabBtn-interview" onclick="switchTab('interview')">
-          <span>🎤</span> Embassy Prep
+          Consular Prep
         </button>
         <button class="nav-tab-btn" id="tabBtn-coverletter" onclick="switchTab('coverletter')">
-          <span>✍️</span> Visa Cover Letter AI
+          Cover Letter Studio
         </button>
         <button class="nav-tab-btn" id="tabBtn-resume" onclick="switchTab('resume')">
-          <span>📄</span> AI ATS Matcher
+          Resume &amp; ATS Review
         </button>
-                <button class="nav-tab-btn" id="tabBtn-dossier" onclick="switchTab('dossier')">
-          <span>📑</span> Visa Dossier
+        <button class="nav-tab-btn" id="tabBtn-dossier" onclick="switchTab('dossier')">
+          Visa Dossier
         </button>
         <button class="nav-tab-btn" id="tabBtn-alerts" onclick="switchTab('alerts')">
-          <span>🔔</span> Job Alerts (<span id="activeAlertCount">0</span>)
+          Job Alerts (<span id="activeAlertCount">0</span>)
         </button>
         <button class="nav-tab-btn" id="tabBtn-tracker" onclick="switchTab('tracker')">
-          <span>📋</span> My Saved (<span id="savedCountBadge">0</span>)
+          Saved (<span id="savedCountBadge">0</span>)
         </button>
         <button class="nav-tab-btn" id="tabBtn-profile" onclick="openProfileModal()">
-          <span>👤</span> My Profile
+          Profile
         </button>
         <button class="nav-tab-btn" id="tabBtn-download" onclick="switchTab('download')">
-          <span>📱</span> APK Hub
+          Android App
         </button>
       </nav>
 
@@ -1283,31 +1291,31 @@
     <div class="verification-ribbon">
       <div class="verification-ribbon-text">
         <div class="status-dot"></div>
-        <span><strong>Google &amp; Bing Search Verified:</strong> Real-time visa sponsorship registry with licensed UK CoS, Germany EU Blue Card, and Canada LMIA employers.</span>
+        <span><strong style="color: var(--text-white);">Official Registry Index:</strong> Direct employer sponsorship listings verified against UK Home Office CoS, Germany EU Blue Card, and Canada LMIA directories.</span>
       </div>
-      <div style="font-size: 12px; color: var(--emerald); font-weight: 700;">
-        5,200+ Live Listings &bull; Updated Daily
+      <div style="font-size: 12px; color: var(--emerald); font-weight: 600;">
+        5,200+ Active Roles &bull; Updated Daily
       </div>
     </div>
 
     <!-- 1. LIVE VISA JOBS -->
     <section id="section-jobs">
       <div class="section-header">
-        <h2><span>🌐</span> Verified International Visa Sponsorship Jobs</h2>
-        <p>Explore employers offering Certificate of Sponsorship (UK), EU Blue Card (Germany), LMIA (Canada), and H-1B / O-1 (USA).</p>
+        <h2>Verified International Visa Sponsorship Roles</h2>
+        <p>Filter licensed employers offering Certificate of Sponsorship (UK), EU Blue Card (Germany), LMIA (Canada), and H-1B / O-1 (USA).</p>
       </div>
 
       <!-- Relocate.me / Otta Style Quick Filter Pills -->
       <div class="quick-filter-pills" id="quickFilterPills">
-        <button class="quick-pill-btn active" onclick="applyQuickFilter('ALL', this)">🌐 All Opportunities</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('FULL_RELOCATION', this)">✈️ Full Relocation</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('HOUSING', this)">🏠 Housing Covered</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('FAST_TRACK', this)">⚡ Fast-Track Visa</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('FAMILY', this)">👨‍👩‍👧 Spousal Visa</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('HIGH_SALARY', this)">💰 High Compensation</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('TECH', this)">💻 Tech & Software</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('HEALTHCARE', this)">🩺 Healthcare & Care</button>
-        <button class="quick-pill-btn" onclick="applyQuickFilter('ENGINEERING', this)">🚜 Engineering</button>
+        <button class="quick-pill-btn active" onclick="applyQuickFilter('ALL', this)">All Opportunities</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('FULL_RELOCATION', this)">Full Relocation</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('HOUSING', this)">Housing Covered</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('FAST_TRACK', this)">Fast-Track Visa</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('FAMILY', this)">Spousal Work Rights</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('HIGH_SALARY', this)">Executive Compensation</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('TECH', this)">Software &amp; Engineering</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('HEALTHCARE', this)">Clinical &amp; Healthcare</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('ENGINEERING', this)">Industrial &amp; Civil</button>
       </div>
 
       <!-- Search & Filters -->
@@ -1353,8 +1361,11 @@
           </select>
           <select id="sortSelect" class="input-control" onchange="filterJobs()">
             <option value="DEFAULT">Sort: Recommended</option>
-            <option value="SALARY_HIGH">Salary: High to Low</option>
-            <option value="SALARY_LOW">Salary: Low to High</option>
+            <option value="SALARY_HIGH">Salary: High to Low (USD Normalized)</option>
+            <option value="NET_USD_HIGH">Net Take-Home Pay (After Tax/Ruling)</option>
+            <option value="VISA_SPEED">Fastest Visa Processing (Days)</option>
+            <option value="PR_TIMELINE">Fastest PR / Residency Timeline</option>
+            <option value="SALARY_LOW">Salary: Low to High (USD)</option>
             <option value="NEWEST">Latest Verified</option>
             <option value="RELOCATION">Best Relocation Tier</option>
             <option value="COUNTRY">Country: A to Z</option>
@@ -1794,7 +1805,7 @@
     <!-- 8. EMBASSY INTERVIEW SIMULATOR -->
     <section id="section-interview" style="display: none;">
       <div class="section-header">
-        <h2><span>🎤</span> AI Embassy & Visa Consular Interview Simulator</h2>
+        <h2>Consular &amp; Embassy Interview Preparation</h2>
         <p>Practice realistic immigration consular questions asked at UK VFS, US Embassy (DS-160/H-1B), and German Ausländerbehörde.</p>
       </div>
 
@@ -1816,12 +1827,12 @@
               </h3>
               <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Your Sample Practice Answer:</label>
               <textarea id="interviewUserAnswer" class="input-control" rows="5" placeholder="Type your structured practice response here explaining your recruitment timeline, technical qualifications, and sponsor relationship..."></textarea>
-              <button class="btn-primary" style="margin-top: 12px; width: 100%;" onclick="evaluateInterviewAnswer()">Submit Answer for AI Scoring</button>
+              <button class="btn-primary" style="margin-top: 12px; width: 100%;" onclick="evaluateInterviewAnswer()">Evaluate Response Clarity</button>
             </div>
           </div>
 
           <div class="result-box" id="interviewFeedbackBox">
-            <h4 style="color: var(--emerald); margin-bottom: 12px;">AI Consular Scoring & Advice</h4>
+            <h4 style="color: var(--emerald); margin-bottom: 12px;">Consular Readiness Evaluation</h4>
             <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
               <div style="font-size: 32px; font-weight: 900; color: var(--emerald);" id="interviewScore">92%</div>
               <div style="font-size: 13px; color: var(--text-muted);">
@@ -1841,11 +1852,11 @@
       </div>
     </section>
 
-    <!-- 9. AI VISA COVER LETTER GENERATOR -->
+    <!-- 9. VISA COVER LETTER STUDIO -->
     <section id="section-coverletter" style="display: none;">
       <div class="section-header">
-        <h2><span>✍️</span> AI Visa Sponsorship Cover Letter & Justification Generator</h2>
-        <p>Create a customized, ATS-compliant cover letter highlighting your immigration eligibility, shortage occupation skills, and relocation readiness.</p>
+        <h2>Visa Sponsorship Cover Letter &amp; Justification Studio</h2>
+        <p>Draft a structured cover letter highlighting your immigration eligibility, occupation code alignment, and relocation readiness.</p>
       </div>
 
       <div class="tool-container">
@@ -1871,13 +1882,13 @@
                 <option value="8+">8+ Years (Staff / Principal Architect)</option>
               </select>
             </div>
-            <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="generateCoverLetter()">Generate Tailored Cover Letter</button>
+            <button class="btn-primary" style="width: 100%; margin-top: 10px;" onclick="generateCoverLetter()">Draft Tailored Cover Letter</button>
           </div>
 
           <div class="result-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <h4 style="color: var(--teal); font-size: 15px;">Generated Visa Cover Letter</h4>
-              <button class="btn-download-top" style="font-size: 11px; padding: 4px 10px;" onclick="copyCoverLetter()">📋 Copy Text</button>
+              <h4 style="color: var(--teal); font-size: 15px;">Sponsorship Cover Letter Draft</h4>
+              <button class="btn-download-top" style="font-size: 11px; padding: 4px 10px;" onclick="copyCoverLetter()">Copy Text</button>
             </div>
             <textarea id="clResultText" class="input-control" rows="13" style="font-size: 12px; line-height: 1.6; background: var(--bg-card); color: var(--text-white);" readonly>
 Dear Hiring Team at Monzo Financial Technologies Ltd,
@@ -1896,11 +1907,11 @@ International Engineering Candidate
       </div>
     </section>
 
-    <!-- 10. AI ATS RESUME OPTIMIZER -->
+    <!-- 10. RESUME & ATS ALIGNMENT REVIEW -->
     <section id="section-resume" style="display: none;">
       <div class="section-header">
-        <h2><span>📄</span> AI ATS Visa Resume Optimizer</h2>
-        <p>Score your resume against international shortage-occupation criteria and generate tailored bullet points.</p>
+        <h2>International Resume &amp; Shortage Occupation Review</h2>
+        <p>Benchmark your CV against international shortage-occupation criteria and generate structured impact statements.</p>
       </div>
 
       <div class="tool-container">
@@ -3483,10 +3494,13 @@ International Engineering Candidate
       }
       container.innerHTML = jobs.map(j => {
         const isSaved = isJobInPipeline(j.id);
+        const isCompared = typeof comparedWebJobIds !== 'undefined' && comparedWebJobIds.includes(j.id);
         const perks = getRelocationPerks(j);
         const liveBadge = j.isLiveFeed ? '<span class="live-badge">⚡ LIVE INGESTED</span>' : '';
+        const usdEq = typeof estimateUsdAnnual === 'function' ? estimateUsdAnnual(j) : 0;
+        const usdBadge = usdEq > 0 ? `<span style="font-size: 11px; color: var(--teal); font-weight: 600; margin-left: 8px;">(≈ $${usdEq.toLocaleString()} USD/yr)</span>` : '';
         return `
-          <div class="job-card" onclick="openJobModal('${j.id}')">
+          <div class="job-card" onclick="openJobModal('${j.id}')" style="${isCompared ? 'border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal);' : ''}">
             <div>
               <div class="job-badge-row">
                 <span class="visa-pill">${j.visaType}</span> ${liveBadge}
@@ -3495,7 +3509,7 @@ International Engineering Candidate
               </div>
               <h3 class="job-title">${j.title}</h3>
               <div class="company-name">${j.company}</div>
-              <div class="salary-box">${j.salary}</div>
+              <div class="salary-box">${j.salary}${usdBadge}</div>
               <div class="relocation-perks-row">
                 ${perks.map(p => `<span class="perk-pill">${p}</span>`).join('')}
               </div>
@@ -3503,9 +3517,12 @@ International Engineering Candidate
                 ${j.tags.map(t => `<span class="tech-tag">${t}</span>`).join('')}
               </div>
             </div>
-            <div class="card-footer-actions">
+            <div class="card-footer-actions" style="gap: 6px;">
               <button class="btn-view-details" type="button">
-                Visa Details &rarr;
+                Details &rarr;
+              </button>
+              <button class="btn-secondary" type="button" style="padding: 6px 10px; font-size: 11.5px; border-color: ${isCompared ? 'var(--teal)' : 'rgba(245, 158, 11, 0.45)'}; color: ${isCompared ? 'var(--teal)' : 'var(--amber)'};" onclick="event.stopPropagation(); toggleCompareWebJob('${j.id}')">
+                ${isCompared ? '✓ Comparing' : '⚖️ Compare'}
               </button>
               <button class="btn-apply-fast" type="button" onclick="event.stopPropagation(); openJobModal('${j.id}')">
                 ${isSaved ? '★ In Pipeline' : 'Quick Apply'}
@@ -3865,19 +3882,17 @@ International Engineering Candidate
         return matchesQuery && matchesCountry && matchesVisa && matchesRelo && matchesQuick;
       });
 
-      // Sorting
+      // Sorting (Multi-Currency USD Normalized & Visa/PR Speed)
       if (sort === 'SALARY_HIGH') {
-        filtered.sort((a, b) => {
-          const numA = parseInt(a.salary.replace(/[^0-9]/g, '')) || 0;
-          const numB = parseInt(b.salary.replace(/[^0-9]/g, '')) || 0;
-          return numB - numA;
-        });
+        filtered.sort((a, b) => estimateUsdAnnual(b) - estimateUsdAnnual(a));
+      } else if (sort === 'NET_USD_HIGH') {
+        filtered.sort((a, b) => estimateNetUsdAnnual(b) - estimateNetUsdAnnual(a));
+      } else if (sort === 'VISA_SPEED') {
+        filtered.sort((a, b) => estimateVisaSpeedDays(a) - estimateVisaSpeedDays(b));
+      } else if (sort === 'PR_TIMELINE') {
+        filtered.sort((a, b) => estimatePrMonths(a) - estimatePrMonths(b));
       } else if (sort === 'SALARY_LOW') {
-        filtered.sort((a, b) => {
-          const numA = parseInt(a.salary.replace(/[^0-9]/g, '')) || 0;
-          const numB = parseInt(b.salary.replace(/[^0-9]/g, '')) || 0;
-          return numA - numB;
-        });
+        filtered.sort((a, b) => estimateUsdAnnual(a) - estimateUsdAnnual(b));
       } else if (sort === 'NEWEST') {
         filtered.reverse();
       } else if (sort === 'RELOCATION') {
@@ -5430,6 +5445,209 @@ Reference: GVJ-DOS-2026-88192 | globalvisajobs.com`;
       }
 
       showNotificationToast('🔔 Live Match Triggered!', 'Matched: "Senior Software Engineer at NHS Trust London" (£65,000 • Skilled Worker CoS)');
+    }
+
+    // =========================================================================
+    // WORLDWIDE MULTI-CURRENCY USD NORMALIZATION & SIDE-BY-SIDE COMPARATOR
+    // =========================================================================
+    let comparedWebJobIds = [];
+
+    function estimateUsdAnnual(job) {
+      if (!job || !job.salary) return 0;
+      const s = job.salary;
+      const matches = s.match(/\d[\d,]*/g);
+      if (!matches || matches.length === 0) return 0;
+      const nums = matches.map(m => parseFloat(m.replace(/,/g, ''))).filter(n => !isNaN(n));
+      if (nums.length === 0) return 0;
+      let base = Math.max(...nums);
+      const lower = s.toLowerCase();
+      if (lower.includes('month') || lower.includes('/mo')) base *= 12;
+      if (lower.includes('hour') || lower.includes('/hr')) base *= 2080;
+      const c = (job.country || '');
+      let fx = 1.0;
+      if (s.includes('£') || c === 'United Kingdom') fx = 1.28;
+      else if (s.includes('€') || ['Germany', 'Netherlands', 'Ireland', 'France', 'Finland', 'Spain'].includes(c)) fx = 1.09;
+      else if (lower.includes('chf') || c === 'Switzerland') fx = 1.14;
+      else if (lower.includes('cad') || c === 'Canada') fx = 0.74;
+      else if (lower.includes('aud') || c === 'Australia') fx = 0.67;
+      else if (lower.includes('nzd') || c === 'New Zealand') fx = 0.61;
+      else if (lower.includes('sgd') || c === 'Singapore') fx = 0.75;
+      else if (lower.includes('sek') || c === 'Sweden') fx = 0.096;
+      else if (lower.includes('nok') || c === 'Norway') fx = 0.094;
+      else if (lower.includes('dkk') || c === 'Denmark') fx = 0.146;
+      else if (lower.includes('pln') || c === 'Poland') fx = 0.25;
+      else if (lower.includes('aed') || c === 'United Arab Emirates') fx = 0.272;
+      else if (lower.includes('sar') || c === 'Saudi Arabia') fx = 0.266;
+      else if (s.includes('¥') || lower.includes('jpy') || c === 'Japan') {
+        return Math.round((base < 200 ? base * 1000000 : base) * 0.0067);
+      }
+      return Math.round(base * fx);
+    }
+
+    function estimateNetUsdAnnual(job) {
+      const gross = estimateUsdAnnual(job);
+      const c = (job && job.country) || '';
+      const retention = {
+        'United Arab Emirates': 0.98,
+        'Saudi Arabia': 0.98,
+        'Singapore': 0.86,
+        'Switzerland': 0.79,
+        'Netherlands': 0.76,
+        'Japan': 0.73,
+        'Poland': 0.73,
+        'Spain': 0.73,
+        'United States': 0.71,
+        'Australia': 0.71,
+        'New Zealand': 0.71,
+        'United Kingdom': 0.69,
+        'Canada': 0.69,
+        'Ireland': 0.69,
+        'France': 0.69
+      }[c] || 0.66;
+      return Math.round(gross * retention);
+    }
+
+    function estimateVisaSpeedDays(job) {
+      const v = ((job && job.visaType) || '').toLowerCase();
+      const c = (job && job.country) || '';
+      if (v.includes('gts') || v.includes('global talent')) return 10;
+      if (c === 'United Arab Emirates' || c === 'Saudi Arabia') return 12;
+      if (c === 'Netherlands' || v.includes('ind') || c === 'Singapore') return 14;
+      if (v.includes('health') || v.includes('fast-track')) return 15;
+      if (c === 'Ireland' || c === 'Denmark' || c === 'Finland' || c === 'United Kingdom') return 21;
+      if (c === 'Germany' || c === 'Switzerland' || c === 'Japan') return 28;
+      if (c === 'Australia' || c === 'New Zealand') return 35;
+      return 42;
+    }
+
+    function estimatePrMonths(job) {
+      const v = ((job && job.visaType) || '').toLowerCase();
+      const c = (job && job.country) || '';
+      if (v.includes('pnp') || v.includes('186') || v.includes('green card') || v.includes('straight to residence')) return 6;
+      if (c === 'Germany' || v.includes('blue card')) return 21;
+      if (['Ireland', 'Canada', 'Australia', 'New Zealand', 'Singapore'].includes(c)) return 24;
+      if (['Norway', 'Poland'].includes(c)) return 36;
+      if (['Sweden', 'Finland', 'Spain'].includes(c)) return 48;
+      return 60;
+    }
+
+    function toggleCompareWebJob(jobId) {
+      const idx = comparedWebJobIds.indexOf(jobId);
+      if (idx >= 0) {
+        comparedWebJobIds.splice(idx, 1);
+      } else {
+        if (comparedWebJobIds.length >= 3) {
+          showNotificationToast('⚖️ Max 3 Offers', 'You can compare up to 3 global job offers side-by-side at once.');
+          return;
+        }
+        comparedWebJobIds.push(jobId);
+      }
+      filterJobs();
+      renderWebCompareDock();
+    }
+
+    function clearComparedWebJobs() {
+      comparedWebJobIds = [];
+      filterJobs();
+      renderWebCompareDock();
+      const modal = document.getElementById('webCompareModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function renderWebCompareDock() {
+      let dock = document.getElementById('webCompareDock');
+      if (!dock) {
+        dock = document.createElement('div');
+        dock.id = 'webCompareDock';
+        dock.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9990;background:rgba(15,23,42,0.96);border:1px solid var(--teal);border-radius:16px;padding:12px 20px;display:none;align-items:center;gap:16px;box-shadow:0 16px 40px rgba(0,0,0,0.65);backdrop-filter:blur(12px);max-width:92vw;';
+        document.body.appendChild(dock);
+      }
+      if (comparedWebJobIds.length === 0) {
+        dock.style.display = 'none';
+        return;
+      }
+      const selectedJobs = JOBS_DATA.filter(j => comparedWebJobIds.includes(j.id));
+      dock.style.display = 'flex';
+      dock.innerHTML = `
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;">⚖️ ${selectedJobs.length}/3 Global Offers Selected</div>
+          <div style="font-size:11px;color:var(--text-muted);">${selectedJobs.map(j => j.company + ' (' + j.country + ')').join(' vs. ')}</div>
+        </div>
+        <button class="btn-secondary" style="padding:6px 12px;font-size:11.5px;color:#ef4444;border-color:rgba(239,68,68,0.4);" onclick="clearComparedWebJobs()">Clear</button>
+        <button class="btn-primary" style="padding:8px 16px;font-size:12px;" onclick="openWebCompareModal()">Compare Side-by-Side &rarr;</button>
+      `;
+    }
+
+    function openWebCompareModal() {
+      let modal = document.getElementById('webCompareModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'webCompareModal';
+        modal.className = 'modal-overlay';
+        modal.onclick = function(e) { if (e.target === modal) modal.style.display = 'none'; };
+        document.body.appendChild(modal);
+      }
+      const selectedJobs = JOBS_DATA.filter(j => comparedWebJobIds.includes(j.id));
+      if (selectedJobs.length === 0) return;
+      const maxNet = Math.max(...selectedJobs.map(j => estimateNetUsdAnnual(j)));
+      const minDays = Math.min(...selectedJobs.map(j => estimateVisaSpeedDays(j)));
+      const minPr = Math.min(...selectedJobs.map(j => estimatePrMonths(j)));
+
+      modal.style.display = 'flex';
+      modal.innerHTML = `
+        <div class="modal-card" style="max-width:960px;width:95%;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div>
+              <h3 style="margin:0;font-size:20px;color:#fff;">⚖️ Side-by-Side Global Offer & Visa Pathway Matrix</h3>
+              <p style="margin:4px 0 0;font-size:12.5px;color:var(--text-muted);">Normalized USD purchasing power, after-tax take-home pay, visa processing speed, and PR timeline</p>
+            </div>
+            <button class="modal-close" onclick="document.getElementById('webCompareModal').style.display='none'">&times;</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(${selectedJobs.length},1fr);gap:14px;">
+            ${selectedJobs.map(j => {
+              const gross = estimateUsdAnnual(j);
+              const net = estimateNetUsdAnnual(j);
+              const days = estimateVisaSpeedDays(j);
+              const pr = estimatePrMonths(j);
+              const isTopNet = net === maxNet && selectedJobs.length > 1;
+              return `
+                <div style="background:var(--bg-dark);border:1px solid ${isTopNet ? 'var(--emerald)' : 'var(--border-color)'};border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                      <span class="visa-pill">${j.country}</span>
+                      ${isTopNet ? '<span style="background:rgba(16,185,129,0.2);color:var(--emerald);font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;">★ TOP NET PAY</span>' : ''}
+                    </div>
+                    <h4 style="margin:0 0 4px;font-size:15px;color:#fff;">${j.title}</h4>
+                    <div style="font-size:12.5px;color:var(--teal);font-weight:600;margin-bottom:12px;">${j.company} • ${j.city}</div>
+                    <div style="background:var(--bg-card);border-radius:10px;padding:10px;margin-bottom:8px;">
+                      <div style="font-size:10.5px;color:var(--text-muted);">Gross Salary (USD Normalized)</div>
+                      <div style="font-size:16px;font-weight:800;color:#fff;">$${gross.toLocaleString()} / yr</div>
+                      <div style="font-size:11px;color:var(--text-muted);">${j.salary}</div>
+                    </div>
+                    <div style="background:var(--bg-card);border-radius:10px;padding:10px;margin-bottom:8px;">
+                      <div style="font-size:10.5px;color:var(--text-muted);">Est. Net Take-Home (After Tax/Ruling)</div>
+                      <div style="font-size:16px;font-weight:800;color:${isTopNet ? 'var(--emerald)' : 'var(--teal)'};">$${net.toLocaleString()} / yr</div>
+                    </div>
+                    <div style="background:var(--bg-card);border-radius:10px;padding:10px;margin-bottom:8px;">
+                      <div style="font-size:10.5px;color:var(--text-muted);">Visa Route & Speed</div>
+                      <div style="font-size:13.5px;font-weight:700;color:${days === minDays ? 'var(--emerald)' : '#fff'};">~${days} Days (${j.visaType})</div>
+                    </div>
+                    <div style="background:var(--bg-card);border-radius:10px;padding:10px;margin-bottom:12px;">
+                      <div style="font-size:10.5px;color:var(--text-muted);">Permanent Residency & Relocation</div>
+                      <div style="font-size:13px;font-weight:700;color:${pr === minPr ? 'var(--emerald)' : 'var(--amber)'};">${pr} Months to PR</div>
+                      <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${j.relocation}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button class="btn-secondary" style="flex:1;padding:8px;font-size:11.5px;" onclick="document.getElementById('webCompareModal').style.display='none';openDossierForJob('${j.id}')">📄 Build Dossier</button>
+                    <button class="btn-primary" style="flex:1;padding:8px;font-size:11.5px;" onclick="document.getElementById('webCompareModal').style.display='none';openJobModal('${j.id}')">Apply &rarr;</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
     }
 
   </script>

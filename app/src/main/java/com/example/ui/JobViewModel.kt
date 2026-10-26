@@ -65,6 +65,9 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedSourceFilter = MutableStateFlow("All Sources")
     val selectedSourceFilter: StateFlow<String> = _selectedSourceFilter.asStateFlow()
 
+    private val _comparedJobIds = MutableStateFlow<List<String>>(emptyList())
+    val comparedJobIds: StateFlow<List<String>> = _comparedJobIds.asStateFlow()
+
     // Database flow bindings
     val allJobs: StateFlow<List<JobEntity>> = repository.allJobs
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -219,6 +222,23 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
         _selectedSourceFilter.value = source
     }
 
+    fun toggleCompareJob(jobId: String): Boolean {
+        val current = _comparedJobIds.value
+        return if (current.contains(jobId)) {
+            _comparedJobIds.value = current - jobId
+            true
+        } else if (current.size < 3) {
+            _comparedJobIds.value = current + jobId
+            true
+        } else {
+            false
+        }
+    }
+
+    fun clearComparedJobs() {
+        _comparedJobIds.value = emptyList()
+    }
+
     /**
      * Normalizes global salary strings across 21 currencies into an estimated annual USD figure for sorting.
      */
@@ -249,7 +269,6 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             lower.contains("aed") || country.equals("United Arab Emirates", true) -> 0.272
             lower.contains("sar") || country.equals("Saudi Arabia", true) -> 0.266
             lower.contains("¥") || lower.contains("jpy") || country.equals("Japan", true) -> {
-                // If written in Millions (e.g., 12M), multiply accordingly
                 if (baseAmount < 200) baseAmount * 1_000_000 * 0.0067 else baseAmount * 0.0067
             }
             else -> 1.0
@@ -258,6 +277,55 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             fxToUsd.toInt()
         } else {
             (baseAmount * fxToUsd).toInt()
+        }
+    }
+
+    fun estimateNetTakeHomeUsd(job: JobEntity): Int {
+        val grossUsd = estimateAnnualUsdSalary(job.salary, job.country)
+        val netRetentionRatio = when (job.country) {
+            "United Arab Emirates", "Saudi Arabia" -> 0.98 // 0% personal income tax
+            "Singapore" -> 0.86
+            "Switzerland" -> 0.79
+            "Netherlands" -> 0.76 // Includes 30% Expat Tax Ruling benefit
+            "Japan", "Poland", "Spain" -> 0.73
+            "United States", "New Zealand", "Australia" -> 0.71
+            "United Kingdom", "Canada", "Ireland", "France" -> 0.69
+            else -> 0.66 // Germany, Nordics high social security + pension
+        }
+        return (grossUsd * netRetentionRatio).toInt()
+    }
+
+    fun estimateVisaProcessingDays(job: JobEntity): Int {
+        val v = job.visaType.lowercase()
+        return when {
+            v.contains("gts") || v.contains("global talent stream") -> 10
+            job.country == "United Arab Emirates" || job.country == "Saudi Arabia" -> 12
+            job.country == "Netherlands" || v.contains("ind") -> 14
+            job.country == "Singapore" || v.contains("employment pass") -> 14
+            v.contains("health and care") || v.contains("fast-track") -> 15
+            job.country == "Ireland" || v.contains("critical skills") -> 21
+            job.country == "Denmark" || job.country == "Finland" -> 21
+            job.country == "United Kingdom" -> 21
+            job.country == "Germany" || v.contains("blue card") -> 28
+            job.country == "Switzerland" || job.country == "Japan" -> 28
+            job.country == "Australia" || job.country == "New Zealand" -> 35
+            job.country == "Canada" -> 42
+            else -> 45
+        }
+    }
+
+    fun estimatePrTimelineMonths(job: JobEntity): Int {
+        val v = job.visaType.lowercase()
+        return when {
+            v.contains("pnp") || v.contains("186") || v.contains("green card") || v.contains("straight to residence") -> 6
+            job.country == "Germany" || v.contains("blue card") -> 21
+            job.country == "Ireland" || v.contains("critical skills") -> 24
+            job.country == "Canada" || job.country == "Australia" || job.country == "New Zealand" -> 24
+            job.country == "Singapore" -> 24
+            job.country == "Norway" || job.country == "Poland" -> 36
+            job.country == "Sweden" || job.country == "Finland" || job.country == "Spain" -> 48
+            job.country == "United Kingdom" || job.country == "Netherlands" || job.country == "France" -> 60
+            else -> 60
         }
     }
 

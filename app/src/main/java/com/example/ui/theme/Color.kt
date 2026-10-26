@@ -2,14 +2,15 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Professional Polish MD3 Light Theme Colors
-val NavyDark = Color(0xFFFDFCFF)       // Light professional background
-val NavyMedium = Color(0xFFFFFFFF)     // Card background (pure white)
-val NavyLight = Color(0xFFCAC4D0)      // Light neutral border / divider (MD3 gray-purple)
-val EmeraldGreen = Color(0xFF6750A4)   // MD3 Primary Brand Purple
-val WhiteActive = Color(0xFF1C1B1F)    // High contrast dark charcoal text
-val SlateMuted = Color(0xFF49454F)     // Low contrast medium-grey descriptions
-val AmberGold = Color(0xFFB58000)      // Visa confidence star / Alerts (Darker gold for light background readability)
-val CoralRed = Color(0xFFBA1A1A)       // Fraud warning / errors (Light theme error red)
-val TealCyan = Color(0xFF381E72)       // Tertiary deep lavender
+// Editorial Global Mobility Palette (Clean Slate, Crisp White & Deep Forest Teal)
+val NavyDark = Color(0xFFF8FAFC)       // Crisp cool alabaster background (Slate 50)
+val NavyMedium = Color(0xFFFFFFFF)     // Pure white card surface
+val NavyLight = Color(0xFFE2E8F0)      // Subtle hairline border / divider (Slate 200)
+val EmeraldGreen = Color(0xFF0F766E)   // Editorial Deep Forest Teal (Teal 700)
+val WhiteActive = Color(0xFF0F172A)    // Deep slate ink primary text (Slate 900)
+val SlateMuted = Color(0xFF475569)     // Balanced muted slate secondary text (Slate 600)
+val AmberGold = Color(0xFFB45309)      // Warm Ochre / Amber 700 for official accents
+val CoralRed = Color(0xFFB91C1C)       // Refined Crimson 700 for alerts
+val TealCyan = Color(0xFF1E293B)       // Executive Slate 800 for secondary badges & actions
 val LinkedInBlue = Color(0xFF0A66C2)   // Official LinkedIn Brand Blue
+

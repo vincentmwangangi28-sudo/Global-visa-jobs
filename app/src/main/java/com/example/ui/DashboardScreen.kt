@@ -64,14 +64,14 @@ fun DashboardScreen(viewModel: JobViewModel) {
                     title = {
                         Column(modifier = Modifier.padding(start = 4.dp)) {
                             Text(
-                                text = "VisaGo AI",
+                                text = "Global Visa Jobs",
                                 color = WhiteActive,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 19.sp,
                                 letterSpacing = (-0.5).sp
                             )
                             Text(
-                                text = "Global Sponsored Talent Engine",
+                                text = "Verified International Sponsorship Registry",
                                 color = SlateMuted,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 11.sp
@@ -157,17 +157,17 @@ fun DashboardScreen(viewModel: JobViewModel) {
                                     .size(36.dp)
                                     .clip(androidx.compose.foundation.shape.CircleShape)
                                     .background(
-                                        if (authenticatedUser != null) EmeraldGreen else Color(0xFFD0BCFF)
+                                        if (authenticatedUser != null) EmeraldGreen else NavyLight
                                     )
                                     .clickable { showModeMenu = true }
                                     .testTag("avatar_button"),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = authenticatedUser?.displayName?.take(2)?.uppercase() ?: "VM",
-                                    color = if (authenticatedUser != null) NavyDark else Color(0xFF381E72),
+                                    text = authenticatedUser?.displayName?.take(2)?.uppercase() ?: "GV",
+                                    color = if (authenticatedUser != null) NavyMedium else WhiteActive,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
+                                    fontSize = 12.sp
                                 )
                             }
                             DropdownMenu(
@@ -223,8 +223,8 @@ fun DashboardScreen(viewModel: JobViewModel) {
             bottomBar = {
                 if (!isWideScreen) {
                     NavigationBar(
-                        containerColor = Color(0xFFF3EDF7),
-                        tonalElevation = 8.dp
+                        containerColor = NavyMedium,
+                        tonalElevation = 2.dp
                     ) {
                         val tabs = listOf(
                             Triple("Discover", Icons.Default.Search, "Discover"),
@@ -246,7 +246,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
                                     Icon(
                                         imageVector = icon,
                                         contentDescription = label,
-                                        tint = if (isSelected) NavyDark else SlateMuted
+                                        tint = if (isSelected) EmeraldGreen else SlateMuted
                                     )
                                 },
                                 label = {
@@ -254,12 +254,12 @@ fun DashboardScreen(viewModel: JobViewModel) {
                                         text = label,
                                         color = if (isSelected) EmeraldGreen else SlateMuted,
                                         fontSize = 10.sp,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                                         maxLines = 1
                                     )
                                 },
                                 colors = NavigationBarItemDefaults.colors(
-                                    indicatorColor = EmeraldGreen
+                                    indicatorColor = EmeraldGreen.copy(alpha = 0.12f)
                                 )
                             )
                         }
@@ -516,6 +516,7 @@ fun DiscoverTab(
     val selectedSponsorship by viewModel.selectedSponsorship.collectAsStateWithLifecycle()
     val selectedSortBy by viewModel.selectedSortBy.collectAsStateWithLifecycle()
     val selectedSourceFilter by viewModel.selectedSourceFilter.collectAsStateWithLifecycle()
+    val comparedJobIds by viewModel.comparedJobIds.collectAsStateWithLifecycle()
     val jobVerifications by viewModel.jobVerifications.collectAsStateWithLifecycle()
     val isVerifyingJob by viewModel.isVerifyingJob.collectAsStateWithLifecycle()
     val linkedInJobCount by viewModel.linkedInJobCount.collectAsStateWithLifecycle()
@@ -545,6 +546,8 @@ fun DiscoverTab(
     var filterSavedOnly by remember { mutableStateOf(false) }
     var showExportPdfDialog by remember { mutableStateOf(false) }
     var showDiscoverDossierDialog by remember { mutableStateOf(false) }
+    var dossierTargetJob by remember { mutableStateOf<JobEntity?>(null) }
+    var showComparisonDialog by remember { mutableStateOf(false) }
 
     var activeDetailJob by remember { mutableStateOf<JobEntity?>(null) }
     var activeApplyJob by remember { mutableStateOf<JobEntity?>(null) }
@@ -582,6 +585,9 @@ fun DiscoverTab(
     }.let { list ->
         when (selectedSortBy) {
             "Salary (Highest USD)" -> list.sortedByDescending { viewModel.estimateAnnualUsdSalary(it.salary, it.country) }
+            "Net Take-Home (USD)" -> list.sortedByDescending { viewModel.estimateNetTakeHomeUsd(it) }
+            "Fastest Visa Processing" -> list.sortedWith(compareBy<JobEntity> { viewModel.estimateVisaProcessingDays(it) }.thenByDescending { it.confidenceScore })
+            "Fastest PR Pathway" -> list.sortedWith(compareBy<JobEntity> { viewModel.estimatePrTimelineMonths(it) }.thenByDescending { it.confidenceScore })
             "Country (A → Z)" -> list.sortedWith(compareBy<JobEntity> { it.country }.thenByDescending { it.confidenceScore })
             "Company (A → Z)" -> list.sortedWith(compareBy<JobEntity> { it.company }.thenByDescending { it.confidenceScore })
             "Relocation Paid First" -> list.sortedWith(compareByDescending<JobEntity> { it.relocationAssistance }.thenByDescending { it.confidenceScore })
@@ -599,38 +605,38 @@ fun DiscoverTab(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 12.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFFF3EDF7))
-                .border(1.dp, Color(0xFFCAC4D0), RoundedCornerShape(24.dp))
+                .padding(vertical = 10.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(NavyMedium)
+                .border(1.dp, NavyLight, RoundedCornerShape(14.dp))
                 .padding(16.dp)
         ) {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Global Visa Aggregator",
-                        color = EmeraldGreen,
+                        text = "Global Sponsorship Directory",
+                        color = WhiteActive,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 18.sp
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(EmeraldGreen.copy(alpha = 0.15f))
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(EmeraldGreen.copy(alpha = 0.1f))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "Grounded AI",
+                            text = "Verified Registry",
                             color = EmeraldGreen,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 11.sp
                         )
                     }
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Search live sponsorship, relocation, work permits, and verified immigration jobs worldwide.",
+                    text = "Direct access to licensed visa sponsors, relocation packages, and government-backed work permit roles across 30+ countries.",
                     color = SlateMuted,
                     fontSize = 13.sp,
                     lineHeight = 18.sp
@@ -641,31 +647,31 @@ fun DiscoverTab(
         // Live Radar Pulse Top Ticker Banner
         LiveRadarTopTickerBanner(
             onClickOpenHub = { onNavigateTab("Radar") },
-            modifier = Modifier.padding(bottom = 10.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         // Global Mobility & Immigration Tools Suite Quick Launcher
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp)
+                .padding(bottom = 8.dp)
         ) {
             item {
                 Surface(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .clickable { onNavigateTab("Radar") }
-                        .border(1.dp, Color(0xFFFF5252), RoundedCornerShape(12.dp)),
+                        .border(1.dp, NavyLight, RoundedCornerShape(10.dp)),
                     color = NavyMedium
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Sensors, contentDescription = null, tint = Color(0xFFFF5252), modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Sensors, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Live Radar & Slots", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Embassy & Slot Monitor", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -673,18 +679,18 @@ fun DiscoverTab(
             item {
                 Surface(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .clickable { onNavigateTab("Sponsors") }
-                        .border(1.dp, EmeraldGreen, RoundedCornerShape(12.dp)),
+                        .border(1.dp, NavyLight, RoundedCornerShape(10.dp)),
                     color = NavyMedium
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Verified, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Verified, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Official Sponsor Registry", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Official Sponsor Registry", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -692,18 +698,18 @@ fun DiscoverTab(
             item {
                 Surface(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .clickable { onNavigateTab("Family") }
-                        .border(1.dp, Color(0xFFCE93D8), RoundedCornerShape(12.dp)),
+                        .border(1.dp, NavyLight, RoundedCornerShape(10.dp)),
                     color = NavyMedium
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.FamilyRestroom, contentDescription = null, tint = Color(0xFFCE93D8), modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.FamilyRestroom, contentDescription = null, tint = TealCyan, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Spouse & Family Rights", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Spouse & Family Rights", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -711,18 +717,18 @@ fun DiscoverTab(
             item {
                 Surface(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .clickable { onNavigateTab("Interview") }
-                        .border(1.dp, Color(0xFFF48FB1), RoundedCornerShape(12.dp)),
+                        .border(1.dp, NavyLight, RoundedCornerShape(10.dp)),
                     color = NavyMedium
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.RecordVoiceOver, contentDescription = null, tint = Color(0xFFF48FB1), modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.RecordVoiceOver, contentDescription = null, tint = TealCyan, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Consular Interview Simulator", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Consular Interview Prep", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -730,18 +736,18 @@ fun DiscoverTab(
             item {
                 Surface(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .clickable { onNavigateTab("Reviews") }
-                        .border(1.dp, Color(0xFFFFB74D), RoundedCornerShape(12.dp)),
+                        .border(1.dp, NavyLight, RoundedCornerShape(10.dp)),
                     color = NavyMedium
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.RateReview, contentDescription = null, tint = Color(0xFFFFB74D), modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.RateReview, contentDescription = null, tint = AmberGold, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Employer Reviews", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Employer Reviews", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -749,9 +755,9 @@ fun DiscoverTab(
             item {
                 Surface(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .clickable { showDiscoverDossierDialog = true }
-                        .border(1.dp, AmberGold, RoundedCornerShape(12.dp))
+                        .border(1.dp, NavyLight, RoundedCornerShape(10.dp))
                         .testTag("discover_quick_visa_dossier_btn"),
                     color = NavyMedium
                 ) {
@@ -759,9 +765,9 @@ fun DiscoverTab(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null, tint = AmberGold, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Share, contentDescription = null, tint = EmeraldGreen, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Official Visa Dossier PDF", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Official Visa Dossier PDF", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -769,18 +775,18 @@ fun DiscoverTab(
             item {
                 Surface(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .clickable { onNavigateTab("Remittance") }
-                        .border(1.dp, TealCyan, RoundedCornerShape(12.dp)),
+                        .border(1.dp, NavyLight, RoundedCornerShape(10.dp)),
                     color = NavyMedium
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.CurrencyExchange, contentDescription = null, tint = TealCyan, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.CurrencyExchange, contentDescription = null, tint = TealCyan, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Tax & Remittance Engine", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Tax & Remittance Calculator", color = WhiteActive, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -801,12 +807,12 @@ fun DiscoverTab(
                         viewModel.checkAndTriggerFirstSearchReminder()
                     }
                 },
-                placeholder = { Text("Role (e.g., Nurse, Driver, Dev)", color = SlateMuted) },
+                placeholder = { Text("Search role, company, or visa code (e.g., Nurse, H-1B, Skilled Worker)", color = SlateMuted) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = SlateMuted) },
                 modifier = Modifier
                     .weight(1f)
                     .testTag("search_input_field"),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedTextColor = WhiteActive,
                     unfocusedTextColor = WhiteActive,
@@ -819,47 +825,52 @@ fun DiscoverTab(
             )
             Spacer(modifier = Modifier.width(8.dp))
 
-            // AI Search Scraper button
+            // Live Feed Sync button
             Button(
                 onClick = {
                     viewModel.checkAndTriggerFirstSearchReminder()
                     viewModel.performLiveScrapeSearch(queryText.ifEmpty { "Visa sponsorship jobs" }, searchCountryText)
                 },
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
                 modifier = Modifier
                     .height(56.dp)
                     .testTag("scrape_button")
             ) {
                 if (isSearching) {
-                    CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(24.dp))
+                    CircularProgressIndicator(color = NavyMedium, modifier = Modifier.size(22.dp))
                 } else {
-                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "AI Scrape", tint = NavyDark)
+                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "Sync Live Feeds", tint = NavyMedium)
                 }
             }
         }
 
-        // Target country search helper input
+        var showLiveConnectors by remember { mutableStateOf(false) }
+
+        // Target country search helper input & Live Data Connectors Toggle
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Target Search Country:",
+                text = "Target Destination:",
                 color = SlateMuted,
                 fontSize = 12.sp,
-                modifier = Modifier.weight(1f)
+                fontWeight = FontWeight.Medium
             )
             Box {
                 var countryExpanded by remember { mutableStateOf(false) }
                 OutlinedButton(
                     onClick = { countryExpanded = true },
                     shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                    modifier = Modifier.height(32.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = EmeraldGreen)
                 ) {
-                    Text(searchCountryText)
+                    Text(searchCountryText, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 }
                 DropdownMenu(
                     expanded = countryExpanded,
@@ -877,21 +888,55 @@ fun DiscoverTab(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            OutlinedButton(
+                onClick = { showLiveConnectors = !showLiveConnectors },
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                modifier = Modifier.height(32.dp).testTag("toggle_live_connectors_btn"),
+                border = BorderStroke(1.dp, if (showLiveConnectors) EmeraldGreen else NavyLight),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = if (showLiveConnectors) EmeraldGreen.copy(alpha = 0.08f) else NavyMedium,
+                    contentColor = if (showLiveConnectors) EmeraldGreen else SlateMuted
+                )
+            ) {
+                Icon(
+                    imageVector = if (showLiveConnectors) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    modifier = Modifier.size(15.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = if (showLiveConnectors) "Hide API Feeds" else "Live API Feeds & Alerts",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
 
-        // Real-Time Firestore Notification & Search Alert Card
-        RealtimeJobAlertCard(
-            queryText = queryText,
-            searchCountryText = searchCountryText,
-            viewModel = viewModel,
-            onCriteriaSelected = { newRole, newCountry ->
-                queryText = newRole
-                searchCountryText = newCountry
-            }
-        )
+        if (showLiveConnectors) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 340.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 8.dp)
+            ) {
+                // Real-Time Firestore Notification & Search Alert Card
+                RealtimeJobAlertCard(
+                    queryText = queryText,
+                    searchCountryText = searchCountryText,
+                    viewModel = viewModel,
+                    onCriteriaSelected = { newRole, newCountry ->
+                        queryText = newRole
+                        searchCountryText = newCountry
+                    }
+                )
 
-        // Master Fetch All Jobs from API Keys Card
-        AllApiJobsMasterCard(
+                // Master Fetch All Jobs from API Keys Card
+                AllApiJobsMasterCard(
             queryText = queryText,
             searchCountryText = searchCountryText,
             viewModel = viewModel
@@ -1685,11 +1730,13 @@ fun DiscoverTab(
                 googleJobsError?.let { err ->
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "⚠️ $err",
+                        text = "Alert: $err",
                         color = CoralRed,
                         fontSize = 11.sp
                     )
                 }
+            }
+        }
             }
         }
 
@@ -1748,6 +1795,9 @@ fun DiscoverTab(
                 options = listOf(
                     "Confidence Score",
                     "Salary (Highest USD)",
+                    "Net Take-Home (USD)",
+                    "Fastest Visa Processing",
+                    "Fastest PR Pathway",
                     "Country (A → Z)",
                     "Company (A → Z)",
                     "Relocation Paid First",
@@ -1810,10 +1860,10 @@ fun DiscoverTab(
                 .testTag("worldwide_jobs_summary_bar")
         ) {
             Text(
-                text = "🌍 Displaying ${filteredJobs.size} verified jobs across $distinctCountriesCount countries • Sorted by $selectedSortBy",
-                color = EmeraldGreen,
+                text = "Showing ${filteredJobs.size} verified roles across $distinctCountriesCount countries • Sorted by $selectedSortBy",
+                color = SlateMuted,
                 fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
             if (selectedCountry != "All" || selectedIndustry != "All" || selectedExperience != "All" || selectedSponsorship != "All" || selectedSourceFilter != "All Sources" || queryText.isNotEmpty()) {
@@ -1963,7 +2013,13 @@ fun DiscoverTab(
                                     onVerifyClick = { viewModel.verifyJobListing(job) },
                                     onBookmarkToggle = { viewModel.toggleBookmark(job) },
                                     onViewDetails = { activeDetailJob = job },
-                                    onApplyClick = { activeApplyJob = job }
+                                    onApplyClick = { activeApplyJob = job },
+                                    isCompared = comparedJobIds.contains(job.id),
+                                    onCompareToggle = {
+                                        if (!viewModel.toggleCompareJob(job.id)) {
+                                            Toast.makeText(context, "Maximum 3 jobs can be compared at once", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -2159,8 +2215,59 @@ fun DiscoverTab(
                             onVerifyClick = { viewModel.verifyJobListing(job) },
                             onBookmarkToggle = { viewModel.toggleBookmark(job) },
                             onViewDetails = { activeDetailJob = job },
-                            onApplyClick = { activeApplyJob = job }
+                            onApplyClick = { activeApplyJob = job },
+                            isCompared = comparedJobIds.contains(job.id),
+                            onCompareToggle = {
+                                if (!viewModel.toggleCompareJob(job.id)) {
+                                    Toast.makeText(context, "Maximum 3 jobs can be compared at once", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         )
+                    }
+                }
+            }
+        }
+
+        // Floating Global Offer Comparator Dock
+        if (comparedJobIds.isNotEmpty()) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .testTag("global_compare_dock"),
+                color = NavyMedium,
+                shape = RoundedCornerShape(14.dp),
+                border = BorderStroke(1.dp, TealCyan)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "⚖️ ${comparedJobIds.size}/3 Global Offers Selected",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
+                        Text(
+                            text = "Compare USD net pay, visa processing & PR timeline",
+                            color = SlateMuted,
+                            fontSize = 10.sp
+                        )
+                    }
+                    TextButton(onClick = { viewModel.clearComparedJobs() }) {
+                        Text("Clear", color = CoralRed, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Button(
+                        onClick = { showComparisonDialog = true },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = TealCyan, contentColor = NavyDark),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                        modifier = Modifier.height(34.dp).testTag("open_global_compare_dialog_btn")
+                    ) {
+                        Text("Compare Now", fontWeight = FontWeight.Bold, fontSize = 11.sp)
                     }
                 }
             }
@@ -2200,7 +2307,25 @@ fun DiscoverTab(
     if (showDiscoverDossierDialog) {
         ExportVisaDossierDialog(
             viewModel = viewModel,
-            onDismiss = { showDiscoverDossierDialog = false }
+            onDismiss = {
+                showDiscoverDossierDialog = false
+                dossierTargetJob = null
+            },
+            initialJob = dossierTargetJob
+        )
+    }
+
+    if (showComparisonDialog) {
+        val comparedEntities = jobs.filter { comparedJobIds.contains(it.id) }
+        GlobalJobComparisonDialog(
+            jobs = comparedEntities,
+            viewModel = viewModel,
+            onDismiss = { showComparisonDialog = false },
+            onBuildDossierForJob = { selectedJob ->
+                showComparisonDialog = false
+                dossierTargetJob = selectedJob
+                showDiscoverDossierDialog = true
+            }
         )
     }
 }
@@ -2220,22 +2345,23 @@ fun FilterBadgeDropdown(
             label = {
                 Text(
                     text = if (selected == "All") label else "$label: $selected",
-                    color = if (selected != "All") Color(0xFF1D192B) else SlateMuted,
-                    fontWeight = FontWeight.Medium
+                    color = if (selected != "All") EmeraldGreen else WhiteActive,
+                    fontWeight = if (selected != "All") FontWeight.SemiBold else FontWeight.Medium,
+                    fontSize = 12.sp
                 )
             },
             colors = AssistChipDefaults.assistChipColors(
-                containerColor = if (selected != "All") Color(0xFFE8DEF8) else NavyMedium
+                containerColor = if (selected != "All") EmeraldGreen.copy(alpha = 0.1f) else NavyMedium
             ),
             border = BorderStroke(
                 width = 1.dp,
-                color = if (selected != "All") Color(0xFFE8DEF8) else NavyLight
+                color = if (selected != "All") EmeraldGreen else NavyLight
             ),
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = if (selected != "All") Color(0xFF1D192B) else SlateMuted,
+                    tint = if (selected != "All") EmeraldGreen else SlateMuted,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -2266,7 +2392,9 @@ fun JobListItemCard(
     onVerifyClick: () -> Unit,
     onBookmarkToggle: () -> Unit,
     onViewDetails: () -> Unit,
-    onApplyClick: (() -> Unit)? = null
+    onApplyClick: (() -> Unit)? = null,
+    isCompared: Boolean = false,
+    onCompareToggle: (() -> Unit)? = null
 ) {
     Card(
         onClick = onViewDetails,
@@ -2274,7 +2402,7 @@ fun JobListItemCard(
             .fillMaxWidth()
             .border(
                 1.dp,
-                if (job.isFraud) CoralRed.copy(alpha = 0.5f) else NavyLight,
+                if (job.isFraud) CoralRed.copy(alpha = 0.5f) else if (isCompared) TealCyan else NavyLight,
                 RoundedCornerShape(16.dp)
             )
             .testTag("job_card_${job.id}"),
@@ -2398,8 +2526,8 @@ fun JobListItemCard(
                 
                 Text(
                     text = if (verificationResult != null) {
-                        "Risk Score: ${verificationResult.riskScore}/100 (${verificationResult.riskLevel})"
-                    } else "Scam Risk Scan: Pending Analysis",
+                        "Compliance Score: ${verificationResult.riskScore}/100 (${verificationResult.riskLevel})"
+                    } else "Sponsor License & Compliance Audit",
                     color = if (verificationResult != null) {
                         when (verificationResult.riskLevel) {
                             "High Risk" -> CoralRed
@@ -2408,7 +2536,7 @@ fun JobListItemCard(
                         }
                     } else SlateMuted,
                     fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Medium,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -2482,22 +2610,42 @@ fun JobListItemCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Direct Quick Action Row (Details & Apply)
+            // Direct Quick Action Row (Details, Compare & Apply)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 OutlinedButton(
                     onClick = onViewDetails,
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = TealCyan),
                     border = BorderStroke(1.dp, TealCyan.copy(alpha = 0.5f)),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    modifier = Modifier.weight(0.48f).height(34.dp).testTag("list_view_details_${job.id}")
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                    modifier = Modifier.weight(0.32f).height(34.dp).testTag("list_view_details_${job.id}")
                 ) {
-                    Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(13.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("View Details", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Details", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                }
+
+                if (onCompareToggle != null) {
+                    OutlinedButton(
+                        onClick = onCompareToggle,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (isCompared) EmeraldGreen.copy(alpha = 0.1f) else Color.Transparent,
+                            contentColor = if (isCompared) EmeraldGreen else SlateMuted
+                        ),
+                        border = BorderStroke(1.dp, if (isCompared) EmeraldGreen else NavyLight),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                        modifier = Modifier.weight(0.32f).height(34.dp).testTag("list_compare_btn_${job.id}")
+                    ) {
+                        Text(
+                            text = if (isCompared) "Selected" else "Compare",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
 
                 Button(
@@ -2509,13 +2657,13 @@ fun JobListItemCard(
                         }
                     },
                     shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen, contentColor = NavyDark),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    modifier = Modifier.weight(0.52f).height(34.dp).testTag("list_apply_btn_${job.id}")
+                    colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen, contentColor = NavyMedium),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                    modifier = Modifier.weight(0.36f).height(34.dp).testTag("list_apply_btn_${job.id}")
                 ) {
-                    Icon(Icons.Default.Send, contentDescription = null, tint = NavyDark, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Send, contentDescription = null, tint = NavyMedium, modifier = Modifier.size(13.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Apply (Methods)", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = NavyDark)
+                    Text("Apply", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = NavyMedium)
                 }
             }
         }
@@ -2629,7 +2777,7 @@ fun JobDetailContent(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (job.isFraud) "FLAGGED LISTING" else "AI Verified Sponsorship",
+                            text = if (job.isFraud) "FLAGGED LISTING" else "Verified Sponsor License",
                             color = if (job.isFraud) CoralRed else EmeraldGreen,
                             fontWeight = FontWeight.Bold,
                             fontSize = 13.sp
@@ -2637,7 +2785,7 @@ fun JobDetailContent(
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "AI Score: ${job.confidenceScore}% • Reason: ${job.confidenceReason}",
+                        text = "Trust Index: ${job.confidenceScore}% • ${job.confidenceReason}",
                         color = SlateMuted,
                         fontSize = 12.sp,
                         lineHeight = 16.sp
@@ -2656,7 +2804,7 @@ fun JobDetailContent(
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "AI Suitability Engine",
+                            text = "Candidate Eligibility Assessment",
                             color = WhiteActive,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
@@ -2666,13 +2814,13 @@ fun JobDetailContent(
                             onClick = { viewModel.analyzeJobCompatibility(job) },
                             shape = RoundedCornerShape(8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = EmeraldGreen),
-                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp),
                             modifier = Modifier.height(32.dp)
                         ) {
                             if (isAnalyzing) {
-                                CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(16.dp))
+                                CircularProgressIndicator(color = NavyMedium, modifier = Modifier.size(16.dp))
                             } else {
-                                Text("Score Match", color = NavyDark, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text("Assess Fit", color = NavyMedium, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                             }
                         }
                     }
@@ -2710,7 +2858,7 @@ fun JobDetailContent(
                 }
             }
 
-            // AI Resume Match & Gap Analysis Card
+            // Qualification & Skill Alignment Card
             val isAnalyzingGapMap by viewModel.isAnalyzingGap.collectAsStateWithLifecycle()
             val jobsGapAnalysisMap by viewModel.jobsGapAnalysisMap.collectAsStateWithLifecycle()
             val isAnalyzingGap = isAnalyzingGapMap[job.id] ?: false
@@ -2728,13 +2876,13 @@ fun JobDetailContent(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "AI Resume Match & Gap Analysis",
+                                text = "Qualification & Skill Alignment",
                                 color = WhiteActive,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
                             Text(
-                                text = if (parsedResumeResult != null) "Comparing parsed resume text" else "Comparing candidate profile details",
+                                text = if (parsedResumeResult != null) "Benchmarked against your uploaded CV" else "Benchmarked against your candidate profile",
                                 color = SlateMuted,
                                 fontSize = 11.sp
                             )
@@ -2747,13 +2895,13 @@ fun JobDetailContent(
                             modifier = Modifier.height(32.dp).testTag("analyze_gaps_btn_${job.id}")
                         ) {
                             if (isAnalyzingGap) {
-                                CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(16.dp))
+                                CircularProgressIndicator(color = NavyMedium, modifier = Modifier.size(16.dp))
                             } else {
                                 Text(
-                                    text = if (gapResult != null) "Re-Analyze" else "Match & Find Gaps",
-                                    color = NavyDark,
+                                    text = if (gapResult != null) "Re-Evaluate" else "Review Alignment",
+                                    color = NavyMedium,
                                     fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.SemiBold
                                 )
                             }
                         }
@@ -2920,7 +3068,7 @@ fun JobDetailContent(
                 Column(modifier = Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "AI Scam & Fraud Scanner",
+                            text = "Sponsor License & Compliance Audit",
                             color = WhiteActive,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,

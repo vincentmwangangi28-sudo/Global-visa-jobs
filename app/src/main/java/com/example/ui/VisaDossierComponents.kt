@@ -474,3 +474,241 @@ fun ExportVisaDossierDialog(
         }
     }
 }
+
+@Composable
+fun GlobalJobComparisonDialog(
+    jobs: List<com.example.data.JobEntity>,
+    viewModel: JobViewModel,
+    onDismiss: () -> Unit,
+    onBuildDossierForJob: (com.example.data.JobEntity) -> Unit
+) {
+    val maxGrossUsd = jobs.maxOfOrNull { viewModel.estimateAnnualUsdSalary(it.salary, it.country) } ?: 0
+    val maxNetUsd = jobs.maxOfOrNull { viewModel.estimateNetTakeHomeUsd(it) } ?: 0
+    val minVisaDays = jobs.minOfOrNull { viewModel.estimateVisaProcessingDays(it) } ?: 999
+    val minPrMonths = jobs.minOfOrNull { viewModel.estimatePrTimelineMonths(it) } ?: 999
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, TealCyan.copy(alpha = 0.5f), RoundedCornerShape(18.dp))
+                .testTag("global_job_comparison_dialog"),
+            colors = CardDefaults.cardColors(containerColor = NavyMedium),
+            shape = RoundedCornerShape(18.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "⚖️ Global Offer & Visa Comparator",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = "Side-by-side USD salary, net take-home, visa speed & PR timeline",
+                            color = SlateMuted,
+                            fontSize = 11.sp
+                        )
+                    }
+                    IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SlateMuted)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                jobs.forEach { job ->
+                    val grossUsd = viewModel.estimateAnnualUsdSalary(job.salary, job.country)
+                    val netUsd = viewModel.estimateNetTakeHomeUsd(job)
+                    val visaDays = viewModel.estimateVisaProcessingDays(job)
+                    val prMonths = viewModel.estimatePrTimelineMonths(job)
+
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = NavyDark),
+                        border = BorderStroke(
+                            1.dp,
+                            if (netUsd == maxNetUsd && jobs.size > 1) EmeraldGreen.copy(alpha = 0.6f) else NavyLight
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = job.title,
+                                        color = WhiteActive,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    )
+                                    Text(
+                                        text = "${job.company} • ${job.country}",
+                                        color = TealCyan,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                                if (netUsd == maxNetUsd && jobs.size > 1) {
+                                    Surface(
+                                        color = EmeraldGreen.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(6.dp)
+                                    ) {
+                                        Text(
+                                            text = "★ TOP NET PAY",
+                                            color = EmeraldGreen,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .background(NavyMedium, RoundedCornerShape(8.dp))
+                                        .padding(8.dp)
+                                ) {
+                                    Text("Gross (USD/yr)", color = SlateMuted, fontSize = 9.sp)
+                                    Text(
+                                        text = "$${String.format("%,d", grossUsd)}",
+                                        color = if (grossUsd == maxGrossUsd) EmeraldGreen else WhiteActive,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                    Text(job.salary, color = SlateMuted, fontSize = 9.sp, maxLines = 1)
+                                }
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .background(NavyMedium, RoundedCornerShape(8.dp))
+                                        .padding(8.dp)
+                                ) {
+                                    Text("Est. Net USD/yr", color = SlateMuted, fontSize = 9.sp)
+                                    Text(
+                                        text = "$${String.format("%,d", netUsd)}",
+                                        color = if (netUsd == maxNetUsd) EmeraldGreen else TealCyan,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp
+                                    )
+                                    Text("After Tax/Ruling", color = SlateMuted, fontSize = 9.sp)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .background(NavyMedium, RoundedCornerShape(8.dp))
+                                        .padding(8.dp)
+                                ) {
+                                    Text("Visa Processing", color = SlateMuted, fontSize = 9.sp)
+                                    Text(
+                                        text = "~$visaDays Days",
+                                        color = if (visaDays == minVisaDays) EmeraldGreen else WhiteActive,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.sp
+                                    )
+                                    Text(job.visaType, color = SlateMuted, fontSize = 9.sp, maxLines = 1)
+                                }
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .background(NavyMedium, RoundedCornerShape(8.dp))
+                                        .padding(8.dp)
+                                ) {
+                                    Text("PR / Residency", color = SlateMuted, fontSize = 9.sp)
+                                    Text(
+                                        text = "$prMonths Months",
+                                        color = if (prMonths == minPrMonths) EmeraldGreen else AmberGold,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.sp
+                                    )
+                                    Text(
+                                        text = if (job.relocationAssistance) "Full Relo Included" else "Visa Only",
+                                        color = SlateMuted,
+                                        fontSize = 9.sp
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                OutlinedButton(
+                                    onClick = { viewModel.toggleCompareJob(job.id) },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = CoralRed),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                                    modifier = Modifier.weight(0.38f).height(30.dp)
+                                ) {
+                                    Text("Remove", fontSize = 10.sp)
+                                }
+                                Button(
+                                    onClick = { onBuildDossierForJob(job) },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = AmberGold, contentColor = NavyDark),
+                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
+                                    modifier = Modifier.weight(0.62f).height(30.dp)
+                                ) {
+                                    Text("📄 Build Dossier PDF", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            viewModel.clearComparedJobs()
+                            onDismiss()
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = CoralRed),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Clear All", fontSize = 12.sp)
+                    }
+                    Button(
+                        onClick = onDismiss,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = TealCyan, contentColor = NavyDark),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Done", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
+
