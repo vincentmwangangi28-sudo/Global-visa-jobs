@@ -275,6 +275,106 @@ object SponsorRegistryRepository {
             visaQuotaStatus = "MOJ Highly Skilled Professional Quota: 30 Slots Open",
             visaQuotaUpdatedAt = "Today, 08:00 AM",
             availableQuotaSpots = 30
+        ),
+        OfficialSponsor(
+            id = "sp_ke_009",
+            name = "Safaricom PLC & M-PESA Africa",
+            country = "Kenya",
+            licenseNumber = "KE-DIS-CLASSD-10482",
+            licenseRating = "NSE Tier-1 Corporate & EAC Regional Sponsor",
+            industry = "Telecommunications, Mobile Money & Cloud",
+            headquarterLocation = "Westlands, Nairobi County, Kenya",
+            eligibleVisaRoutes = listOf("Local County Hire (All 47 Counties)", "East African Community (EAC) Gratis Permit", "Kenya Class D Special Pass & Work Permit"),
+            tierLevel = "Tier 1 - Full County & Regional Relocation + Comprehensive Medical",
+            totalApprovedPetitionsLast3Years = 640,
+            approvalRatePercent = 99.5,
+            medianApprovedWage = "KES 4,800,000 / year (KES 400k/mo)",
+            localMarketMedianWage = "KES 2,400,000 / year (+100% above Nairobi tech median)",
+            licenseStatus = SponsorLicenseStatus.PREMIUM_FAST_TRACK,
+            primaryLegalPartner = "Anjarwalla & Khanna (ALN Kenya)",
+            avgCoSIssuanceDays = 5,
+            greenCardPrSupportPolicy = "Permanent local pension & long-term Kenya Permanent Residence Class K/L support for expatriate specialists",
+            historicalFilingsByYear = mapOf("2023" to 180, "2024" to 215, "2025" to 245),
+            topSponsoredRoles = listOf("Senior Android & Kotlin Engineer", "M-PESA Core Payment Architect", "Cloud DevSecOps Lead", "Data Scientist"),
+            description = "East Africa's largest telecommunications and fintech employer hiring actively across Nairobi County, Mombasa County, Kisumu County, and regional hubs.",
+            visaQuotaStatus = "Active Local County & EAC Hiring Quota: 90 Positions Open",
+            visaQuotaUpdatedAt = "Today, 09:20 AM",
+            availableQuotaSpots = 90
+        ),
+        OfficialSponsor(
+            id = "sp_ke_010",
+            name = "KenGen (Kenya Electricity Generating Company PLC)",
+            country = "Kenya",
+            licenseNumber = "KE-EPRA-GEOTHERM-2091",
+            licenseRating = "National Strategic Energy Utility Employer",
+            industry = "Geothermal, Hydro & Renewable Energy",
+            headquarterLocation = "Olkaria (Nakuru County) & Parklands (Nairobi County)",
+            eligibleVisaRoutes = listOf("Local County Hire (Nakuru, Machakos, Kisumu, Kilifi)", "EAC Regional Engineer Permit", "Class D Energy Specialist Permit"),
+            tierLevel = "Tier 1 - Full Relocation + On-Site Staff Housing in Naivasha",
+            totalApprovedPetitionsLast3Years = 410,
+            approvalRatePercent = 98.9,
+            medianApprovedWage = "KES 3,600,000 / year (KES 300k/mo)",
+            localMarketMedianWage = "KES 2,100,000 / year",
+            licenseStatus = SponsorLicenseStatus.ACTIVE_VERIFIED,
+            primaryLegalPartner = "KenGen Corporate Legal & Immigration Directorate",
+            avgCoSIssuanceDays = 7,
+            greenCardPrSupportPolicy = "Long-term permanent & pensionable utility contract with full family housing in Nakuru County",
+            historicalFilingsByYear = mapOf("2023" to 120, "2024" to 140, "2025" to 150),
+            topSponsoredRoles = listOf("Geothermal Reservoir Engineer", "High-Voltage Grid Protection Engineer", "SCADA Control Specialist", "Environmental Analyst"),
+            description = "Africa's largest geothermal power producer offering local county careers in Nakuru, Nairobi, and Machakos with staff housing.",
+            visaQuotaStatus = "Nakuru & Nairobi Engineering Quota: 55 Slots Open",
+            visaQuotaUpdatedAt = "Today, 10:10 AM",
+            availableQuotaSpots = 55
+        ),
+        OfficialSponsor(
+            id = "sp_ng_011",
+            name = "Flutterwave Inc. Nigeria",
+            country = "Nigeria",
+            licenseNumber = "NG-NIS-ECOWAS-77412",
+            licenseRating = "CBN Licensed Switching & Processing Unicorn",
+            industry = "FinTech & Cross-Border Payments",
+            headquarterLocation = "Victoria Island, Lagos State, Nigeria",
+            eligibleVisaRoutes = listOf("Local State Hire (Lagos & Abuja FCT)", "ECOWAS Free Movement Residence Card", "Nigeria CERPAC Expatriate Quota"),
+            tierLevel = "Tier 1 - Full Relocation + Executive HMO + Equity",
+            totalApprovedPetitionsLast3Years = 520,
+            approvalRatePercent = 98.6,
+            medianApprovedWage = "NGN 42,000,000 / year",
+            localMarketMedianWage = "NGN 18,000,000 / year",
+            licenseStatus = SponsorLicenseStatus.PREMIUM_FAST_TRACK,
+            primaryLegalPartner = "Banwo & Ighodalo Lagos",
+            avgCoSIssuanceDays = 6,
+            greenCardPrSupportPolicy = "Direct local permanent contract & ECOWAS long-term residence facilitation",
+            historicalFilingsByYear = mapOf("2023" to 150, "2024" to 175, "2025" to 195),
+            topSponsoredRoles = listOf("Backend Payment Switch Engineer", "Cloud Infrastructure Lead", "Product Security Architect", "Compliance Lead"),
+            description = "Leading African payment infrastructure company offering top-percentile local compensation in Lagos State and pan-African mobility.",
+            visaQuotaStatus = "Lagos & Regional Engineering Quota: 60 Slots Active",
+            visaQuotaUpdatedAt = "Today, 09:05 AM",
+            availableQuotaSpots = 60
+        ),
+        OfficialSponsor(
+            id = "sp_za_012",
+            name = "Standard Bank Group South Africa",
+            country = "South Africa",
+            licenseNumber = "ZA-DHA-TES-55190",
+            licenseRating = "DHA Trusted Employer Scheme (TES) Partner",
+            industry = "Pan-African Banking & Quantitative Risk",
+            headquarterLocation = "Rosebank, Johannesburg (Gauteng), South Africa",
+            eligibleVisaRoutes = listOf("Local Hire (Gauteng & Western Cape)", "South Africa Critical Skills Work Visa", "Intra-Company Transfer (ICT)"),
+            tierLevel = "Tier 1 - Full Relocation + Critical Skills Fast-Track",
+            totalApprovedPetitionsLast3Years = 730,
+            approvalRatePercent = 99.0,
+            medianApprovedWage = "ZAR 1,550,000 / year",
+            localMarketMedianWage = "ZAR 980,000 / year",
+            licenseStatus = SponsorLicenseStatus.ACTIVE_VERIFIED,
+            primaryLegalPartner = "ENSafrica Immigration Practice",
+            avgCoSIssuanceDays = 12,
+            greenCardPrSupportPolicy = "Direct South African Permanent Residency (§27b) endorsement for Critical Skills holders",
+            historicalFilingsByYear = mapOf("2023" to 210, "2024" to 250, "2025" to 270),
+            topSponsoredRoles = listOf("Principal Data Platform Architect", "Quantitative Risk Analyst", "Cloud Security Engineer", "Mobile Lead"),
+            description = "Member of South Africa's Department of Home Affairs Trusted Employer Scheme with priority Critical Skills processing.",
+            visaQuotaStatus = "DHA Trusted Employer Priority Quota: 75 Spots Open",
+            visaQuotaUpdatedAt = "Today, 08:30 AM",
+            availableQuotaSpots = 75
         )
     )
 }
@@ -298,13 +398,14 @@ fun SponsorRegistryHub(
     var selectedTierFilter by remember { mutableStateOf("All Tiers") }
     var selectedSponsorForDetail by remember { mutableStateOf<OfficialSponsor?>(null) }
     var sponsorList by remember { mutableStateOf(SponsorRegistryRepository.officialSponsors) }
-    var notifiedSponsorIds by remember { mutableStateOf(setOf<String>("sp_uk_001", "sp_ca_002")) }
+    var notifiedSponsorIds by remember { mutableStateOf(setOf<String>("sp_uk_001", "sp_ca_002", "sp_ke_009")) }
     var activeQuotaAlert by remember { mutableStateOf<QuotaUpdateAlert?>(null) }
 
     val countries = listOf(
-        "All Countries", "United Kingdom", "Canada", "Germany", "United States", 
-        "Australia", "Netherlands", "Japan", "Singapore", "Switzerland", "France", 
-        "Ireland", "New Zealand", "Denmark", "Sweden", "United Arab Emirates", "Saudi Arabia"
+        "All Countries", "Kenya", "United Kingdom", "Canada", "Germany", "United States",
+        "Nigeria", "South Africa", "Australia", "Netherlands", "Japan", "Singapore",
+        "Switzerland", "France", "Ireland", "New Zealand", "Denmark", "Sweden",
+        "United Arab Emirates", "Saudi Arabia"
     )
     val tiers = listOf("All Tiers", "Tier 1 - Full Relocation", "Tier 2 - Visa Only")
 

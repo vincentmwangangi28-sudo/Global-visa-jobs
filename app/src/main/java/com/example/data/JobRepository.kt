@@ -333,6 +333,14 @@ class JobRepository(private val db: AppDatabase, private val context: Context) {
             "germany" -> "DE"
             "australia" -> "AU"
             "france" -> "FR"
+            "kenya" -> "KE"
+            "nigeria" -> "NG"
+            "south africa" -> "ZA"
+            "rwanda" -> "RW"
+            "uganda" -> "UG"
+            "ghana" -> "GH"
+            "india" -> "IN"
+            "philippines" -> "PH"
             else -> "US"
         }
 

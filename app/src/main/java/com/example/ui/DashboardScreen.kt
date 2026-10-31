@@ -502,15 +502,44 @@ fun DiscoverTab(
     var searchCountryText by remember { mutableStateOf("All") }
 
     val countries = listOf(
-        "All", "Canada", "United Kingdom", "Australia", "Germany", "Sweden", 
-        "United States", "Netherlands", "Ireland", "New Zealand", "Japan", 
-        "Singapore", "Denmark", "Switzerland", "France", "United Arab Emirates", 
-        "Saudi Arabia", "Norway", "Finland", "Poland", "Spain"
+        "All", "Kenya", "Canada", "United Kingdom", "Australia", "Germany", "Sweden",
+        "United States", "Nigeria", "South Africa", "Rwanda", "Uganda", "Tanzania", "Ghana",
+        "Egypt", "India", "Philippines", "Malaysia", "Brazil", "Netherlands", "Ireland",
+        "New Zealand", "Japan", "Singapore", "Denmark", "Switzerland", "France",
+        "United Arab Emirates", "Saudi Arabia", "Norway", "Finland", "Poland", "Spain"
+    )
+    val countyRegions = listOf(
+        "All Regions",
+        "Nairobi County",
+        "Mombasa County",
+        "Kisumu County",
+        "Nakuru County",
+        "Kiambu County",
+        "Uasin Gishu County",
+        "Machakos County",
+        "Nyeri County",
+        "Kilifi County",
+        "Kakamega County",
+        "Meru County",
+        "Kajiado County",
+        "Laikipia County",
+        "Lagos State",
+        "Gauteng",
+        "Kigali",
+        "Kampala",
+        "Dar es Salaam",
+        "Greater Accra",
+        "Cairo",
+        "Karnataka",
+        "Metro Manila",
+        "Kuala Lumpur",
+        "São Paulo"
     )
     val industries = listOf("All", "Healthcare", "Technology", "Logistics", "Engineering", "Transportation", "Energy", "Hospitality", "Agriculture")
     val experiences = listOf("All", "Entry", "Mid", "Senior")
 
     val selectedCountry by viewModel.selectedCountry.collectAsStateWithLifecycle()
+    val selectedCountyRegion by viewModel.selectedCountyRegion.collectAsStateWithLifecycle()
     val selectedIndustry by viewModel.selectedIndustry.collectAsStateWithLifecycle()
     val selectedExperience by viewModel.selectedExperience.collectAsStateWithLifecycle()
     val selectedSponsorship by viewModel.selectedSponsorship.collectAsStateWithLifecycle()
@@ -559,14 +588,20 @@ fun DiscoverTab(
                 job.title.contains(queryText, ignoreCase = true) ||
                 job.company.contains(queryText, ignoreCase = true) ||
                 job.country.contains(queryText, ignoreCase = true) ||
+                job.location.contains(queryText, ignoreCase = true) ||
                 job.visaType.contains(queryText, ignoreCase = true) ||
                 job.description.contains(queryText, ignoreCase = true)
 
         val matchCountry = selectedCountry == "All" || job.country.equals(selectedCountry, ignoreCase = true)
+        val matchCountyRegion = selectedCountyRegion == "All Regions" ||
+                job.location.contains(selectedCountyRegion, ignoreCase = true) ||
+                job.visaType.contains(selectedCountyRegion, ignoreCase = true) ||
+                job.description.contains(selectedCountyRegion, ignoreCase = true)
         val matchIndustry = selectedIndustry == "All" || job.industry.equals(selectedIndustry, ignoreCase = true)
         val matchExp = selectedExperience == "All" || job.experienceLevel.equals(selectedExperience, ignoreCase = true)
         val matchSponsorship = when (selectedSponsorship) {
             "All" -> true
+            "Local / County Hire" -> job.visaType.contains("Local", ignoreCase = true) || job.visaType.contains("County", ignoreCase = true) || job.visaType.contains("Domestic", ignoreCase = true)
             "Full Sponsorship" -> job.visaType.contains("Full", ignoreCase = true) || job.visaType.contains("Skilled", ignoreCase = true) || job.visaType.contains("Sponsorship", ignoreCase = true) || job.confidenceScore >= 92
             "Relocation Paid" -> job.relocationAssistance == true
             "LMIA Approved" -> job.visaType.contains("LMIA", ignoreCase = true) || job.description.contains("LMIA", ignoreCase = true)
@@ -581,7 +616,7 @@ fun DiscoverTab(
         }
         val matchSaved = !filterSavedOnly || job.isBookmarked
 
-        matchQuery && matchCountry && matchIndustry && matchExp && matchSponsorship && matchSource && matchSaved
+        matchQuery && matchCountry && matchCountyRegion && matchIndustry && matchExp && matchSponsorship && matchSource && matchSaved
     }.let { list ->
         when (selectedSortBy) {
             "Salary (Highest USD)" -> list.sortedByDescending { viewModel.estimateAnnualUsdSalary(it.salary, it.country) }
@@ -1822,6 +1857,14 @@ fun DiscoverTab(
                 onSelected = { viewModel.selectCountry(it) }
             )
 
+            // County / Region Filter Dropdown (Kenya Counties & Global Hubs)
+            FilterBadgeDropdown(
+                label = "County / Region",
+                selected = selectedCountyRegion,
+                options = countyRegions,
+                onSelected = { viewModel.selectCountyRegion(it) }
+            )
+
             // Industry Filter Dropdown
             FilterBadgeDropdown(
                 label = "Industry",
@@ -1838,11 +1881,11 @@ fun DiscoverTab(
                 onSelected = { viewModel.selectExperience(it) }
             )
 
-            // Sponsorship Filter Dropdown
+            // Sponsorship / Hiring Type Filter Dropdown
             FilterBadgeDropdown(
-                label = "Sponsorship",
+                label = "Hiring Type",
                 selected = selectedSponsorship,
-                options = listOf("All", "Full Sponsorship", "Relocation Paid", "LMIA Approved", "High Confidence"),
+                options = listOf("All", "Local / County Hire", "Full Sponsorship", "Relocation Paid", "LMIA Approved", "High Confidence"),
                 onSelected = { viewModel.selectSponsorship(it) }
             )
         }
@@ -9677,11 +9720,14 @@ fun SalariesTab(viewModel: JobViewModel) {
     var jobTitle by remember { mutableStateOf("Software Engineer") }
 
     val countries = listOf(
+        Pair("KE", "Kenya 🇰🇪"),
         Pair("DE", "Germany 🇩🇪"),
         Pair("US", "United States 🇺🇸"),
         Pair("GB", "United Kingdom 🇬🇧"),
         Pair("CA", "Canada 🇨🇦"),
-        Pair("AU", "Australia 🇦🇺")
+        Pair("AU", "Australia 🇦🇺"),
+        Pair("NG", "Nigeria 🇳🇬"),
+        Pair("ZA", "South Africa 🇿🇦")
     )
 
     data class MarketTrendPoint(
@@ -9692,6 +9738,48 @@ fun SalariesTab(viewModel: JobViewModel) {
 
     val trendsData = remember {
         mapOf(
+            "KE" to listOf(
+                MarketTrendPoint("Jul 25", 2400, 3100000.0),
+                MarketTrendPoint("Aug 25", 2550, 3180000.0),
+                MarketTrendPoint("Sep 25", 2720, 3250000.0),
+                MarketTrendPoint("Oct 25", 2890, 3320000.0),
+                MarketTrendPoint("Nov 25", 3050, 3400000.0),
+                MarketTrendPoint("Dec 25", 2980, 3450000.0),
+                MarketTrendPoint("Jan 26", 3220, 3550000.0),
+                MarketTrendPoint("Feb 26", 3410, 3620000.0),
+                MarketTrendPoint("Mar 26", 3590, 3700000.0),
+                MarketTrendPoint("Apr 26", 3760, 3810000.0),
+                MarketTrendPoint("May 26", 3940, 3920000.0),
+                MarketTrendPoint("Jun 26", 4180, 4050000.0)
+            ),
+            "NG" to listOf(
+                MarketTrendPoint("Jul 25", 3100, 26000000.0),
+                MarketTrendPoint("Aug 25", 3240, 27200000.0),
+                MarketTrendPoint("Sep 25", 3390, 28500000.0),
+                MarketTrendPoint("Oct 25", 3520, 29800000.0),
+                MarketTrendPoint("Nov 25", 3680, 31000000.0),
+                MarketTrendPoint("Dec 25", 3610, 31800000.0),
+                MarketTrendPoint("Jan 26", 3850, 33000000.0),
+                MarketTrendPoint("Feb 26", 4020, 34200000.0),
+                MarketTrendPoint("Mar 26", 4190, 35500000.0),
+                MarketTrendPoint("Apr 26", 4350, 36800000.0),
+                MarketTrendPoint("May 26", 4520, 38000000.0),
+                MarketTrendPoint("Jun 26", 4750, 39500000.0)
+            ),
+            "ZA" to listOf(
+                MarketTrendPoint("Jul 25", 2850, 1180000.0),
+                MarketTrendPoint("Aug 25", 2960, 1200000.0),
+                MarketTrendPoint("Sep 25", 3100, 1225000.0),
+                MarketTrendPoint("Oct 25", 3240, 1250000.0),
+                MarketTrendPoint("Nov 25", 3380, 1275000.0),
+                MarketTrendPoint("Dec 25", 3310, 1290000.0),
+                MarketTrendPoint("Jan 26", 3520, 1320000.0),
+                MarketTrendPoint("Feb 26", 3680, 1345000.0),
+                MarketTrendPoint("Mar 26", 3810, 1370000.0),
+                MarketTrendPoint("Apr 26", 3950, 1395000.0),
+                MarketTrendPoint("May 26", 4120, 1420000.0),
+                MarketTrendPoint("Jun 26", 4310, 1450000.0)
+            ),
             "US" to listOf(
                 MarketTrendPoint("Jul 25", 11800, 109500.0),
                 MarketTrendPoint("Aug 25", 12100, 110200.0),
@@ -9809,6 +9897,9 @@ fun SalariesTab(viewModel: JobViewModel) {
             val selectedTrends = trendsData[countryCode] ?: trendsData["DE"]!!
             val activePoint = selectedTrends[hoveredIndex]
             val totalAnnualSponsorships = when (countryCode) {
+                "KE" -> "38.4k"
+                "NG" -> "44.2k"
+                "ZA" -> "39.8k"
                 "US" -> "168.4k"
                 "GB" -> "68.2k"
                 "DE" -> "42.5k"
@@ -9817,6 +9908,9 @@ fun SalariesTab(viewModel: JobViewModel) {
                 else -> "45.0k"
             }
             val avgSalaryText = when (countryCode) {
+                "KE" -> "KES ${String.format("%,.0f", selectedTrends.map { it.averageSalary }.average())}"
+                "NG" -> "NGN ${String.format("%,.0f", selectedTrends.map { it.averageSalary }.average())}"
+                "ZA" -> "ZAR ${String.format("%,.0f", selectedTrends.map { it.averageSalary }.average())}"
                 "DE" -> "€${String.format("%,.0f", selectedTrends.map { it.averageSalary }.average())}"
                 "US" -> "$${String.format("%,.0f", selectedTrends.map { it.averageSalary }.average())}"
                 "GB" -> "£${String.format("%,.0f", selectedTrends.map { it.averageSalary }.average())}"

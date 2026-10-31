@@ -643,7 +643,16 @@ object GeminiApiClient {
             else -> techRoles + healthRoles + logisticsRoles + engineeringRoles + generalRoles
         }
 
-        val countriesList = if (c.isNotEmpty()) listOf(c) else listOf("Canada", "United Kingdom", "Germany", "Australia", "Sweden")
+        val countriesList = if (c.isNotEmpty()) listOf(c) else listOf("Kenya", "Canada", "United Kingdom", "Germany", "Australia", "Nigeria", "South Africa", "Sweden")
+        val kenyaCounties = listOf(
+            "Nairobi County (Westlands), Kenya",
+            "Mombasa County (Kilindini), Kenya",
+            "Kisumu County (Milimani), Kenya",
+            "Nakuru County (Naivasha / Olkaria), Kenya",
+            "Kiambu County (Ruiru / Tatu City), Kenya",
+            "Uasin Gishu County (Eldoret), Kenya",
+            "Machakos County (Konza Technopolis), Kenya"
+        )
         
         val results = mutableListOf<JobEntity>()
         val limit = 15
@@ -657,6 +666,73 @@ object GeminiApiClient {
             val (title, industry, desc) = selectedRoleList[roleIdx]
 
             val (location, salary, visa, score, reason, relocation) = when (activeCountry) {
+                "Kenya" -> {
+                    val countyLoc = kenyaCounties[i % kenyaCounties.size]
+                    Sextet(
+                        countyLoc,
+                        "KES 180,000 - 360,000 per month",
+                        "Local County Hire / EAC & Class D Permit",
+                        97,
+                        "Verified Kenyan employer with county relocation & medical cover.",
+                        true
+                    )
+                }
+                "Nigeria" -> Sextet(
+                    if (i % 2 == 0) "Lagos State (Victoria Island), Nigeria" else "Abuja FCT, Nigeria",
+                    "NGN 1,800,000 - 3,400,000 per month",
+                    "Local State Hire / ECOWAS Work Permit",
+                    96,
+                    "Verified Nigerian enterprise with local & regional hiring.",
+                    true
+                )
+                "South Africa" -> Sextet(
+                    if (i % 2 == 0) "Gauteng (Johannesburg), South Africa" else "Western Cape (Cape Town), South Africa",
+                    "ZAR 85,000 - 130,000 per month",
+                    "Local Hire / SA Critical Skills Visa",
+                    96,
+                    "Registered South African employer with local & DHA critical skills support.",
+                    true
+                )
+                "Rwanda" -> Sextet(
+                    "Kigali City, Rwanda",
+                    "RWF 2,500,000 - 4,200,000 per month",
+                    "Local Hire (Kigali) / EAC Free Movement Permit",
+                    95,
+                    "Kigali Innovation City accredited employer.",
+                    true
+                )
+                "Uganda" -> Sextet(
+                    "Kampala District, Uganda",
+                    "UGX 7,500,000 - 12,500,000 per month",
+                    "Local Hire (Kampala) / EAC Work Permit",
+                    94,
+                    "Verified Kampala employer with regional benefits.",
+                    true
+                )
+                "Ghana" -> Sextet(
+                    "Greater Accra Region, Ghana",
+                    "GHS 22,000 - 38,000 per month",
+                    "Local Hire (Accra) / ECOWAS Permit",
+                    94,
+                    "Licensed Greater Accra corporate employer.",
+                    true
+                )
+                "India" -> Sextet(
+                    "Karnataka (Bengaluru), India",
+                    "INR 3,200,000 - 5,500,000 per year",
+                    "Local Domestic Hire + Interstate Relocation",
+                    96,
+                    "Tier-1 Bengaluru technology & engineering hub employer.",
+                    true
+                )
+                "Philippines" -> Sextet(
+                    "Metro Manila (BGC Taguig), Philippines",
+                    "PHP 150,000 - 240,000 per month",
+                    "Local Domestic Hire + Relocation",
+                    95,
+                    "Verified Metro Manila & Cebu enterprise employer.",
+                    true
+                )
                 "Canada" -> Sextet(
                     "Vancouver, BC", 
                     "$75,000 - $95,000 CAD per year", 
@@ -700,9 +776,9 @@ object GeminiApiClient {
                 else -> Sextet(
                     "Global Office", 
                     "Competitive", 
-                    "Global Relocation Support", 
+                    "Local Hire & Global Relocation Support", 
                     85, 
-                    "Verified global hiring campaign with visa application assistance.", 
+                    "Verified hiring campaign with local and international relocation assistance.", 
                     true
                 )
             }

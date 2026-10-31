@@ -1308,6 +1308,8 @@
       <!-- Relocate.me / Otta Style Quick Filter Pills -->
       <div class="quick-filter-pills" id="quickFilterPills">
         <button class="quick-pill-btn active" onclick="applyQuickFilter('ALL', this)">All Opportunities</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('LOCAL_JOBS', this)">Local &amp; County Jobs</button>
+        <button class="quick-pill-btn" onclick="applyQuickFilter('KENYA_COUNTIES', this)">Kenya (47 Counties)</button>
         <button class="quick-pill-btn" onclick="applyQuickFilter('FULL_RELOCATION', this)">Full Relocation</button>
         <button class="quick-pill-btn" onclick="applyQuickFilter('HOUSING', this)">Housing Covered</button>
         <button class="quick-pill-btn" onclick="applyQuickFilter('FAST_TRACK', this)">Fast-Track Visa</button>
@@ -1321,13 +1323,25 @@
       <!-- Search & Filters -->
       <div class="search-filter-box">
         <div class="search-row">
-          <input type="text" id="jobSearchInput" class="input-control" placeholder="Search title, tech stack (e.g. Kotlin, React, Nurse, Python)..." oninput="filterJobs()">
+          <input type="text" id="jobSearchInput" class="input-control" placeholder="Search title, county/city (e.g. Nairobi, Mombasa, Kisumu, Lagos), or stack..." oninput="filterJobs()">
           <select id="countrySelect" class="input-control" onchange="filterJobs()">
-            <option value="ALL">All Countries (Global)</option>
+            <option value="ALL">All Countries (Global &amp; Local)</option>
+            <option value="Kenya">Kenya (Local Counties &amp; EAC)</option>
             <option value="United Kingdom">United Kingdom (UK)</option>
             <option value="Germany">Germany (EU Blue Card)</option>
             <option value="Canada">Canada (LMIA / GTS)</option>
             <option value="United States">United States (H-1B / O-1)</option>
+            <option value="Nigeria">Nigeria (Lagos / Abuja Local &amp; ECOWAS)</option>
+            <option value="South Africa">South Africa (Gauteng / Cape Town)</option>
+            <option value="Rwanda">Rwanda (Kigali Innovation City)</option>
+            <option value="Uganda">Uganda (Kampala Local &amp; EAC)</option>
+            <option value="Tanzania">Tanzania (Dar es Salaam Local &amp; EAC)</option>
+            <option value="Ghana">Ghana (Greater Accra Local &amp; ECOWAS)</option>
+            <option value="Egypt">Egypt (Cairo Smart Village)</option>
+            <option value="India">India (Bengaluru / Domestic Hub)</option>
+            <option value="Philippines">Philippines (Metro Manila / Cebu)</option>
+            <option value="Malaysia">Malaysia (Kuala Lumpur / MDEC)</option>
+            <option value="Brazil">Brazil (São Paulo Tech Hub)</option>
             <option value="Netherlands">Netherlands (Kennismigrant)</option>
             <option value="Australia">Australia (TSS 482)</option>
             <option value="Ireland">Ireland (CSEP)</option>
@@ -1345,8 +1359,37 @@
             <option value="Finland">Finland (Specialist Permit)</option>
             <option value="Poland">Poland (EU Blue Card)</option>
           </select>
+          <select id="countyRegionSelect" class="input-control" onchange="filterJobs()">
+            <option value="ALL">All Counties &amp; Regions</option>
+            <option value="Nairobi County">Nairobi County (Kenya)</option>
+            <option value="Mombasa County">Mombasa County (Kenya)</option>
+            <option value="Kisumu County">Kisumu County (Kenya)</option>
+            <option value="Nakuru County">Nakuru County (Kenya)</option>
+            <option value="Kiambu County">Kiambu County (Kenya)</option>
+            <option value="Uasin Gishu County">Uasin Gishu County - Eldoret (Kenya)</option>
+            <option value="Machakos County">Machakos County - Konza (Kenya)</option>
+            <option value="Nyeri County">Nyeri County (Kenya)</option>
+            <option value="Kilifi County">Kilifi County (Kenya)</option>
+            <option value="Kakamega County">Kakamega County (Kenya)</option>
+            <option value="Meru County">Meru County (Kenya)</option>
+            <option value="Kajiado County">Kajiado County (Kenya)</option>
+            <option value="Laikipia County">Laikipia County - Nanyuki (Kenya)</option>
+            <option value="Lagos State">Lagos State (Nigeria)</option>
+            <option value="Gauteng">Gauteng - Johannesburg (South Africa)</option>
+            <option value="Kigali">Kigali City (Rwanda)</option>
+            <option value="Kampala">Kampala District (Uganda)</option>
+            <option value="Dar es Salaam">Dar es Salaam (Tanzania)</option>
+            <option value="Greater Accra">Greater Accra (Ghana)</option>
+            <option value="Cairo">Cairo Governorate (Egypt)</option>
+            <option value="Karnataka">Karnataka - Bengaluru (India)</option>
+            <option value="Metro Manila">Metro Manila (Philippines)</option>
+            <option value="Kuala Lumpur">Kuala Lumpur (Malaysia)</option>
+            <option value="São Paulo">São Paulo State (Brazil)</option>
+          </select>
           <select id="visaTypeSelect" class="input-control" onchange="filterJobs()">
-            <option value="ALL">All Visa Routes</option>
+            <option value="ALL">All Hiring &amp; Visa Routes</option>
+            <option value="Local">Local / County Hire (Domestic)</option>
+            <option value="EAC">East African Community (EAC / Class D)</option>
             <option value="UK Skilled Worker">UK Skilled Worker (CoS)</option>
             <option value="EU Blue Card">EU Blue Card</option>
             <option value="Canada LMIA">Canada LMIA</option>
@@ -1363,7 +1406,7 @@
             <option value="DEFAULT">Sort: Recommended</option>
             <option value="SALARY_HIGH">Salary: High to Low (USD Normalized)</option>
             <option value="NET_USD_HIGH">Net Take-Home Pay (After Tax/Ruling)</option>
-            <option value="VISA_SPEED">Fastest Visa Processing (Days)</option>
+            <option value="VISA_SPEED">Fastest Onboarding / Visa Speed</option>
             <option value="PR_TIMELINE">Fastest PR / Residency Timeline</option>
             <option value="SALARY_LOW">Salary: Low to High (USD)</option>
             <option value="NEWEST">Latest Verified</option>
@@ -1381,10 +1424,10 @@
         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
           <div class="live-status-pill">
             <span class="live-pulse-dot"></span>
-            <span>Live Global Ingestion: Active</span>
+            <span>Live Global &amp; County Ingestion: Active</span>
           </div>
           <span style="font-size: 12.5px; color: var(--text-muted);">
-            <strong id="liveJobCountSpan">55</strong> verified visa positions indexed across 21 countries
+            <strong id="liveJobCountSpan">72</strong> verified local county &amp; visa positions indexed across 29 countries
           </span>
         </div>
 
@@ -3407,11 +3450,330 @@ International Engineering Candidate
         relocation: "Tax-Free Compensation + Executive Compound Housing + International Schooling",
         tags: ["Industrial IoT", "Edge AI", "Kubernetes", "Cloud", "0% Tax"],
         description: "Architect sovereign industrial AI platforms across critical energy and manufacturing facilities. Full sponsorship with zero income tax and family compound living."
+      },
+      // KENYA COUNTY LOCAL & REGIONAL JOBS
+      {
+        id: "ke-job-nairobi-safaricom",
+        title: "Senior Android & M-PESA Financial Systems Engineer",
+        company: "Safaricom PLC",
+        country: "Kenya",
+        city: "Nairobi County (Westlands)",
+        visaType: "Local County Hire (Nairobi) / EAC & Class D Permit",
+        salary: "KES 380,000 - 520,000 / mo",
+        relocation: "Full Nairobi County Relocation Package + Comprehensive Medical + Pension",
+        tags: ["Kotlin", "Compose", "M-PESA", "FinTech", "Microservices"],
+        description: "Architect high-throughput mobile money microservices and Android apps serving 42M+ M-PESA customers across Kenya and East Africa. Open to local Kenyan citizens/residents in Nairobi County and EAC / Class D Permit candidates."
+      },
+      {
+        id: "ke-job-nairobi-equity",
+        title: "Lead Cloud Infrastructure & FinTech Security Architect",
+        company: "Equity Bank Group HQ",
+        country: "Kenya",
+        city: "Nairobi County (Upper Hill)",
+        visaType: "Local County Hire (Nairobi) / EAC Regional Permit",
+        salary: "KES 350,000 - 480,000 / mo",
+        relocation: "Direct Local Hire in Nairobi County + Regional Relocation Stipend",
+        tags: ["AWS", "Cybersecurity", "Kubernetes", "FinTech", "Zero-Trust"],
+        description: "Lead hybrid cloud infrastructure and core banking cybersecurity across 6 East & Central African markets from Equity Centre in Nairobi County."
+      },
+      {
+        id: "ke-job-nairobi-agakhan",
+        title: "Critical Care & ICU Registered Nurse (KRCHN / BScN)",
+        company: "Aga Khan University Hospital Nairobi",
+        country: "Kenya",
+        city: "Nairobi County (Parklands)",
+        visaType: "Local County Hire (Nairobi) / Healthcare Permit",
+        salary: "KES 145,000 - 210,000 / mo",
+        relocation: "Inter-County Relocation Allowance + Housing Support + CME Grant",
+        tags: ["ICU Nursing", "KRCHN", "Clinical Care", "Hospital", "NCK Licensed"],
+        description: "Deliver specialized intensive care nursing at our JCIA-accredited tertiary teaching hospital in Parklands, Nairobi County."
+      },
+      {
+        id: "ke-job-mombasa-kpa",
+        title: "Senior Marine Terminal & Port Logistics Operations Engineer",
+        company: "East Africa Maritime & Mombasa Port Logistics",
+        country: "Kenya",
+        city: "Mombasa County (Kilindini Harbour)",
+        visaType: "Local County Hire (Mombasa) + Inter-County Relocation",
+        salary: "KES 230,000 - 320,000 / mo",
+        relocation: "Coastal Housing Allowance + Domestic Relocation to Mombasa County",
+        tags: ["Port Engineering", "Marine Logistics", "Supply Chain", "Automation"],
+        description: "Oversee automated container terminal cranes, cold-chain freight corridors, and berth operations at the Port of Mombasa in Mombasa County."
+      },
+      {
+        id: "ke-job-nakuru-kengen",
+        title: "Geothermal Power Plant & High-Voltage Grid Engineer",
+        company: "KenGen Olkaria Geothermal Operations",
+        country: "Kenya",
+        city: "Nakuru County (Naivasha / Olkaria)",
+        visaType: "Local County Hire (Nakuru) + Staff Housing",
+        salary: "KES 250,000 - 350,000 / mo",
+        relocation: "On-Site Staff Housing in Naivasha + Full Family Medical & Relocation",
+        tags: ["Geothermal Energy", "Power Grid", "Electrical Engineering", "EBK"],
+        description: "Manage steam-field turbine operations and national grid dispatch at Africa's largest geothermal renewable energy complex in Nakuru County."
+      },
+      {
+        id: "ke-job-kisumu-lakebasin",
+        title: "Regional Clinical Officer & Public Health Program Lead",
+        company: "Lake Victoria Basin Medical & Research Network",
+        country: "Kenya",
+        city: "Kisumu County (Milimani)",
+        visaType: "Local County Hire (Kisumu)",
+        salary: "KES 140,000 - 190,000 / mo",
+        relocation: "Kisumu County Relocation Allowance + Field Transport & Medical Cover",
+        tags: ["Clinical Officer", "Public Health", "Epidemiology", "Healthcare"],
+        description: "Coordinate maternal healthcare delivery, digital diagnostics, and county referral clinics across Kisumu County and the Lake Basin region."
+      },
+      {
+        id: "ke-job-kiambu-twiga",
+        title: "Supply Chain & Cold-Storage Fleet Logistics Manager",
+        company: "Twiga Foods & Ruiru Industrial Hub",
+        country: "Kenya",
+        city: "Kiambu County (Ruiru / Tatu City)",
+        visaType: "Local County Hire (Kiambu)",
+        salary: "KES 185,000 - 260,000 / mo",
+        relocation: "Tatu City SEZ Commuter Allowance + Full Local Benefits",
+        tags: ["Supply Chain", "Cold Chain", "Fleet Operations", "AgriTech"],
+        description: "Manage automated packhouse sorting, farm-to-market cold chain distribution, and commercial fleet routing at Tatu City Special Economic Zone in Kiambu County."
+      },
+      {
+        id: "ke-job-uasingishu-ampath",
+        title: "Senior Biomedical Engineer & Clinical Diagnostics Specialist",
+        company: "North Rift Referral & AMPATH Research Hub",
+        country: "Kenya",
+        city: "Uasin Gishu County (Eldoret)",
+        visaType: "Local County Hire (Uasin Gishu) + Relocation",
+        salary: "KES 155,000 - 220,000 / mo",
+        relocation: "Eldoret Housing Stipend + Inter-County Relocation Package",
+        tags: ["Biomedical Engineering", "MRI/CT", "Clinical Systems", "Healthcare"],
+        description: "Maintain CT/MRI imaging systems, automated pathology lab analyzers, and digital health telemetry in Eldoret, Uasin Gishu County."
+      },
+      {
+        id: "ke-job-machakos-konza",
+        title: "Smart City Civil Infrastructure & Tier-III Data Center Engineer",
+        company: "Konza Technopolis Development Authority (KoTDA)",
+        country: "Kenya",
+        city: "Machakos County (Konza Silicon Savannah)",
+        visaType: "Local County Hire (Machakos) / SEZ Work Permit",
+        salary: "KES 220,000 - 310,000 / mo",
+        relocation: "Konza Technopolis Housing Support + Full Relocation Allowance",
+        tags: ["Civil Engineering", "Smart Cities", "Data Centers", "Solar Grid"],
+        description: "Supervise smart utility tunnels, solar microgrids, and national cloud data center facilities at Konza Technopolis in Machakos County."
+      },
+      {
+        id: "ke-job-nyeri-highlands",
+        title: "Precision Agronomy & Export Tea/Coffee Processing Manager",
+        company: "Mt. Kenya Highlands Agribusiness Cooperative",
+        country: "Kenya",
+        city: "Nyeri County (Nyeri Town / Karatina)",
+        visaType: "Local County Hire (Nyeri) + Housing",
+        salary: "KES 130,000 - 185,000 / mo",
+        relocation: "Estate Staff Housing Covered in Nyeri County + Transport",
+        tags: ["Agronomy", "Food Safety", "Agribusiness", "Supply Chain"],
+        description: "Lead sustainable specialty coffee and tea processing factories, ISO food-safety traceability, and smallholder digital agronomy across Nyeri County."
+      },
+      // OTHER COUNTRIES LOCAL & REGIONAL HIRING
+      {
+        id: "ng-job-lagos-flutterwave",
+        title: "Senior Backend Payment Switch & Settlement Engineer",
+        company: "Flutterwave Inc. Nigeria",
+        country: "Nigeria",
+        city: "Lagos State (Victoria Island / Lekki)",
+        visaType: "Local Hire (Lagos State) / ECOWAS Work Permit",
+        salary: "NGN 2,800,000 - 4,200,000 / mo",
+        relocation: "Lagos Relocation Grant + Executive HMO + Equity Package",
+        tags: ["Go", "Java", "Payment Rails", "FinTech", "PostgreSQL"],
+        description: "Build high-concurrency cross-border payment rails and treasury settlement APIs across Africa. Direct local hiring in Lagos State plus ECOWAS mobility support."
+      },
+      {
+        id: "za-job-gauteng-standardbank",
+        title: "Principal Data Platform & Quantitative Risk Architect",
+        company: "Standard Bank Group SA",
+        country: "South Africa",
+        city: "Gauteng (Rosebank, Johannesburg)",
+        visaType: "Local Hire (Gauteng) / SA Critical Skills Visa",
+        salary: "ZAR 110,000 - 145,000 / mo",
+        relocation: "Gauteng Relocation Package + DHA Critical Skills Permit Support",
+        tags: ["Python", "Spark", "Quant Risk", "Cloud", "Banking"],
+        description: "Lead real-time Pan-African risk analytics and cloud data lakes in Johannesburg, Gauteng. Open to South African residents and Critical Skills Visa applicants."
+      },
+      {
+        id: "rw-job-kigali-irembo",
+        title: "Staff Digital Government Platform & GovTech Engineer",
+        company: "Irembo & Kigali Innovation City",
+        country: "Rwanda",
+        city: "Kigali City (Nyarutarama)",
+        visaType: "Local Hire (Kigali) / EAC Free Movement Permit",
+        salary: "RWF 3,200,000 - 4,800,000 / mo",
+        relocation: "Kigali Relocation Flights + EAC Work Permit Fee Waiver",
+        tags: ["TypeScript", "Go", "GovTech", "Cloud", "Kubernetes"],
+        description: "Design citizen-scale digital public infrastructure serving millions of Rwandans. Open to local Rwandan engineers and East African Community (EAC) talent."
+      },
+      {
+        id: "ug-job-kampala-mtn",
+        title: "Regional Fiber Network & 5G Core Transmission Lead",
+        company: "MTN Uganda PLC",
+        country: "Uganda",
+        city: "Kampala District (Kololo)",
+        visaType: "Local Hire (Kampala) / EAC Work Permit",
+        salary: "UGX 9,500,000 - 14,000,000 / mo",
+        relocation: "Kampala Relocation Allowance + Regional Telecom Benefits",
+        tags: ["5G Core", "Fiber Optics", "Telecom", "Network Engineering"],
+        description: "Direct national 5G core rollout and regional fiber interconnects across Kampala and regional Ugandan hubs."
+      },
+      {
+        id: "gh-job-accra-hubtel",
+        title: "Senior Mobile Commerce & POS Platform Engineer",
+        company: "Hubtel Ghana Limited",
+        country: "Ghana",
+        city: "Greater Accra (Kokomlemle, Accra)",
+        visaType: "Local Hire (Greater Accra) / ECOWAS Permit",
+        salary: "GHS 28,000 - 42,000 / mo",
+        relocation: "Accra Relocation Support + Health Cover & Performance Bonus",
+        tags: ["Kotlin", "C#", ".NET", "Mobile Money", "POS"],
+        description: "Build everyday merchant payment and delivery systems across Greater Accra, Kumasi, and Takoradi."
+      },
+      {
+        id: "in-job-bengaluru-flipkart",
+        title: "Principal Distributed Systems & Supply Chain AI Architect",
+        company: "Flipkart Internet Pvt Ltd",
+        country: "India",
+        city: "Karnataka (Bellandur, Bengaluru)",
+        visaType: "Local Domestic Hire (Karnataka) + Relocation",
+        salary: "INR 4,500,000 - 6,800,000 / yr",
+        relocation: "Full Interstate Relocation to Bengaluru + 30 Days Corporate Stay + ESOPs",
+        tags: ["Java", "Distributed Systems", "AI", "Supply Chain", "Kubernetes"],
+        description: "Architect ultra-low-latency e-commerce fulfillment and inventory prediction engines for 450M+ users across India."
+      },
+      {
+        id: "ph-job-manila-gcash",
+        title: "Lead Mobile Wallet Security & Cloud DevSecOps Engineer",
+        company: "GCash (Mynt - Globe Fintech Innovations)",
+        country: "Philippines",
+        city: "Metro Manila (BGC, Taguig)",
+        visaType: "Local Domestic Hire (Metro Manila) + Relocation",
+        salary: "PHP 180,000 - 260,000 / mo",
+        relocation: "Domestic Relocation to Metro Manila + Executive HMO",
+        tags: ["AWS", "DevSecOps", "Kubernetes", "FinTech", "Cybersecurity"],
+        description: "Secure digital financial services for 80M+ Filipinos at our BGC headquarters in Metro Manila."
+      },
+      {
+        id: "ke-job-kilifi-kemri",
+        title: "Senior Clinical Trials & Genomics Bioinformatics Scientist",
+        company: "KEMRI-Wellcome Trust Research Programme",
+        country: "Kenya",
+        city: "Kilifi County (Kilifi Town)",
+        visaType: "Local County Hire (Kilifi) / Research Work Permit",
+        salary: "KES 290,000 - 410,000 / mo",
+        relocation: "Kilifi Coastal Campus Housing + Full Relocation & Research Grant",
+        tags: ["Bioinformatics", "Clinical Trials", "Genomics", "Python", "Healthcare"],
+        description: "Lead tropical medicine genomics and vaccine efficacy clinical trials at the internationally renowned KEMRI-Wellcome Trust campus in Kilifi County."
+      },
+      {
+        id: "ke-job-kakamega-agro",
+        title: "Industrial Process & Biomass Cogeneration Plant Engineer",
+        company: "Western Kenya Agro-Industrial & Energy Complex",
+        country: "Kenya",
+        city: "Kakamega County (Kakamega / Mumias)",
+        visaType: "Local County Hire (Kakamega) + Staff Housing",
+        salary: "KES 175,000 - 245,000 / mo",
+        relocation: "On-Site Family Estate Housing in Kakamega County + Relocation",
+        tags: ["Process Engineering", "Biomass Energy", "SCADA", "Industrial"],
+        description: "Supervise automated agro-processing boilers, bagasse biomass cogeneration turbines, and plant maintenance in Kakamega County."
+      },
+      {
+        id: "ke-job-meru-horticulture",
+        title: "Export Cold-Chain & Sustainable Agribusiness Operations Lead",
+        company: "Eastern Highlands Horticulture & Dairy Export Hub",
+        country: "Kenya",
+        city: "Meru County (Meru Town / Timau)",
+        visaType: "Local County Hire (Meru) + Field Vehicle",
+        salary: "KES 150,000 - 215,000 / mo",
+        relocation: "Meru County Relocation Support + Dedicated 4x4 Field Vehicle",
+        tags: ["Cold Chain", "Agribusiness", "Export Logistics", "Agronomy"],
+        description: "Direct GlobalG.A.P. certified avocado, french beans, and dairy cold-chain logistics across Meru County for European and Middle Eastern export corridors."
+      },
+      {
+        id: "ke-job-kajiado-solar",
+        title: "Utility-Scale Solar PV & Battery Storage Project Engineer",
+        company: "Rift Valley Clean Power & Grid Solutions",
+        country: "Kenya",
+        city: "Kajiado County (Kitengela / Isinya)",
+        visaType: "Local County Hire (Kajiado) + Relocation",
+        salary: "KES 210,000 - 295,000 / mo",
+        relocation: "Kajiado / Nairobi Metro Relocation Package + Site Allowance",
+        tags: ["Solar PV", "Battery Storage", "High Voltage", "Renewable Energy"],
+        description: "Commission 40MW solar photovoltaic arrays and grid-scale BESS inverter stations in Kajiado County within the Nairobi Metropolitan corridor."
+      },
+      {
+        id: "ke-job-laikipia-conservancy",
+        title: "Eco-Tourism Hospitality General Manager & Conservation Operations Lead",
+        company: "Laikipia Plateau Luxury Safari & Conservation Group",
+        country: "Kenya",
+        city: "Laikipia County (Nanyuki)",
+        visaType: "Local County Hire (Laikipia) + Full Board Accommodation",
+        salary: "KES 190,000 - 270,000 / mo",
+        relocation: "Full Board Executive Cottage in Nanyuki + Domestic Flights",
+        tags: ["Hospitality", "Conservation", "Operations", "Eco-Tourism"],
+        description: "Manage luxury eco-lodge hospitality operations, guest relations, and community wildlife conservation partnerships in Nanyuki, Laikipia County."
+      },
+      {
+        id: "tz-job-dar-vodacom",
+        title: "Senior M-Pesa Core Platform & Microservices Architect",
+        company: "Vodacom Tanzania PLC",
+        country: "Tanzania",
+        city: "Dar es Salaam (Masaki / Kinondoni)",
+        visaType: "Local Hire (Dar es Salaam) / EAC Residence Permit",
+        salary: "TZS 6,500,000 - 9,800,000 / mo",
+        relocation: "Dar es Salaam Relocation Package + EAC Work Permit Support",
+        tags: ["Java", "Kotlin", "FinTech", "Microservices", "M-Pesa"],
+        description: "Scale mobile financial services and merchant payment APIs in Dar es Salaam. Open to local Tanzanian engineers and East African Community (EAC) citizens."
+      },
+      {
+        id: "eg-job-cairo-fawry",
+        title: "Staff Distributed Payment Systems & Cloud Architect",
+        company: "Fawry Banking & Payment Technology Services",
+        country: "Egypt",
+        city: "Cairo Governorate (Smart Village / New Cairo)",
+        visaType: "Local Domestic Hire (Cairo) / MENA Work Permit",
+        salary: "EGP 130,000 - 195,000 / mo",
+        relocation: "Cairo Relocation Support + Premium Medical & Stock Options",
+        tags: ["Java", "Spring Boot", "Kubernetes", "FinTech", "Payment Switch"],
+        description: "Architect high-throughput digital banking and bill-presentment platforms serving 50M+ Egyptians across Cairo and Alexandria."
+      },
+      {
+        id: "br-job-saopaulo-nubank",
+        title: "Senior Clojure / Kotlin Backend & Credit Platform Engineer",
+        company: "Nubank Brasil",
+        country: "Brazil",
+        city: "São Paulo State (Pinheiros, São Paulo)",
+        visaType: "Local Hire (São Paulo) / Brazil Tech Work Visa (VITEM V)",
+        salary: "BRL 28,000 - 42,000 / mo",
+        relocation: "Full São Paulo Relocation + Equity + VITEM V Visa Support",
+        tags: ["Kotlin", "Clojure", "FinTech", "AWS", "Distributed Systems"],
+        description: "Build core banking and credit underwriting microservices for 100M+ customers across Latin America from our São Paulo engineering hub."
+      },
+      {
+        id: "my-job-kl-grab",
+        title: "Lead Geo-Spatial Routing & Real-Time Logistics Engineer",
+        company: "Grab Malaysia R&D Center",
+        country: "Malaysia",
+        city: "Kuala Lumpur (KL Eco City / Petaling Jaya)",
+        visaType: "Local Hire (Kuala Lumpur) / MDEC Tech EP",
+        salary: "MYR 22,000 - 34,000 / mo",
+        relocation: "Kuala Lumpur Relocation Grant + MDEC Fast-Track Employment Pass",
+        tags: ["Go", "Kubernetes", "Geo-Spatial", "Logistics", "AI"],
+        description: "Optimize real-time ride-hailing dispatch and food delivery logistics across Southeast Asia."
       }
     ];
 
     // Verified Sponsors Directory
     const SPONSORS_DATA = [
+      { name: "Safaricom PLC", country: "Kenya (Nairobi County)", tier: "NSE Tier-1 Corporate & EAC Sponsor", routes: "Local County Hire, Kenya Class D & EAC Permit", quota: "350+ Active", status: "Active" },
+      { name: "Equity Bank Group HQ", country: "Kenya (Nairobi & Regional)", tier: "CBK Tier-1 Regional Employer", routes: "Local County Hire, EAC Regional Transfer", quota: "280+ Active", status: "Active" },
+      { name: "KenGen Olkaria Geothermal", country: "Kenya (Nakuru County)", tier: "National Energy Utility Sponsor", routes: "Local County Hire + Staff Housing", quota: "120+ Active", status: "Active" },
+      { name: "Flutterwave Inc.", country: "Nigeria (Lagos State)", tier: "Pan-African FinTech Employer", routes: "Local State Hire, ECOWAS Residence Permit", quota: "190+ Active", status: "Active" },
+      { name: "Standard Bank Group SA", country: "South Africa (Gauteng)", tier: "DHA Critical Skills Trusted Employer", routes: "Local Hire, SA Critical Skills Visa", quota: "240+ Active", status: "Active" },
       { name: "Monzo Bank Ltd", country: "United Kingdom", tier: "A-Rating (Worker)", routes: "Skilled Worker, Global Business", quota: "450+ Uncapped", status: "Active" },
       { name: "HealCare & London NHS Trust", country: "United Kingdom", tier: "NHS Fast-Track A-Rating", routes: "Health & Care Worker Visa", quota: "1,200+ Active", status: "Active" },
       { name: "Delivery Hero SE", country: "Germany", tier: "Federal BAMF Whitelist", routes: "EU Blue Card, Specialist Visa", quota: "250+ Approved", status: "Active" },
@@ -3839,19 +4201,21 @@ International Engineering Candidate
     function filterJobs() {
       const q = (document.getElementById('jobSearchInput')?.value || '').toLowerCase();
       const country = document.getElementById('countrySelect')?.value || 'ALL';
+      const countyRegion = document.getElementById('countyRegionSelect')?.value || 'ALL';
       const visaType = document.getElementById('visaTypeSelect')?.value || 'ALL';
       const relocation = document.getElementById('relocationSelect')?.value || 'ALL';
       const sort = document.getElementById('sortSelect')?.value || 'DEFAULT';
 
       let filtered = JOBS_DATA.filter(j => {
-        const matchesQuery = !q || j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.tags.some(t => t.toLowerCase().includes(q)) || j.city.toLowerCase().includes(q);
+        const matchesQuery = !q || j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q) || j.tags.some(t => t.toLowerCase().includes(q)) || j.city.toLowerCase().includes(q) || j.country.toLowerCase().includes(q) || (j.description && j.description.toLowerCase().includes(q));
         const matchesCountry = country === 'ALL' || j.country === country;
+        const matchesCounty = countyRegion === 'ALL' || j.city.toLowerCase().includes(countyRegion.toLowerCase()) || j.visaType.toLowerCase().includes(countyRegion.toLowerCase()) || (j.description && j.description.toLowerCase().includes(countyRegion.toLowerCase()));
         const matchesVisa = visaType === 'ALL' || j.visaType.toLowerCase().includes(visaType.toLowerCase());
 
         // Relocation Benefit filter
         let matchesRelo = true;
         if (relocation === 'YES') {
-          matchesRelo = j.relocation.toLowerCase().includes('full') || j.relocation.toLowerCase().includes('flight') || j.relocation.toLowerCase().includes('moving');
+          matchesRelo = j.relocation.toLowerCase().includes('full') || j.relocation.toLowerCase().includes('flight') || j.relocation.toLowerCase().includes('moving') || j.relocation.toLowerCase().includes('relocation');
         } else if (relocation === 'HOUSING') {
           matchesRelo = j.relocation.toLowerCase().includes('apartment') || j.relocation.toLowerCase().includes('housing') || j.relocation.toLowerCase().includes('villa');
         } else if (relocation === 'VISA_ONLY') {
@@ -3860,26 +4224,30 @@ International Engineering Candidate
 
         // Quick pill filter
         let matchesQuick = true;
-        const combinedText = (j.title + ' ' + j.relocation + ' ' + j.description + ' ' + j.tags.join(' ')).toLowerCase();
-        if (currentQuickFilter === 'FULL_RELOCATION') {
-          matchesQuick = j.relocation.toLowerCase().includes('full') || j.relocation.toLowerCase().includes('flight');
+        const combinedText = (j.title + ' ' + j.city + ' ' + j.visaType + ' ' + j.relocation + ' ' + j.description + ' ' + j.tags.join(' ')).toLowerCase();
+        if (currentQuickFilter === 'LOCAL_JOBS') {
+          matchesQuick = combinedText.includes('local') || combinedText.includes('county') || combinedText.includes('domestic');
+        } else if (currentQuickFilter === 'KENYA_COUNTIES') {
+          matchesQuick = j.country === 'Kenya';
+        } else if (currentQuickFilter === 'FULL_RELOCATION') {
+          matchesQuick = j.relocation.toLowerCase().includes('full') || j.relocation.toLowerCase().includes('flight') || j.relocation.toLowerCase().includes('relocation');
         } else if (currentQuickFilter === 'HOUSING') {
           matchesQuick = j.relocation.toLowerCase().includes('housing') || j.relocation.toLowerCase().includes('apartment') || j.relocation.toLowerCase().includes('villa');
         } else if (currentQuickFilter === 'FAST_TRACK') {
-          matchesQuick = combinedText.includes('fast-track') || combinedText.includes('gts') || combinedText.includes('express') || combinedText.includes('immediate');
+          matchesQuick = combinedText.includes('fast-track') || combinedText.includes('gts') || combinedText.includes('express') || combinedText.includes('immediate') || combinedText.includes('local');
         } else if (currentQuickFilter === 'FAMILY') {
           matchesQuick = combinedText.includes('family') || combinedText.includes('spouse') || combinedText.includes('partner');
         } else if (currentQuickFilter === 'HIGH_SALARY') {
           matchesQuick = j.salary.includes('1') || j.salary.includes('9') || j.salary.includes('8') || j.salary.includes('70') || j.salary.includes('80');
         } else if (currentQuickFilter === 'TECH') {
-          matchesQuick = j.tags.some(t => ['Kotlin', 'Compose', 'AWS', 'Kubernetes', 'Go', 'Rust', 'Python', 'AI', 'C++', 'Java'].includes(t));
+          matchesQuick = j.tags.some(t => ['Kotlin', 'Compose', 'AWS', 'Kubernetes', 'Go', 'Rust', 'Python', 'AI', 'C++', 'Java', 'TypeScript'].includes(t));
         } else if (currentQuickFilter === 'HEALTHCARE') {
           matchesQuick = combinedText.includes('nurse') || combinedText.includes('hospital') || combinedText.includes('clinical') || combinedText.includes('medical');
         } else if (currentQuickFilter === 'ENGINEERING') {
-          matchesQuick = combinedText.includes('engineer') || combinedText.includes('hydrogen') || combinedText.includes('battery') || combinedText.includes('port') || combinedText.includes('agronomist');
+          matchesQuick = combinedText.includes('engineer') || combinedText.includes('hydrogen') || combinedText.includes('battery') || combinedText.includes('port') || combinedText.includes('agronomy') || combinedText.includes('geothermal');
         }
 
-        return matchesQuery && matchesCountry && matchesVisa && matchesRelo && matchesQuick;
+        return matchesQuery && matchesCountry && matchesCounty && matchesVisa && matchesRelo && matchesQuick;
       });
 
       // Sorting (Multi-Currency USD Normalized & Visa/PR Speed)
@@ -5478,6 +5846,18 @@ Reference: GVJ-DOS-2026-88192 | globalvisajobs.com`;
       else if (lower.includes('pln') || c === 'Poland') fx = 0.25;
       else if (lower.includes('aed') || c === 'United Arab Emirates') fx = 0.272;
       else if (lower.includes('sar') || c === 'Saudi Arabia') fx = 0.266;
+      else if (lower.includes('kes') || c === 'Kenya') fx = 0.0078;
+      else if (lower.includes('tzs') || c === 'Tanzania') fx = 0.00038;
+      else if (lower.includes('ngn') || c === 'Nigeria') fx = 0.00063;
+      else if (lower.includes('zar') || c === 'South Africa') fx = 0.055;
+      else if (lower.includes('rwf') || c === 'Rwanda') fx = 0.00075;
+      else if (lower.includes('ugx') || c === 'Uganda') fx = 0.00027;
+      else if (lower.includes('ghs') || c === 'Ghana') fx = 0.065;
+      else if (lower.includes('egp') || c === 'Egypt') fx = 0.021;
+      else if (lower.includes('inr') || c === 'India') fx = 0.012;
+      else if (lower.includes('php') || c === 'Philippines') fx = 0.018;
+      else if (lower.includes('myr') || c === 'Malaysia') fx = 0.23;
+      else if (lower.includes('brl') || c === 'Brazil') fx = 0.18;
       else if (s.includes('¥') || lower.includes('jpy') || c === 'Japan') {
         return Math.round((base < 200 ? base * 1000000 : base) * 0.0067);
       }
@@ -5492,7 +5872,19 @@ Reference: GVJ-DOS-2026-88192 | globalvisajobs.com`;
         'Saudi Arabia': 0.98,
         'Singapore': 0.86,
         'Switzerland': 0.79,
+        'Nigeria': 0.78,
+        'Ghana': 0.78,
+        'Rwanda': 0.78,
+        'Uganda': 0.78,
+        'Tanzania': 0.78,
+        'Egypt': 0.78,
+        'Philippines': 0.78,
+        'Malaysia': 0.78,
         'Netherlands': 0.76,
+        'Kenya': 0.74,
+        'South Africa': 0.74,
+        'India': 0.74,
+        'Brazil': 0.74,
         'Japan': 0.73,
         'Poland': 0.73,
         'Spain': 0.73,
@@ -5510,6 +5902,8 @@ Reference: GVJ-DOS-2026-88192 | globalvisajobs.com`;
     function estimateVisaSpeedDays(job) {
       const v = ((job && job.visaType) || '').toLowerCase();
       const c = (job && job.country) || '';
+      if (v.includes('local') || v.includes('county') || v.includes('domestic')) return 3;
+      if (v.includes('eac') || v.includes('ecowas')) return 7;
       if (v.includes('gts') || v.includes('global talent')) return 10;
       if (c === 'United Arab Emirates' || c === 'Saudi Arabia') return 12;
       if (c === 'Netherlands' || v.includes('ind') || c === 'Singapore') return 14;

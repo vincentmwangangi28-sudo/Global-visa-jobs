@@ -39,10 +39,14 @@ data class DestinationTaxModel(
 )
 
 val destinationTaxModels = listOf(
+    DestinationTaxModel("Kenya", "KES ", "KES", "🇰🇪", 0.26, 65000.0, 12000.0, 32000.0, 14000.0, 6500.0, 0.0078),
     DestinationTaxModel("United Kingdom", "£", "GBP", "🇬🇧", 0.28, 1450.0, 210.0, 320.0, 160.0, 85.0, 1.28),
     DestinationTaxModel("Canada", "CA$", "CAD", "🇨🇦", 0.29, 2100.0, 190.0, 440.0, 130.0, 60.0, 0.74),
     DestinationTaxModel("Germany", "€", "EUR", "🇩🇪", 0.38, 1150.0, 260.0, 350.0, 90.0, 280.0, 1.08),
     DestinationTaxModel("United States", "$", "USD", "🇺🇸", 0.25, 2300.0, 220.0, 480.0, 140.0, 180.0, 1.0),
+    DestinationTaxModel("South Africa", "ZAR ", "ZAR", "🇿🇦", 0.26, 14500.0, 2800.0, 6200.0, 2600.0, 2400.0, 0.055),
+    DestinationTaxModel("Nigeria", "NGN ", "NGN", "🇳🇬", 0.21, 650000.0, 120000.0, 280000.0, 95000.0, 45000.0, 0.00063),
+    DestinationTaxModel("India", "₹", "INR", "🇮🇳", 0.24, 42000.0, 5500.0, 16000.0, 5000.0, 3500.0, 0.012),
     DestinationTaxModel("Australia", "AU$", "AUD", "🇦🇺", 0.30, 2200.0, 240.0, 460.0, 160.0, 120.0, 0.65),
     DestinationTaxModel("Netherlands", "€", "EUR", "🇳🇱", 0.37, 1600.0, 230.0, 380.0, 110.0, 140.0, 1.08),
     DestinationTaxModel("United Arab Emirates", "AED ", "AED", "🇦🇪", 0.00, 6500.0, 800.0, 1600.0, 400.0, 350.0, 0.27),
@@ -51,8 +55,8 @@ val destinationTaxModels = listOf(
 
 @Composable
 fun SalaryPurchasingPowerCalculator(viewModel: JobViewModel) {
-    var selectedCountryName by remember { mutableStateOf("United Kingdom") }
-    var annualGrossSalary by remember { mutableStateOf(65000.0) }
+    var selectedCountryName by remember { mutableStateOf("Kenya") }
+    var annualGrossSalary by remember { mutableStateOf(4200000.0) }
     var isCityCenterRent by remember { mutableStateOf(true) }
 
     val model = destinationTaxModels.find { it.country == selectedCountryName } ?: destinationTaxModels[0]
@@ -102,13 +106,13 @@ fun SalaryPurchasingPowerCalculator(viewModel: JobViewModel) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Global Purchasing Power & Net Pay",
+                        text = "Global & County Purchasing Power Calculator",
                         color = WhiteActive,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp
                     )
                     Text(
-                        text = "Real net take-home salary after destination income tax, mandatory social deductions, and local cost of living.",
+                        text = "Real net take-home salary after PAYE/income tax, statutory deductions (NSSF/SHIF/NI), and local county or metro living costs.",
                         color = SlateMuted,
                         fontSize = 11.sp,
                         lineHeight = 15.sp
@@ -120,7 +124,7 @@ fun SalaryPurchasingPowerCalculator(viewModel: JobViewModel) {
         Spacer(modifier = Modifier.height(14.dp))
 
         // Country Selector Chips
-        Text(text = "DESTINATION COUNTRY:", color = TealCyan, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+        Text(text = "DESTINATION / LOCAL COUNTRY:", color = TealCyan, fontWeight = FontWeight.Bold, fontSize = 11.sp)
         Spacer(modifier = Modifier.height(6.dp))
 
         ScrollableTabRow(
@@ -139,6 +143,10 @@ fun SalaryPurchasingPowerCalculator(viewModel: JobViewModel) {
                         selectedCountryName = item.country
                         // adjust default salary appropriately for currency scale
                         annualGrossSalary = when (item.currencyCode) {
+                            "KES" -> 4200000.0
+                            "NGN" -> 36000000.0
+                            "ZAR" -> 1440000.0
+                            "INR" -> 4800000.0
                             "AED" -> 240000.0
                             "SGD" -> 90000.0
                             "CAD", "AUD" -> 85000.0
@@ -190,10 +198,18 @@ fun SalaryPurchasingPowerCalculator(viewModel: JobViewModel) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 val minSal = when (model.currencyCode) {
+                    "KES" -> 1200000f
+                    "NGN" -> 12000000f
+                    "ZAR" -> 480000f
+                    "INR" -> 1500000f
                     "AED" -> 60000f
                     else -> 25000f
                 }
                 val maxSal = when (model.currencyCode) {
+                    "KES" -> 12000000f
+                    "NGN" -> 80000000f
+                    "ZAR" -> 3600000f
+                    "INR" -> 12000000f
                     "AED" -> 600000f
                     else -> 200000f
                 }

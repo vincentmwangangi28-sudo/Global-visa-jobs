@@ -81,6 +81,24 @@ object TaxRemittanceRepository {
             foreignTaxCreditRule = "CRA income taxes paid in Canada offset BIR income obligations in the Philippines.",
             remittanceTaxStatus = "OFW remittance sent to family in the Philippines is completely tax-exempt under RA 10022.",
             days183ResidencyRule = "Canada Revenue Agency (CRA) deems worldwide income taxable once significant residential ties (home, spouse, bank accounts) are formed in Canada."
+        ),
+        DtaaTreatyInfo(
+            originCountry = "Kenya",
+            destinationCountry = "Kenya",
+            hasDtaaTreaty = true,
+            treatySummary = "Kenya Domestic County Employment & KRA Tax Framework (Income Tax Act Cap 470). Applies to local county & inter-county employment across all 47 Kenyan Counties.",
+            foreignTaxCreditRule = "Standard KRA PAYE bands (10% to 35%), statutory NSSF Tier I & II pension contributions, SHIF (2.75%), and Affordable Housing Levy (1.5%) with personal tax relief of KES 2,400/month.",
+            remittanceTaxStatus = "Instant Domestic M-PESA & Pesalink Inter-County Transfers (Zero Remittance Tax)",
+            days183ResidencyRule = "Resident individuals in any Kenyan county are taxed on domestic employment income with full personal, insurance, and mortgage interest relief."
+        ),
+        DtaaTreatyInfo(
+            originCountry = "Uganda",
+            destinationCountry = "Kenya",
+            hasDtaaTreaty = true,
+            treatySummary = "East African Community (EAC) Multilateral Double Taxation Agreement. Protects cross-border professionals working in Nairobi, Mombasa, Kampala, Kigali, and Dar es Salaam.",
+            foreignTaxCreditRule = "KRA PAYE deducted in Kenya is fully credited by Uganda Revenue Authority (URA) / Rwanda Revenue Authority (RRA) under the EAC treaty.",
+            remittanceTaxStatus = "Instant M-PESA Global & EAC Mobile Money Corridor",
+            days183ResidencyRule = "183-day presence in Kenya establishes Kenyan tax residency for EAC nationals."
         )
     )
 }
@@ -95,8 +113,8 @@ fun TaxAndRemittanceCalculatorHub(
     var monthlyRemittancePercentage by remember { mutableFloatStateOf(20f) } // e.g. 20%
     var activeSubTab by remember { mutableIntStateOf(0) } // 0: Remittance Engine, 1: Double Tax Treaty (DTAA)
 
-    val originCountries = listOf("Kenya", "Nigeria", "India", "Philippines", "Ghana", "South Africa")
-    val destinationCountries = listOf("United Kingdom", "Canada", "Germany", "United States", "Australia")
+    val originCountries = listOf("Kenya", "Nigeria", "Uganda", "Rwanda", "Ghana", "South Africa", "India", "Philippines")
+    val destinationCountries = listOf("United Kingdom", "Kenya", "Canada", "Germany", "United States", "Australia", "South Africa", "United Arab Emirates")
 
     val currentDtaa = remember(originCountry, destinationCountry) {
         TaxRemittanceRepository.sampleTreaties.find {
@@ -106,6 +124,9 @@ fun TaxAndRemittanceCalculatorHub(
 
     val currencySymbol = when (destinationCountry) {
         "United Kingdom" -> "£"
+        "Kenya" -> "KES "
+        "South Africa" -> "ZAR "
+        "United Arab Emirates" -> "AED "
         "Canada" -> "CAD $"
         "Germany" -> "€"
         "Australia" -> "AUD $"
@@ -115,6 +136,8 @@ fun TaxAndRemittanceCalculatorHub(
     val homeCurrencySymbol = when (originCountry) {
         "Kenya" -> "KES"
         "Nigeria" -> "NGN"
+        "Uganda" -> "UGX"
+        "Rwanda" -> "RWF"
         "India" -> "INR"
         "Philippines" -> "PHP"
         "Ghana" -> "GHS"
@@ -123,8 +146,13 @@ fun TaxAndRemittanceCalculatorHub(
     }
 
     val exchangeRateToHome = when (Pair(destinationCountry, originCountry)) {
+        Pair("Kenya", "Kenya") -> 1.0
+        Pair("Kenya", "Uganda") -> 28.8 // 1 KES = 28.8 UGX
+        Pair("Kenya", "Rwanda") -> 10.4 // 1 KES = 10.4 RWF
         Pair("United Kingdom", "Kenya") -> 168.5 // 1 GBP = 168.5 KES
         Pair("United Kingdom", "Nigeria") -> 1950.0 // 1 GBP = 1950 NGN
+        Pair("United Kingdom", "Uganda") -> 4850.0
+        Pair("United Kingdom", "Rwanda") -> 1750.0
         Pair("United Kingdom", "India") -> 108.2
         Pair("United Kingdom", "Philippines") -> 72.8
         Pair("United Kingdom", "Ghana") -> 19.8

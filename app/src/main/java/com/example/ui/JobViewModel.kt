@@ -50,6 +50,9 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedCountry = MutableStateFlow("All")
     val selectedCountry: StateFlow<String> = _selectedCountry.asStateFlow()
 
+    private val _selectedCountyRegion = MutableStateFlow("All Regions")
+    val selectedCountyRegion: StateFlow<String> = _selectedCountyRegion.asStateFlow()
+
     private val _selectedIndustry = MutableStateFlow("All")
     val selectedIndustry: StateFlow<String> = _selectedIndustry.asStateFlow()
 
@@ -202,6 +205,10 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
         _selectedCountry.value = country
     }
 
+    fun selectCountyRegion(region: String) {
+        _selectedCountyRegion.value = region
+    }
+
     fun selectIndustry(industry: String) {
         _selectedIndustry.value = industry
     }
@@ -240,7 +247,7 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Normalizes global salary strings across 21 currencies into an estimated annual USD figure for sorting.
+     * Normalizes global salary strings across 29+ currencies (including KES, NGN, ZAR, RWF, UGX, GHS, INR, PHP) into an estimated annual USD figure for sorting.
      */
     fun estimateAnnualUsdSalary(salary: String, country: String): Int {
         val numbers = Regex("""\d[\d,]*""").findAll(salary)
@@ -268,6 +275,18 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             lower.contains("pln") || country.equals("Poland", true) -> 0.25
             lower.contains("aed") || country.equals("United Arab Emirates", true) -> 0.272
             lower.contains("sar") || country.equals("Saudi Arabia", true) -> 0.266
+            lower.contains("kes") || country.equals("Kenya", true) -> 0.0078
+            lower.contains("tzs") || country.equals("Tanzania", true) -> 0.00038
+            lower.contains("ngn") || country.equals("Nigeria", true) -> 0.00063
+            lower.contains("zar") || country.equals("South Africa", true) -> 0.055
+            lower.contains("rwf") || country.equals("Rwanda", true) -> 0.00075
+            lower.contains("ugx") || country.equals("Uganda", true) -> 0.00027
+            lower.contains("ghs") || country.equals("Ghana", true) -> 0.065
+            lower.contains("egp") || country.equals("Egypt", true) -> 0.021
+            lower.contains("inr") || country.equals("India", true) -> 0.012
+            lower.contains("php") || country.equals("Philippines", true) -> 0.018
+            lower.contains("myr") || country.equals("Malaysia", true) -> 0.23
+            lower.contains("brl") || country.equals("Brazil", true) -> 0.18
             lower.contains("¥") || lower.contains("jpy") || country.equals("Japan", true) -> {
                 if (baseAmount < 200) baseAmount * 1_000_000 * 0.0067 else baseAmount * 0.0067
             }
@@ -286,7 +305,9 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             "United Arab Emirates", "Saudi Arabia" -> 0.98 // 0% personal income tax
             "Singapore" -> 0.86
             "Switzerland" -> 0.79
+            "Nigeria", "Ghana", "Rwanda", "Uganda", "Tanzania", "Egypt", "Philippines", "Malaysia" -> 0.78
             "Netherlands" -> 0.76 // Includes 30% Expat Tax Ruling benefit
+            "Kenya", "India", "South Africa", "Brazil" -> 0.74
             "Japan", "Poland", "Spain" -> 0.73
             "United States", "New Zealand", "Australia" -> 0.71
             "United Kingdom", "Canada", "Ireland", "France" -> 0.69
@@ -298,6 +319,8 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     fun estimateVisaProcessingDays(job: JobEntity): Int {
         val v = job.visaType.lowercase()
         return when {
+            v.contains("local") || v.contains("domestic") -> 3 // Immediate local/county hiring onboarding
+            v.contains("eac") || v.contains("ecowas") -> 7
             v.contains("gts") || v.contains("global talent stream") -> 10
             job.country == "United Arab Emirates" || job.country == "Saudi Arabia" -> 12
             job.country == "Netherlands" || v.contains("ind") -> 14
@@ -310,13 +333,14 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             job.country == "Switzerland" || job.country == "Japan" -> 28
             job.country == "Australia" || job.country == "New Zealand" -> 35
             job.country == "Canada" -> 42
-            else -> 45
+            else -> 30
         }
     }
 
     fun estimatePrTimelineMonths(job: JobEntity): Int {
         val v = job.visaType.lowercase()
         return when {
+            v.contains("local") || v.contains("domestic") -> 0 // Local citizen/resident hire
             v.contains("pnp") || v.contains("186") || v.contains("green card") || v.contains("straight to residence") -> 6
             job.country == "Germany" || v.contains("blue card") -> 21
             job.country == "Ireland" || v.contains("critical skills") -> 24
@@ -325,7 +349,7 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
             job.country == "Norway" || job.country == "Poland" -> 36
             job.country == "Sweden" || job.country == "Finland" || job.country == "Spain" -> 48
             job.country == "United Kingdom" || job.country == "Netherlands" || job.country == "France" -> 60
-            else -> 60
+            else -> 36
         }
     }
 
