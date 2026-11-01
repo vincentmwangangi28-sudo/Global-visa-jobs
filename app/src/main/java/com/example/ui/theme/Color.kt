@@ -2,15 +2,16 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Editorial Global Mobility Palette (Clean Slate, Crisp White & Deep Forest Teal)
-val NavyDark = Color(0xFFF8FAFC)       // Crisp cool alabaster background (Slate 50)
-val NavyMedium = Color(0xFFFFFFFF)     // Pure white card surface
-val NavyLight = Color(0xFFE2E8F0)      // Subtle hairline border / divider (Slate 200)
-val EmeraldGreen = Color(0xFF0F766E)   // Editorial Deep Forest Teal (Teal 700)
-val WhiteActive = Color(0xFF0F172A)    // Deep slate ink primary text (Slate 900)
-val SlateMuted = Color(0xFF475569)     // Balanced muted slate secondary text (Slate 600)
-val AmberGold = Color(0xFFB45309)      // Warm Ochre / Amber 700 for official accents
-val CoralRed = Color(0xFFB91C1C)       // Refined Crimson 700 for alerts
-val TealCyan = Color(0xFF1E293B)       // Executive Slate 800 for secondary badges & actions
+// Warm Editorial Global Mobility Palette (Warm Alabaster, Botanical Emerald & Royal Oxford Sapphire)
+val NavyDark = Color(0xFFF6F5F0)       // Warm Editorial Alabaster / Limestone background
+val NavyMedium = Color(0xFFFFFFFF)     // Crisp Pure Paper card surface
+val NavyLight = Color(0xFFE4E2DD)      // Warm Stone hairline border / divider
+val EmeraldGreen = Color(0xFF0D6E5B)   // Deep Botanical Emerald (Primary Trust & Sponsorship)
+val WhiteActive = Color(0xFF111827)    // Rich Obsidian Ink primary text
+val SlateMuted = Color(0xFF525866)     // Balanced Warm Charcoal secondary text
+val AmberGold = Color(0xFFB45309)      // Sovereign Ochre / Amber 700 for official filings
+val CoralRed = Color(0xFFBE123C)       // Editorial Rose Crimson for alerts
+val TealCyan = Color(0xFF1E3A8A)       // Royal Oxford Sapphire for visa badges & secondary actions
 val LinkedInBlue = Color(0xFF0A66C2)   // Official LinkedIn Brand Blue
+
 

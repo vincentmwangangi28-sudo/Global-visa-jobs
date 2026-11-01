@@ -111,6 +111,18 @@ fun DashboardScreen(viewModel: JobViewModel) {
                             }
                         }
 
+                        // Ahrefs Site Explorer Button (Direct Audit Center)
+                        IconButton(
+                            onClick = { activeTab = "SEO" },
+                            modifier = Modifier.padding(end = 4.dp).testTag("ahrefs_site_explorer_topbar_btn")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.QueryStats,
+                                contentDescription = "Ahrefs Site Explorer & Audit",
+                                tint = if (activeTab == "SEO") EmeraldGreen else AmberGold
+                            )
+                        }
+
                         // Global Notification Bell with Badge
                         val notifications by viewModel.notifications.collectAsStateWithLifecycle()
                         val unreadCount = notifications.count { !it.isRead }
@@ -228,6 +240,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
                     ) {
                         val tabs = listOf(
                             Triple("Discover", Icons.Default.Search, "Discover"),
+                            Triple("SEO", Icons.Default.QueryStats, "Site Explorer"),
                             Triple("Radar", Icons.Default.Sensors, "Live"),
                             Triple("Sponsors", Icons.Default.Verified, "Sponsors"),
                             Triple("Mentors", Icons.Default.Groups, "Mentors"),
@@ -282,6 +295,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
                     ) {
                         val tabs = listOf(
                             Triple("Discover", Icons.Default.Search, "Discover"),
+                            Triple("SEO", Icons.Default.QueryStats, "Site Explorer"),
                             Triple("Radar", Icons.Default.Sensors, "Live Radar"),
                             Triple("Sponsors", Icons.Default.Verified, "Sponsor Registry"),
                             Triple("Mentors", Icons.Default.Groups, "Expat Mentors"),
@@ -357,6 +371,7 @@ fun DashboardScreen(viewModel: JobViewModel) {
                 ) {
                     when (activeTab) {
                         "Discover" -> DiscoverTab(viewModel, isWideScreen, onNavigateTab = { activeTab = it })
+                        "SEO" -> SeoAuditCenterHub(onNavigateBack = { activeTab = "Discover" })
                         "Radar" -> RealTimeMobilityHub(onNavigateToJobSearch = { companyName ->
                             viewModel.performLiveScrapeSearch(companyName, "All")
                             activeTab = "Discover"
@@ -573,6 +588,9 @@ fun DiscoverTab(
     var googleJobsMaxRows by remember { mutableStateOf(20) }
 
     var filterSavedOnly by remember { mutableStateOf(false) }
+    var vanhackSkillVerified by remember { mutableStateOf(false) }
+    var ottaForYouActive by remember { mutableStateOf(false) }
+    var myVisaJobsHighApprovalOnly by remember { mutableStateOf(false) }
     var showExportPdfDialog by remember { mutableStateOf(false) }
     var showDiscoverDossierDialog by remember { mutableStateOf(false) }
     var dossierTargetJob by remember { mutableStateOf<JobEntity?>(null) }
@@ -615,8 +633,10 @@ fun DiscoverTab(
             else -> true
         }
         val matchSaved = !filterSavedOnly || job.isBookmarked
+        val matchOtta = !ottaForYouActive || (job.confidenceScore >= 91 && (job.relocationAssistance || job.country.equals("Kenya", ignoreCase = true)))
+        val matchMyVisaJobs = !myVisaJobsHighApprovalOnly || job.confidenceScore >= 94
 
-        matchQuery && matchCountry && matchCountyRegion && matchIndustry && matchExp && matchSponsorship && matchSource && matchSaved
+        matchQuery && matchCountry && matchCountyRegion && matchIndustry && matchExp && matchSponsorship && matchSource && matchSaved && matchOtta && matchMyVisaJobs
     }.let { list ->
         when (selectedSortBy) {
             "Salary (Highest USD)" -> list.sortedByDescending { viewModel.estimateAnnualUsdSalary(it.salary, it.country) }
@@ -636,48 +656,85 @@ fun DiscoverTab(
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        // Welcome Header / Hero Section
+        // Editorial Hero Header with Warm Ivory & Botanical Emerald Accent
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(NavyMedium)
-                .border(1.dp, NavyLight, RoundedCornerShape(14.dp))
+                .padding(vertical = 8.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            NavyMedium,
+                            EmeraldGreen.copy(alpha = 0.06f)
+                        )
+                    )
+                )
+                .border(1.dp, EmeraldGreen.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Global Sponsorship Directory",
-                        color = WhiteActive,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "GLOBAL VISA SPONSORSHIP & COUNTY CAREER DIRECTORY",
+                            color = EmeraldGreen,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 10.sp,
+                            letterSpacing = 0.9.sp
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Verified International Sponsorship & Local County Jobs",
+                            color = WhiteActive,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 18.sp
+                        )
+                    }
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(EmeraldGreen.copy(alpha = 0.1f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(EmeraldGreen)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Text(
-                            text = "Verified Registry",
-                            color = EmeraldGreen,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 11.sp
+                            text = "Top 5 Sites Integrated",
+                            color = NavyMedium,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 10.5.sp
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "Direct access to licensed visa sponsors, relocation packages, and government-backed work permit roles across 30+ countries.",
+                    text = "Powered by Relocate.me perks transparency, VanHack skill verification, MyVisaJobs government petition analytics, BrighterMonday Kenya county hubs, and Otta smart curation.",
                     color = SlateMuted,
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp
+                    fontSize = 12.sp,
+                    lineHeight = 17.sp
                 )
             }
         }
+
+        // Top-Ranking SEO Keywords Bar & Top 5 Global Job Sites Interactive Suite
+        TopRankingKeywordsAndPlatformsSection(
+            activeQuery = queryText,
+            vanhackSkillVerified = vanhackSkillVerified,
+            onToggleVanhackVerified = { vanhackSkillVerified = !vanhackSkillVerified },
+            ottaForYouActive = ottaForYouActive,
+            onToggleOttaForYou = { ottaForYouActive = !ottaForYouActive },
+            myVisaJobsHighApprovalOnly = myVisaJobsHighApprovalOnly,
+            onToggleMyVisaJobsHighApproval = { myVisaJobsHighApprovalOnly = !myVisaJobsHighApprovalOnly },
+            onSelectKeyword = { kw ->
+                queryText = kw.queryValue
+                viewModel.selectCountry(kw.countryFilter)
+                viewModel.selectCountyRegion(kw.countyFilter)
+            },
+            onClearKeywords = {
+                queryText = ""
+                viewModel.selectCountry("All")
+                viewModel.selectCountyRegion("All Regions")
+            }
+        )
 
         // Live Radar Pulse Top Ticker Banner
         LiveRadarTopTickerBanner(
@@ -692,6 +749,26 @@ fun DiscoverTab(
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         ) {
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable { onNavigateTab("SEO") }
+                        .border(1.dp, AmberGold.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                        .testTag("ahrefs_seo_quick_launcher"),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.QueryStats, contentDescription = null, tint = AmberGold, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Ahrefs Site Explorer (12 Opps • 96%)", color = AmberGold, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
             item {
                 Surface(
                     modifier = Modifier
@@ -2439,39 +2516,84 @@ fun JobListItemCard(
     isCompared: Boolean = false,
     onCompareToggle: (() -> Unit)? = null
 ) {
+    val platformMeta = remember(job.id) { deriveJobPlatformMetadata(job) }
+    val companyInitials = remember(job.company) {
+        job.company.split(" ")
+            .filter { it.isNotBlank() }
+            .take(2)
+            .joinToString("") { it.first().uppercase() }
+            .ifEmpty { "GV" }
+    }
+
     Card(
         onClick = onViewDetails,
         modifier = Modifier
             .fillMaxWidth()
             .border(
-                1.dp,
-                if (job.isFraud) CoralRed.copy(alpha = 0.5f) else if (isCompared) TealCyan else NavyLight,
-                RoundedCornerShape(16.dp)
+                width = if (isCompared) 1.5.dp else 1.dp,
+                color = if (job.isFraud) CoralRed.copy(alpha = 0.5f) else if (isCompared) TealCyan else NavyLight,
+                shape = RoundedCornerShape(16.dp)
             )
             .testTag("job_card_${job.id}"),
         colors = CardDefaults.cardColors(
             containerColor = if (job.isFraud) CoralRed.copy(alpha = 0.05f) else NavyMedium
         ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Top Editorial Header with Monogram Avatar + Title + Bookmark
             Row(verticalAlignment = Alignment.Top) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(11.dp))
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    EmeraldGreen.copy(alpha = 0.14f),
+                                    TealCyan.copy(alpha = 0.12f)
+                                )
+                            )
+                        )
+                        .border(1.dp, EmeraldGreen.copy(alpha = 0.25f), RoundedCornerShape(11.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = companyInitials,
+                        color = EmeraldGreen,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = platformMeta.brighterMondayBadge.uppercase(),
+                            color = EmeraldGreen,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 9.5.sp,
+                            letterSpacing = 0.5.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = job.title,
                         color = WhiteActive,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.ExtraBold,
                         fontSize = 16.sp
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "${job.company} • ${job.location}",
                         color = SlateMuted,
-                        fontSize = 13.sp
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 12.5.sp
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                IconButton(onClick = onBookmarkToggle) {
+                Spacer(modifier = Modifier.width(6.dp))
+                IconButton(onClick = onBookmarkToggle, modifier = Modifier.size(34.dp)) {
                     Icon(
                         imageVector = if (job.isBookmarked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Bookmark",
@@ -2482,7 +2604,7 @@ fun JobListItemCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Main sponsorship information row
+            // Main sponsorship & salary row
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -2493,14 +2615,14 @@ fun JobListItemCard(
                         .clip(RoundedCornerShape(8.dp))
                         .background(
                             if (job.isFraud) CoralRed.copy(alpha = 0.15f)
-                            else if (job.confidenceScore >= 90) EmeraldGreen.copy(alpha = 0.15f)
+                            else if (job.confidenceScore >= 90) EmeraldGreen.copy(alpha = 0.12f)
                             else AmberGold.copy(alpha = 0.15f)
                         )
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = if (job.isFraud) Icons.Default.Warning else Icons.Default.Star,
+                            imageVector = if (job.isFraud) Icons.Default.Warning else Icons.Default.Verified,
                             contentDescription = null,
                             tint = if (job.isFraud) CoralRed else if (job.confidenceScore >= 90) EmeraldGreen else AmberGold,
                             modifier = Modifier.size(12.dp)
@@ -2515,13 +2637,13 @@ fun JobListItemCard(
                     }
                 }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(6.dp))
 
                 // Visa Type Badge
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(TealCyan.copy(alpha = 0.15f))
+                        .background(TealCyan.copy(alpha = 0.1f))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
@@ -2538,8 +2660,87 @@ fun JobListItemCard(
                 Text(
                     text = job.salary,
                     color = WhiteActive,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     fontSize = 13.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Relocate.me Perks Breakdown + MyVisaJobs Petition Approval & Occupation Code Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // MyVisaJobs Petition Analytics Pill
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(AmberGold.copy(alpha = 0.1f))
+                        .border(1.dp, AmberGold.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
+                        .padding(horizontal = 7.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        text = "📊 ${platformMeta.myVisaJobsApprovalRate}",
+                        color = AmberGold,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Official Occupation Code Pill (SOC / NOC / KRA)
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(TealCyan.copy(alpha = 0.08f))
+                        .padding(horizontal = 7.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        text = platformMeta.occupationCode,
+                        color = TealCyan,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+
+                // Relocate.me Perks Pills
+                platformMeta.relocatePerks.forEach { perk ->
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(EmeraldGreen.copy(alpha = 0.09f))
+                            .padding(horizontal = 7.dp, vertical = 3.dp)
+                    ) {
+                        Text(
+                            text = perk,
+                            color = EmeraldGreen,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Otta "Why Apply / Culture & Vibe Check" Editorial Strip
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(NavyDark)
+                    .border(1.dp, NavyLight, RoundedCornerShape(8.dp))
+                    .padding(horizontal = 10.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = "✨ ${platformMeta.ottaWhyApply}",
+                    color = SlateMuted,
+                    fontSize = 11.sp,
+                    lineHeight = 15.sp
                 )
             }
 
@@ -2550,7 +2751,7 @@ fun JobListItemCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(NavyDark.copy(alpha = 0.5f))
+                    .background(NavyDark.copy(alpha = 0.6f))
                     .padding(horizontal = 10.dp, vertical = 6.dp)
             ) {
                 Icon(
@@ -2570,7 +2771,7 @@ fun JobListItemCard(
                 Text(
                     text = if (verificationResult != null) {
                         "Compliance Score: ${verificationResult.riskScore}/100 (${verificationResult.riskLevel})"
-                    } else "Sponsor License & Compliance Audit",
+                    } else "Sponsor License & Compliance Audit • ${platformMeta.relocateAllowanceUsd}",
                     color = if (verificationResult != null) {
                         when (verificationResult.riskLevel) {
                             "High Risk" -> CoralRed
@@ -2593,11 +2794,11 @@ fun JobListItemCard(
                     modifier = Modifier.height(26.dp).testTag("list_verify_${job.id}")
                 ) {
                     if (isVerifying) {
-                        CircularProgressIndicator(color = NavyDark, modifier = Modifier.size(12.dp))
+                        CircularProgressIndicator(color = NavyMedium, modifier = Modifier.size(12.dp))
                     } else {
                         Text(
                             text = if (verificationResult != null) "Re-Scan" else "Verify",
-                            color = if (verificationResult != null) WhiteActive else NavyDark,
+                            color = if (verificationResult != null) WhiteActive else NavyMedium,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -2627,6 +2828,7 @@ fun JobListItemCard(
                         Text(
                             text = "Relocation Included",
                             color = EmeraldGreen,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp
                         )
                     }

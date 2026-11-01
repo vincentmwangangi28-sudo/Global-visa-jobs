@@ -145,4 +145,141 @@ class ExampleRobolectricTest {
 
     db.close()
   }
+
+  @Test
+  fun testDeriveJobPlatformMetadata_localKenyaCountyJob() {
+    val countyJob = com.example.data.JobEntity(
+      id = "kenya_nairobi_nurse",
+      title = "Registered Critical Care Nurse",
+      company = "Nairobi County Government",
+      location = "Nairobi",
+      country = "Kenya",
+      visaType = "Local County Career",
+      salary = "KSh 95,000 - 140,000",
+      description = "Critical care nursing position at Mama Lucy Kibaki Hospital.",
+      confidenceScore = 96,
+      confidenceReason = "Verified Public Service",
+      relocationAssistance = false,
+      contractType = "Permanent & Pensionable",
+      industry = "Healthcare",
+      experienceLevel = "Mid",
+      applicationUrl = "https://nairobi.go.ke/careers",
+      datePosted = "2026-07-04"
+    )
+
+    val meta = com.example.ui.deriveJobPlatformMetadata(countyJob)
+    assertTrue(meta.relocatePerks.any { it.contains("Medical") })
+    assertTrue(meta.relocateAllowanceUsd.contains("Local Statutory"))
+    assertTrue(meta.myVisaJobsApprovalRate.contains("Direct Verified Employer"))
+    assertEquals("KRA / KNOCS Verified", meta.occupationCode)
+    assertTrue(meta.ottaWhyApply.contains("East African employer"))
+    assertTrue(meta.brighterMondayBadge.contains("BrighterMonday Recommended"))
+  }
+
+  @Test
+  fun testDeriveJobPlatformMetadata_globalVisaSponsorshipJob() {
+    val ukJob = com.example.data.JobEntity(
+      id = "uk_nhs_nurse",
+      title = "Staff Nurse - Emergency Dept (Band 5/6)",
+      company = "NHS Foundation Trust",
+      location = "Manchester",
+      country = "United Kingdom",
+      visaType = "Health and Care Worker Visa",
+      salary = "£34,000 - £42,000",
+      description = "Full NHS Tier 2 / Health & Care Certificate of Sponsorship provided.",
+      confidenceScore = 98,
+      confidenceReason = "Home Office A-Rated Sponsor",
+      relocationAssistance = true,
+      contractType = "Full-time",
+      industry = "Healthcare",
+      experienceLevel = "Mid",
+      applicationUrl = "https://jobs.nhs.uk",
+      datePosted = "2026-07-04"
+    )
+
+    val meta = com.example.ui.deriveJobPlatformMetadata(ukJob)
+    assertTrue(meta.relocatePerks.any { it.contains("Flights Covered") })
+    assertTrue(meta.relocatePerks.any { it.contains("Housing") })
+    assertTrue(meta.relocateAllowanceUsd.contains("$8,500 Relocation Package"))
+    assertTrue(meta.myVisaJobsApprovalRate.contains("98.2% Gov Petition Approval"))
+    assertEquals("UK SOC 2020 Eligible", meta.occupationCode)
+    assertTrue(meta.ottaWhyApply.contains("priority government healthcare track", ignoreCase = true))
+    assertEquals("VanHack / Relocate.me Verified Sponsor", meta.brighterMondayBadge)
+  }
+
+  @Test
+  fun testTopRankingSeoKeywordsAndTop5PlatformsIntegrity() {
+    val keywords = com.example.ui.topRankingSeoKeywords
+    assertTrue("Keywords list must have high volume entries", keywords.size >= 10)
+    assertTrue(keywords.any { it.keyword.contains("UK Skilled Worker") })
+    assertTrue(keywords.any { it.keyword.contains("Canada LMIA") })
+    assertTrue(keywords.any { it.keyword.contains("Germany EU Blue Card") })
+    assertTrue(keywords.any { it.keyword.contains("Nairobi County Jobs") })
+
+    val platforms = com.example.ui.topFiveJobPlatforms
+    assertEquals(5, platforms.size)
+    val ids = platforms.map { it.id }
+    assertTrue(ids.contains("relocate_me"))
+    assertTrue(ids.contains("vanhack"))
+    assertTrue(ids.contains("myvisajobs"))
+    assertTrue(ids.contains("brightermonday"))
+    assertTrue(ids.contains("otta"))
+  }
+
+  @Test
+  fun testAhrefs12OpportunitiesIntegrity() {
+    val items = com.example.ui.defaultAhrefsOpportunities
+    assertEquals(12, items.size)
+
+    val contentItems = items.filter { it.category == com.example.ui.SeoOpportunityCategory.CONTENT }
+    val linkItems = items.filter { it.category == com.example.ui.SeoOpportunityCategory.LINKS }
+    val techItems = items.filter { it.category == com.example.ui.SeoOpportunityCategory.TECHNICAL }
+
+    assertEquals(6, contentItems.size)
+    assertEquals(5, linkItems.size)
+    assertEquals(1, techItems.size)
+
+    // Verify key titles from the Ahrefs Site Explorer audit
+    val titles = items.map { it.title }
+    assertTrue(titles.any { it.contains("Low-hanging fruit keywords") })
+    assertTrue(titles.any { it.contains("AI Overviews and featured snippets") })
+    assertTrue(titles.any { it.contains("Top suggestions from Content gap") })
+    assertTrue(titles.any { it.contains("Content with declining traffic") })
+    assertTrue(titles.any { it.contains("Pages only published once") })
+    assertTrue(titles.any { it.contains("Potential cannibalization") })
+    assertTrue(titles.any { it.contains("Redirects to implement") })
+    assertTrue(titles.any { it.contains("Internal link opportunities") })
+    assertTrue(titles.any { it.contains("Top links from Link intersect") })
+    assertTrue(titles.any { it.contains("Unlinked brand mentions") })
+    assertTrue(titles.any { it.contains("Descriptive anchors") })
+    assertTrue(titles.any { it.contains("Critical issues") })
+
+    // Verify target URLs point to globalvisajobs.website
+    assertTrue(items.all { it.targetUrl.contains("globalvisajobs.website") || it.targetUrl.contains("Reddit") || it.targetUrl.contains("Outreach") })
+  }
+
+  @Test
+  fun testAhrefsReportMarkdownAndSchemaGenerator() {
+    val items = com.example.ui.defaultAhrefsOpportunities
+    val report = com.example.ui.buildAuditReportMarkdown(items, 96)
+    assertTrue(report.contains("Ahrefs Site Explorer & Site Audit Report"))
+    assertTrue(report.contains("globalvisajobs.website"))
+    assertTrue(report.contains("96%"))
+    assertTrue(report.contains("Content Opportunities"))
+    assertTrue(report.contains("Links Opportunities"))
+    assertTrue(report.contains("Technical Opportunities"))
+
+    // Verify technical item generated snippet has Schema.org JobPosting
+    val techItem = items.first { it.id == "technical_critical_issues" }
+    assertTrue(techItem.generatedSnippetOrCode.contains("\"@type\": \"JobPosting\""))
+    assertTrue(techItem.generatedSnippetOrCode.contains("\"directApply\": true"))
+    assertTrue(techItem.generatedSnippetOrCode.contains("sitemap.xml"))
+    assertTrue(techItem.generatedSnippetOrCode.contains("canonical"))
+
+    // Verify AI Overviews direct snippet
+    val aiOverviewItem = items.first { it.id == "content_ai_overviews" }
+    assertTrue(aiOverviewItem.generatedSnippetOrCode.contains("Certificate of Sponsorship"))
+    assertTrue(aiOverviewItem.generatedSnippetOrCode.contains("FAQPage"))
+  }
 }
+
