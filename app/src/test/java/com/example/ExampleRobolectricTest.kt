@@ -281,5 +281,71 @@ class ExampleRobolectricTest {
     assertTrue(aiOverviewItem.generatedSnippetOrCode.contains("Certificate of Sponsorship"))
     assertTrue(aiOverviewItem.generatedSnippetOrCode.contains("FAQPage"))
   }
+
+  @Test
+  fun testLinkedInOAuthPkceUrlGeneration() {
+    val (authUrl, state) = com.example.auth.LinkedInOAuthService.createAuthorizationUrl(
+      clientId = "test_client_id_123",
+      redirectUri = "globalvisajobs://linkedin-callback"
+    )
+
+    assertTrue("Auth URL must target LinkedIn OAuth v2", authUrl.startsWith("https://www.linkedin.com/oauth/v2/authorization"))
+    assertTrue("Auth URL must have response_type=code", authUrl.contains("response_type=code"))
+    assertTrue("Auth URL must contain client_id", authUrl.contains("client_id=test_client_id_123"))
+    assertTrue("Auth URL must have S256 code challenge method", authUrl.contains("code_challenge_method=S256"))
+    assertTrue("Auth URL must contain PKCE code challenge", authUrl.contains("code_challenge="))
+    assertTrue("Auth URL must contain state", authUrl.contains("state=$state"))
+    assertTrue("Auth URL must contain openid and profile scopes", authUrl.contains("openid") && authUrl.contains("profile"))
+  }
+
+  @Test
+  fun testLinkedInProfileImportAndAtsResumePreFill() = kotlinx.coroutines.runBlocking {
+    val profile = com.example.auth.LinkedInOAuthService.createMockVerifiedProfile(
+      customName = "Vincent Mwangangi",
+      customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+      customEmail = "vincentmwangangi28@gmail.com"
+    )
+
+    // Verify imported positions (work history)
+    assertTrue("Must have imported work history positions", profile.positions.isNotEmpty())
+    val firstJob = profile.positions.first()
+    assertEquals("Senior Cloud Architect", firstJob.title)
+    assertTrue("Company must be populated", firstJob.company.isNotBlank())
+    assertTrue("Job description must contain actionable impact metrics", firstJob.description.contains("AWS") || firstJob.description.contains("Cloud"))
+
+    // Verify education
+    assertTrue("Must have imported education", profile.educations.isNotEmpty())
+    val edu = profile.educations.first()
+    assertTrue("Degree must be present", edu.degree.isNotBlank())
+    assertTrue("Field of study must be computer/software", edu.fieldOfStudy.contains("Computing") || edu.fieldOfStudy.contains("Computer"))
+
+    // Verify skills
+    assertTrue("Must have imported skills", profile.skills.size >= 8)
+    assertTrue(profile.skills.contains("Kotlin"))
+    assertTrue(profile.skills.contains("Cloud Architecture") || profile.skills.contains("AWS"))
+
+    // Verify Trust Score and Verification Hash
+    assertTrue("Trust score must be high", profile.trustScore >= 95)
+    assertTrue("Verification hash must be SHA-256", profile.verificationHash.length >= 32)
+
+    // Verify ATS Resume formatted output
+    val atsResume = com.example.auth.LinkedInOAuthService.formatAsAtsResume(profile)
+    assertTrue(atsResume.contains("VINCENT MWANGANGI"))
+    assertTrue(atsResume.contains("PROFESSIONAL EXPERIENCE"))
+    assertTrue(atsResume.contains("CORE SKILLS & TECHNOLOGIES"))
+    assertTrue(atsResume.contains("EDUCATION"))
+    assertTrue(atsResume.contains("INTERNATIONAL VISA & RELOCATION VERIFICATION"))
+
+    // Verify raw URL / code exchange
+    val result = com.example.auth.LinkedInOAuthService.exchangeRawCodeOrUrl(
+      input = "globalvisajobs://linkedin-callback?code=test_auth_code_987&state=test_state_xyz",
+      defaultName = "Vincent Mwangangi",
+      defaultEmail = "vincentmwangangi28@gmail.com"
+    )
+    assertTrue("Raw code exchange must succeed", result.isSuccess)
+    val exchangedData = result.getOrNull()
+    assertNotNull(exchangedData)
+    assertEquals("Vincent Mwangangi", exchangedData?.fullName)
+  }
 }
 

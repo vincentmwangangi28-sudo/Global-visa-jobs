@@ -4041,6 +4041,45 @@ fun ResumeSubScreen(
         }
     }
 
+    var showLinkedInOAuthDialog by remember { mutableStateOf(false) }
+
+    if (showLinkedInOAuthDialog) {
+        LinkedInOAuthSyncDialog(
+            profile = profile,
+            viewModel = viewModel,
+            onDismiss = { showLinkedInOAuthDialog = false },
+            onPreFillAtsResume = { linkedInData ->
+                name = linkedInData.fullName.ifBlank { name }
+                contactEmail = linkedInData.email.ifBlank { contactEmail }
+                education = linkedInData.educations.joinToString("\n") { 
+                    "${it.degree} in ${it.fieldOfStudy}, ${it.school} (${it.startYear}-${it.endYear})" 
+                }
+                skills = linkedInData.skills.joinToString(", ")
+                skillsList.clear()
+                skillsList.addAll(linkedInData.skills)
+                updateSkills()
+
+                experienceList.clear()
+                linkedInData.positions.forEach { pos ->
+                    experienceList.add(
+                        WorkExperienceItem(
+                            id = java.util.UUID.randomUUID().toString(),
+                            title = pos.title,
+                            company = pos.company,
+                            location = pos.location,
+                            startDate = pos.startDate,
+                            endDate = pos.endDate,
+                            isCurrent = pos.isCurrent,
+                            achievements = pos.description
+                        )
+                    )
+                }
+                updateExperience()
+                activeStep = 1
+            }
+        )
+    }
+
     // Add/Edit Dialog States for Work Experience
     var showExpDialog by remember { mutableStateOf(false) }
     var editingExpItem by remember { mutableStateOf<WorkExperienceItem?>(null) }
@@ -4411,42 +4450,7 @@ fun ResumeSubScreen(
                 .padding(bottom = 12.dp)
                 .border(1.5.dp, LinkedInBlue.copy(alpha = 0.85f), RoundedCornerShape(14.dp))
                 .clickable {
-                    viewModel.connectLinkedInSandbox(
-                        customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
-                        customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
-                        customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
-                    )
-                    name = profile.fullName.ifBlank { "Vincent Mwangangi" }
-                    contactEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
-                    val mockData = com.example.auth.LinkedInOAuthService.createMockVerifiedProfile(
-                        customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
-                        customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
-                        customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
-                    )
-                    viewModel.applyLinkedInImport(mockData, autoImportToProfile = true)
-
-                    education = mockData.educations.joinToString("\n") { "${it.degree} in ${it.fieldOfStudy}, ${it.school} (${it.startYear}-${it.endYear})" }
-                    skills = mockData.skills.joinToString(", ")
-                    skillsList.clear()
-                    skillsList.addAll(mockData.skills)
-                    experienceList.clear()
-                    mockData.positions.forEach { pos ->
-                        experienceList.add(
-                            WorkExperienceItem(
-                                id = java.util.UUID.randomUUID().toString(),
-                                title = pos.title,
-                                company = pos.company,
-                                location = pos.location,
-                                startDate = pos.startDate,
-                                endDate = pos.endDate,
-                                isCurrent = pos.isCurrent,
-                                achievements = pos.description
-                            )
-                        )
-                    }
-                    updateExperience()
-                    activeStep = 1
-                    Toast.makeText(context, "⚡ Synced professional data from LinkedIn successfully!", Toast.LENGTH_LONG).show()
+                    showLinkedInOAuthDialog = true
                 }
                 .testTag("sync_with_linkedin_hero_card"),
             colors = CardDefaults.cardColors(
@@ -4496,7 +4500,7 @@ fun ResumeSubScreen(
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 Text(
-                                    text = if (profile.linkedInConnected) "SYNCED ✓" else "1-CLICK IMPORT",
+                                    text = if (profile.linkedInConnected) "SYNCED ✓" else "OAuth 2.0 PKCE",
                                     color = LinkedInBlue,
                                     fontSize = 9.sp,
                                     fontWeight = FontWeight.ExtraBold
@@ -4508,7 +4512,7 @@ fun ResumeSubScreen(
                             text = if (profile.linkedInConnected)
                                 "Imported: ${profile.fullName.ifBlank { "Vincent Mwangangi" }} · Click to re-sync verified credentials"
                             else
-                                "Quickly import verified professional work history, skills & education via OAuth mock logic",
+                                "Real-time OAuth 2.0 PKCE flow to import work history, skills & education",
                             color = SlateMuted,
                             fontSize = 11.5.sp,
                             lineHeight = 15.sp
@@ -4518,42 +4522,7 @@ fun ResumeSubScreen(
                 Spacer(modifier = Modifier.width(10.dp))
                 Button(
                     onClick = {
-                        viewModel.connectLinkedInSandbox(
-                            customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
-                            customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
-                            customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
-                        )
-                        name = profile.fullName.ifBlank { "Vincent Mwangangi" }
-                        contactEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
-                        val mockData = com.example.auth.LinkedInOAuthService.createMockVerifiedProfile(
-                            customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
-                            customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
-                            customEmail = if (profile.linkedInEmail.isNotBlank()) profile.linkedInEmail else "vincent.mwangangi.verified@example.com"
-                        )
-                        viewModel.applyLinkedInImport(mockData, autoImportToProfile = true)
-
-                        education = mockData.educations.joinToString("\n") { "${it.degree} in ${it.fieldOfStudy}, ${it.school} (${it.startYear}-${it.endYear})" }
-                        skills = mockData.skills.joinToString(", ")
-                        skillsList.clear()
-                        skillsList.addAll(mockData.skills)
-                        experienceList.clear()
-                        mockData.positions.forEach { pos ->
-                            experienceList.add(
-                                WorkExperienceItem(
-                                    id = java.util.UUID.randomUUID().toString(),
-                                    title = pos.title,
-                                    company = pos.company,
-                                    location = pos.location,
-                                    startDate = pos.startDate,
-                                    endDate = pos.endDate,
-                                    isCurrent = pos.isCurrent,
-                                    achievements = pos.description
-                                )
-                            )
-                        }
-                        updateExperience()
-                        activeStep = 1
-                        Toast.makeText(context, "⚡ Synced professional data from LinkedIn successfully!", Toast.LENGTH_LONG).show()
+                        showLinkedInOAuthDialog = true
                     },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -4776,7 +4745,7 @@ fun ResumeSubScreen(
                         ) {
                             Button(
                                 onClick = {
-                                    viewModel.startLinkedInOAuthFlow(context)
+                                    showLinkedInOAuthDialog = true
                                 },
                                 shape = RoundedCornerShape(8.dp),
                                 colors = ButtonDefaults.buttonColors(
@@ -4790,17 +4759,12 @@ fun ResumeSubScreen(
                             ) {
                                 Icon(Icons.Default.AccountCircle, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Connect LinkedIn OAuth", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text("Sync with LinkedIn", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
 
                             OutlinedButton(
                                 onClick = {
-                                    viewModel.connectLinkedInSandbox(
-                                        customName = profile.fullName.ifBlank { "Vincent Mwangangi" },
-                                        customHeadline = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
-                                        customEmail = "vincent.mwangangi.verified@example.com"
-                                    )
-                                    Toast.makeText(context, "Connected Verified Sandbox LinkedIn Account!", Toast.LENGTH_SHORT).show()
+                                    showLinkedInOAuthDialog = true
                                 },
                                 shape = RoundedCornerShape(8.dp),
                                 colors = ButtonDefaults.outlinedButtonColors(
@@ -4812,7 +4776,7 @@ fun ResumeSubScreen(
                                     .height(40.dp)
                                     .testTag("linkedin_resume_sandbox_btn")
                             ) {
-                                Text("Sandbox Profile", fontSize = 12.sp)
+                                Text("OAuth 2.0 PKCE", fontSize = 12.sp)
                             }
                         }
                     }

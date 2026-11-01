@@ -1184,6 +1184,36 @@ class JobViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
+     * Manually exchanges an OAuth2 code or callback URL and updates the live LinkedIn state.
+     */
+    fun exchangeLinkedInRawCodeOrUrl(
+        input: String,
+        defaultName: String = "Vincent Mwangangi",
+        defaultHeadline: String = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+        defaultEmail: String = "vincentmwangangi28@gmail.com"
+    ) {
+        viewModelScope.launch {
+            _linkedInOAuthState.value = LinkedInOAuthState.ExchangingToken("Connecting to LinkedIn OAuth 2.0 API...")
+            val result = LinkedInOAuthService.exchangeRawCodeOrUrl(
+                input = input,
+                defaultName = defaultName,
+                defaultHeadline = defaultHeadline,
+                defaultEmail = defaultEmail
+            )
+            result.onSuccess { profileData ->
+                _linkedInOAuthState.value = LinkedInOAuthState.Success(profileData)
+                _linkedInImportPreview.value = profileData
+            }.onFailure { ex ->
+                _linkedInOAuthState.value = LinkedInOAuthState.Error(ex.message ?: "Token exchange failed.")
+            }
+        }
+    }
+
+    fun resetLinkedInOAuthState() {
+        _linkedInOAuthState.value = LinkedInOAuthState.Idle
+    }
+
+    /**
      * Connects with Sandbox Verified LinkedIn profile for instant testing and demonstration.
      */
     fun connectLinkedInSandbox(

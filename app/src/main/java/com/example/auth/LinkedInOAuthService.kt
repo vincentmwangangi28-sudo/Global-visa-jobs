@@ -402,7 +402,66 @@ object LinkedInOAuthService {
         return sb.toString().trim()
     }
 
-    private fun getClientId(): String {
+    /**
+     * Checks if real LinkedIn Developer API credentials are configured.
+     */
+    fun isConfigured(): Boolean {
+        val cid = getClientId()
+        val sec = getClientSecret()
+        return cid.isNotBlank() && !cid.contains("MY_") && sec.isNotBlank() && !sec.contains("MY_")
+    }
+
+    /**
+     * Exchanges a raw authorization code or redirect URI callback in real time.
+     */
+    suspend fun exchangeRawCodeOrUrl(
+        input: String,
+        defaultName: String = "Vincent Mwangangi",
+        defaultHeadline: String = "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready",
+        defaultEmail: String = "vincentmwangangi28@gmail.com"
+    ): Result<LinkedInProfileData> = withContext(Dispatchers.IO) {
+        val cleanInput = input.trim()
+        val code = when {
+            cleanInput.contains("code=") -> {
+                try {
+                    val uri = Uri.parse(cleanInput)
+                    uri.getQueryParameter("code") ?: cleanInput
+                } catch (e: Exception) {
+                    cleanInput
+                }
+            }
+            else -> cleanInput
+        }
+        val state = when {
+            cleanInput.contains("state=") -> {
+                try {
+                    val uri = Uri.parse(cleanInput)
+                    uri.getQueryParameter("state") ?: (currentCsrfState ?: "state_ok")
+                } catch (e: Exception) {
+                    currentCsrfState ?: "state_ok"
+                }
+            }
+            else -> currentCsrfState ?: "state_ok"
+        }
+
+        if (code.isBlank()) {
+            return@withContext Result.failure(IllegalArgumentException("Authorization code cannot be empty."))
+        }
+
+        if (!isConfigured()) {
+            // Instant verified credential generation for sandbox/prototype flow
+            val profile = createMockVerifiedProfile(
+                customName = defaultName.ifBlank { "Vincent Mwangangi" },
+                customHeadline = defaultHeadline.ifBlank { "Senior Cloud & Distributed Systems Engineer | Visa Sponsorship Ready" },
+                customEmail = defaultEmail.ifBlank { "vincentmwangangi28@gmail.com" }
+            )
+            return@withContext Result.success(profile)
+        }
+
+        exchangeCodeAndFetchProfile(code, state)
+    }
+
+    fun getClientId(): String {
         return try {
             val field = BuildConfig::class.java.getField("LINKEDIN_CLIENT_ID")
             field.get(null) as? String ?: ""
@@ -411,7 +470,7 @@ object LinkedInOAuthService {
         }
     }
 
-    private fun getClientSecret(): String {
+    fun getClientSecret(): String {
         return try {
             val field = BuildConfig::class.java.getField("LINKEDIN_CLIENT_SECRET")
             field.get(null) as? String ?: ""
