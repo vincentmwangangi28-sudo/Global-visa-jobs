@@ -762,9 +762,29 @@ fun DiscoverTab(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.QueryStats, contentDescription = null, tint = AmberGold, modifier = Modifier.size(15.dp))
+                        Icon(Icons.Default.QueryStats, contentDescription = "Ahrefs Site Explorer", tint = AmberGold, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("Ahrefs Site Explorer (12 Opps • 96%)", color = AmberGold, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+
+            item {
+                Surface(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable { onNavigateTab("SEO") }
+                        .border(1.dp, EmeraldGreen.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                        .testTag("lighthouse_adsense_quick_launcher"),
+                    color = NavyMedium
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Speed, contentDescription = "Lighthouse & Google AdSense", tint = EmeraldGreen, modifier = Modifier.size(15.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Lighthouse 99/100 • AdSense ($GOOGLE_ADSENSE_PUBLISHER_ID)", color = EmeraldGreen, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }
