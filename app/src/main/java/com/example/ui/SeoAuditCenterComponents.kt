@@ -475,6 +475,16 @@ fun SeoAuditCenterHub(
             )
         }
 
+        // --- 1B. Lighthouse 13.5.0 Web Vitals, Accessibility, Security & Agentic Browsing Suite ---
+        item {
+            LighthouseWebVitalsAndAgenticSuiteCard()
+        }
+
+        // --- 1C. Google AdSense Publisher Integration & CLS-Safe Loader (ca-pub-1375386376692976) ---
+        item {
+            GoogleAdSensePublisherIntegrationCard()
+        }
+
         // --- 2. Category & Status Filter Chips ---
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

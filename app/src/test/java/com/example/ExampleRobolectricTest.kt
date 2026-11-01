@@ -347,5 +347,59 @@ class ExampleRobolectricTest {
     assertNotNull(exchangedData)
     assertEquals("Vincent Mwangangi", exchangedData?.fullName)
   }
+
+  @Test
+  fun testLighthouse13RemediationSuiteAndWebMcpIntegrity() {
+    val fixes = com.example.ui.defaultLighthouseAuditFixes
+    assertEquals(9, fixes.size)
+
+    // Verify all 5 Lighthouse 13.5.0 categories are covered
+    val categories = fixes.map { it.category }.toSet()
+    assertTrue(categories.contains(com.example.ui.LighthouseAuditCategory.PERFORMANCE))
+    assertTrue(categories.contains(com.example.ui.LighthouseAuditCategory.ACCESSIBILITY))
+    assertTrue(categories.contains(com.example.ui.LighthouseAuditCategory.BEST_PRACTICES))
+    assertTrue(categories.contains(com.example.ui.LighthouseAuditCategory.SEO))
+    assertTrue(categories.contains(com.example.ui.LighthouseAuditCategory.AGENTIC_BROWSING))
+
+    // Verify Performance TBT (24,790ms -> 40ms) & FCP/LCP remediation
+    val tbtFix = fixes.first { it.id == "perf_tbt_main_thread_js" }
+    assertTrue(tbtFix.productionCodePatch.contains("scheduler.yield"))
+    assertTrue(tbtFix.diagnosticMetric.contains("24,790 ms"))
+
+    // Verify Accessibility ARIA roles, form labels, SVG role=img, and WCAG contrast
+    val ariaFix = fixes.first { it.id == "a11y_aria_roles_ids_lists" }
+    assertTrue(ariaFix.productionCodePatch.contains("role=\"tablist\""))
+    assertTrue(ariaFix.productionCodePatch.contains("<ul"))
+
+    val labelsFix = fixes.first { it.id == "a11y_names_labels_alt_svg" }
+    assertTrue(labelsFix.productionCodePatch.contains("<label for="))
+    assertTrue(labelsFix.productionCodePatch.contains("alt="))
+    assertTrue(labelsFix.productionCodePatch.contains("role=\"img\""))
+
+    // Verify Best Practices CSP + Trusted Types, HSTS, COOP, XFO
+    val securityFix = fixes.first { it.id == "bp_security_headers_csp_hsts_coop" }
+    assertTrue(securityFix.productionCodePatch.contains("Strict-Transport-Security"))
+    assertTrue(securityFix.productionCodePatch.contains("Cross-Origin-Opener-Policy"))
+    assertTrue(securityFix.productionCodePatch.contains("X-Frame-Options"))
+    assertTrue(securityFix.productionCodePatch.contains("require-trusted-types-for"))
+
+    // Verify Agentic Browsing & WebMCP declarative tools
+    val agenticFix = fixes.first { it.id == "agentic_webmcp_accessibility_tree" }
+    assertTrue(agenticFix.productionCodePatch.contains("application/webmcp+json"))
+    assertTrue(agenticFix.productionCodePatch.contains("search_sponsored_jobs"))
+
+    // Verify Google AdSense Publisher (ca-pub-1375386376692976) integration & ads.txt
+    assertEquals("ca-pub-1375386376692976", com.example.ui.GOOGLE_ADSENSE_PUBLISHER_ID)
+    assertTrue(com.example.ui.GOOGLE_ADSENSE_HEAD_SNIPPET.contains("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1375386376692976"))
+    assertTrue(com.example.ui.GOOGLE_ADSENSE_HEAD_SNIPPET.contains("crossorigin=\"anonymous\""))
+    assertTrue(com.example.ui.GOOGLE_ADSENSE_ADS_TXT_RECORD.contains("pub-1375386376692976"))
+
+    // Verify full export report
+    val bundleReport = com.example.ui.buildLighthouseRemediationReport(fixes)
+    assertTrue(bundleReport.contains("Lighthouse 13.5.0 Full Remediation Bundle"))
+    assertTrue(bundleReport.contains("ca-pub-1375386376692976"))
+    assertTrue(bundleReport.contains("WebMCP"))
+  }
 }
+
 
