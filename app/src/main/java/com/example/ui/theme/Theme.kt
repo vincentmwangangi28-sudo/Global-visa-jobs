@@ -10,12 +10,13 @@ private val CosmicColorScheme = lightColorScheme(
     tertiary = AmberGold,
     background = NavyDark,
     surface = NavyMedium,
-    onPrimary = NavyDark,
-    onSecondary = NavyDark,
+    onPrimary = NavyMedium,
+    onSecondary = NavyMedium,
+    onTertiary = NavyMedium,
     onBackground = WhiteActive,
     onSurface = WhiteActive,
     error = CoralRed,
-    onError = WhiteActive,
+    onError = NavyMedium,
     outline = NavyLight
 )
 

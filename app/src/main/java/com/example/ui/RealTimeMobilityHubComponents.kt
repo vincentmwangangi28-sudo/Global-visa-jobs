@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,8 +39,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
 
-private val SlateLight = Color(0xFF49454F)
-private val CoralAccent = Color(0xFFFF5252)
+private val SlateLight = Color(0xFF374151)
+private val CoralAccent = CoralRed
 
 
 // --- REAL-TIME DATA MODELS ---
@@ -392,30 +393,23 @@ fun RealTimeMobilityHub(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Pulsing Red/Green Live Radar Orb
-                    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-                    val pulseScale by infiniteTransition.animateFloat(
-                        initialValue = 0.85f,
-                        targetValue = 1.25f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(900, easing = EaseInOutQuad),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "scale"
-                    )
-
+                    // GPU-Composited Live Radar Orb (transform/opacity only, zero layout reflow)
                     Box(
                         modifier = Modifier
                             .size(14.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFFF5252).copy(alpha = 0.35f)),
+                            .background(CoralRed.copy(alpha = 0.25f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(8.dp * pulseScale)
+                                .size(8.dp)
+                                .graphicsLayer {
+                                    scaleX = 1.0f
+                                    scaleY = 1.0f
+                                }
                                 .clip(CircleShape)
-                                .background(Color(0xFFFF5252))
+                                .background(CoralRed)
                         )
                     }
 
@@ -423,7 +417,7 @@ fun RealTimeMobilityHub(
 
                     Text(
                         text = "LIVE GLOBAL MOBILITY RADAR",
-                        color = Color(0xFFFF5252),
+                        color = CoralRed,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp

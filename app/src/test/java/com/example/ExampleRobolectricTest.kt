@@ -351,7 +351,7 @@ class ExampleRobolectricTest {
   @Test
   fun testLighthouse13RemediationSuiteAndWebMcpIntegrity() {
     val fixes = com.example.ui.defaultLighthouseAuditFixes
-    assertEquals(9, fixes.size)
+    assertEquals(10, fixes.size)
 
     // Verify all 5 Lighthouse 13.5.0 categories are covered
     val categories = fixes.map { it.category }.toSet()
@@ -361,10 +361,14 @@ class ExampleRobolectricTest {
     assertTrue(categories.contains(com.example.ui.LighthouseAuditCategory.SEO))
     assertTrue(categories.contains(com.example.ui.LighthouseAuditCategory.AGENTIC_BROWSING))
 
-    // Verify Performance TBT (24,790ms -> 40ms) & FCP/LCP remediation
+    // Verify Performance TBT (24,790ms -> 40ms) & Run #2 Final Boost (45 -> 99)
     val tbtFix = fixes.first { it.id == "perf_tbt_main_thread_js" }
     assertTrue(tbtFix.productionCodePatch.contains("scheduler.yield"))
     assertTrue(tbtFix.diagnosticMetric.contains("24,790 ms"))
+
+    val run2PerfFix = fixes.first { it.id == "perf_run2_dom_reflow_cache_anim" }
+    assertTrue(run2PerfFix.productionCodePatch.contains("content-visibility: auto"))
+    assertTrue(run2PerfFix.productionCodePatch.contains("Cache-Control: public, max-age=31536000, immutable"))
 
     // Verify Accessibility ARIA roles, form labels, SVG role=img, and WCAG contrast
     val ariaFix = fixes.first { it.id == "a11y_aria_roles_ids_lists" }
@@ -393,6 +397,15 @@ class ExampleRobolectricTest {
     assertTrue(com.example.ui.GOOGLE_ADSENSE_HEAD_SNIPPET.contains("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1375386376692976"))
     assertTrue(com.example.ui.GOOGLE_ADSENSE_HEAD_SNIPPET.contains("crossorigin=\"anonymous\""))
     assertTrue(com.example.ui.GOOGLE_ADSENSE_ADS_TXT_RECORD.contains("pub-1375386376692976"))
+
+    // Verify Run #2 Final 100/100 Self-Healing Booster Snippet with Static AdSense Crawler Tags
+    assertTrue(com.example.ui.LIGHTHOUSE_RUN2_FINAL_BOOSTER_SNIPPET.contains("repairAccessibilityTreeAndSelects"))
+    assertTrue(com.example.ui.LIGHTHOUSE_RUN2_FINAL_BOOSTER_SNIPPET.contains("REQUIRED_CHILD_ROLES"))
+    assertTrue(com.example.ui.LIGHTHOUSE_RUN2_FINAL_BOOSTER_SNIPPET.contains("<meta name=\"google-adsense-account\" content=\"ca-pub-1375386376692976\">"))
+    assertTrue(com.example.ui.LIGHTHOUSE_RUN2_FINAL_BOOSTER_SNIPPET.contains("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1375386376692976"))
+    assertTrue(com.example.ui.LIGHTHOUSE_RUN2_FINAL_BOOSTER_SNIPPET.contains("content-visibility: auto"))
+    assertTrue(com.example.ui.GOOGLE_ADSENSE_CRAWLER_UNBLOCK_CONFIG.contains("Mediapartners-Google"))
+    assertTrue(com.example.ui.GOOGLE_ADSENSE_META_TAG.contains("ca-pub-1375386376692976"))
 
     // Verify full export report
     val bundleReport = com.example.ui.buildLighthouseRemediationReport(fixes)
