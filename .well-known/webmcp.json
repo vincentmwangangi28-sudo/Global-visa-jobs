@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "name_for_human": "Global Visa Jobs & County Careers",
+  "name_for_model": "global_visa_jobs",
+  "description_for_model": "Search verified visa-sponsored jobs (UK Tier-2 CoS, Canada LMIA, Germany EU Blue Card, US H-1B) and Kenya 47 County Public Service Board vacancies.",
+  "tools": [
+    {
+      "name": "search_verified_visa_jobs",
+      "description": "Search verified visa sponsorship and county career listings by keyword, destination country, and visa track.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "keyword": { "type": "string", "description": "Job title, skill, or SOC occupation code" },
+          "country": { "type": "string", "description": "Destination country or county" }
+        },
+        "required": ["keyword"]
+      }
+    }
+  ]
+}

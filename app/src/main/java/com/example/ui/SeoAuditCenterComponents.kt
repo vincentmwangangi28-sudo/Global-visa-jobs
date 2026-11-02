@@ -475,6 +475,11 @@ fun SeoAuditCenterHub(
             )
         }
 
+        // --- 1A. Ahrefs Site Audit — All 16 Actual Issues (185 Tracked) & Fix with Letaido Engine ---
+        item {
+            AhrefsSiteAudit16ActualIssuesCard()
+        }
+
         // --- 1B. Lighthouse 13.5.0 Web Vitals, Accessibility, Security & Agentic Browsing Suite ---
         item {
             LighthouseWebVitalsAndAgenticSuiteCard()

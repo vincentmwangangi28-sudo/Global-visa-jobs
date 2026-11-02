@@ -1,0 +1,8 @@
+/ads.txt                 /ads.txt                 200
+/robots.txt              /robots.txt              200
+/sitemap.xml             /sitemap.xml             200
+/.well-known/webmcp.json /.well-known/webmcp.json 200
+/home                    /                        301
+/index                   /                        301
+/jobs/                   /#jobs                   301
+/*                       /index.html              200

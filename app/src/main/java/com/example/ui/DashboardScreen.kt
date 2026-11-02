@@ -764,7 +764,7 @@ fun DiscoverTab(
                     ) {
                         Icon(Icons.Default.QueryStats, contentDescription = "Ahrefs Site Explorer", tint = AmberGold, modifier = Modifier.size(15.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Ahrefs Site Explorer (12 Opps • 96%)", color = AmberGold, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("Ahrefs Site Explorer (16 Issues • 12 Opps • Letaido)", color = AmberGold, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                 }
             }

@@ -189,5 +189,20 @@ class ExampleUnitTest {
     assertTrue(chat.isNotEmpty())
     assertTrue(chat.any { it.isAiAdvisor })
   }
+
+  @Test
+  fun testAhrefs16ActualIssuesAndLetaidoMasterScript() {
+    val issues = com.example.ui.defaultAhrefs16ActualIssues
+    assertEquals(16, issues.size)
+    assertEquals(782, issues.sumOf { it.crawledCount })
+
+    val groups = issues.map { it.group }.toSet()
+    assertEquals(6, groups.size)
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("runAhrefs16IssuesAutoFix"))
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("schema-ahrefs-article"))
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("schema-ahrefs-itemlist"))
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("schema-ahrefs-product"))
+    assertTrue(com.example.ui.LIGHTHOUSE_RUN2_FINAL_BOOSTER_SNIPPET.contains("<meta name=\"google-adsense-account\" content=\"ca-pub-1375386376692976\">"))
+  }
 }
 

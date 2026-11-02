@@ -413,6 +413,38 @@ class ExampleRobolectricTest {
     assertTrue(bundleReport.contains("ca-pub-1375386376692976"))
     assertTrue(bundleReport.contains("WebMCP"))
   }
+
+  @Test
+  fun testAhrefs16ActualIssuesAndLetaidoMasterScript() {
+    val issues = com.example.ui.defaultAhrefs16ActualIssues
+    assertEquals(16, issues.size)
+
+    // Verify exact crawled counts from Ahrefs Site Audit (1+119+3+177+7+1+1+31+2+217+2+1+1+1+1+217 = 782)
+    assertEquals(782, issues.sumOf { it.crawledCount })
+
+    // Verify all 6 Ahrefs Audit Issue Groups
+    val groups = issues.map { it.group }.toSet()
+    assertEquals(6, groups.size)
+    assertTrue(groups.contains(com.example.ui.AhrefsAuditIssueGroup.AI_DISCOVERABILITY))
+    assertTrue(groups.contains(com.example.ui.AhrefsAuditIssueGroup.LINKS))
+    assertTrue(groups.contains(com.example.ui.AhrefsAuditIssueGroup.REDIRECTS))
+    assertTrue(groups.contains(com.example.ui.AhrefsAuditIssueGroup.CONTENT))
+    assertTrue(groups.contains(com.example.ui.AhrefsAuditIssueGroup.JAVASCRIPT))
+    assertTrue(groups.contains(com.example.ui.AhrefsAuditIssueGroup.SITEMAPS))
+
+    // Verify Letaido Master Script & Markdown Export
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("runAhrefs16IssuesAutoFix"))
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("schema-ahrefs-article"))
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("schema-ahrefs-itemlist"))
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("schema-ahrefs-product"))
+    assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("gvj-crawl-mesh-nav"))
+
+    val exportReport = com.example.ui.buildAhrefs16IssuesExportReport(issues)
+    assertTrue(exportReport.contains("Ahrefs Site Audit — All 16 Actual Issues Remediation Report"))
+    assertTrue(exportReport.contains("Orphan page (has no incoming internal links)"))
+    assertTrue(exportReport.contains("Multiple H1 tags"))
+    assertTrue(exportReport.contains("Page in multiple sitemaps"))
+  }
 }
 
 
