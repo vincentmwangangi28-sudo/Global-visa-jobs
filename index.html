@@ -195,8 +195,8 @@
       --purple: #CBD5E1;
       --indigo: #CBD5E1;
       --text-white: #FFFFFF;
-      --text-muted: #CBD5E1;
-      --text-dim: #94A3B8;
+      --text-muted: #E2E8F0;
+      --text-dim: #CBD5E1;
       --danger: #FDA4AF;
       --warning: #FDE047;
       --amber: #FCD34D;
@@ -1159,14 +1159,14 @@
 
         <!-- High-Ranking SEO Keyword Pills -->
         <div class="quick-filter-pills" style="padding: 2px 0 8px 0;">
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Skilled Worker'; document.getElementById('countrySelect').value='United Kingdom'; filterJobs();">🇬🇧 UK Skilled Worker CoS <span style="opacity:0.75;font-size:10px;">118K/mo</span></button>
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='LMIA'; document.getElementById('countrySelect').value='Canada'; filterJobs();">🇨🇦 Canada LMIA Approved <span style="opacity:0.75;font-size:10px;">96K/mo</span></button>
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Blue Card'; document.getElementById('countrySelect').value='Germany'; filterJobs();">🇩🇪 Germany EU Blue Card <span style="opacity:0.75;font-size:10px;">84K/mo</span></button>
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value=''; document.getElementById('countrySelect').value='Kenya'; document.getElementById('countyRegionSelect').value='Nairobi County'; filterJobs();">🇰🇪 Nairobi County Jobs <span style="opacity:0.75;font-size:10px;">142K/mo</span></button>
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value=''; document.getElementById('countrySelect').value='Kenya'; document.getElementById('countyRegionSelect').value='Mombasa County'; filterJobs();">⚓ Mombasa County Jobs <span style="opacity:0.75;font-size:10px;">64K/mo</span></button>
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='H-1B'; document.getElementById('countrySelect').value='United States'; filterJobs();">🇺🇸 US H-1B Cap-Exempt <span style="opacity:0.75;font-size:10px;">110K/mo</span></button>
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Nurse'; document.getElementById('countrySelect').value='ALL'; filterJobs();">🏥 NHS Band 5/6 Nurse <span style="opacity:0.75;font-size:10px;">78K/mo</span></button>
-          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Safaricom'; document.getElementById('countrySelect').value='Kenya'; filterJobs();">📱 Safaricom &amp; M-PESA <span style="opacity:0.75;font-size:10px;">89K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Skilled Worker'; document.getElementById('countrySelect').value='United Kingdom'; filterJobs();">🇬🇧 UK Skilled Worker CoS <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">118K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='LMIA'; document.getElementById('countrySelect').value='Canada'; filterJobs();">🇨🇦 Canada LMIA Approved <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">96K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Blue Card'; document.getElementById('countrySelect').value='Germany'; filterJobs();">🇩🇪 Germany EU Blue Card <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">84K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value=''; document.getElementById('countrySelect').value='Kenya'; document.getElementById('countyRegionSelect').value='Nairobi County'; filterJobs();">🇰🇪 Nairobi County Jobs <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">142K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value=''; document.getElementById('countrySelect').value='Kenya'; document.getElementById('countyRegionSelect').value='Mombasa County'; filterJobs();">⚓ Mombasa County Jobs <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">64K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='H-1B'; document.getElementById('countrySelect').value='United States'; filterJobs();">🇺🇸 US H-1B Cap-Exempt <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">110K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Nurse'; document.getElementById('countrySelect').value='ALL'; filterJobs();">🏥 NHS Band 5/6 Nurse <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">78K/mo</span></button>
+          <button class="quick-pill-btn" onclick="document.getElementById('jobSearchInput').value='Safaricom'; document.getElementById('countrySelect').value='Kenya'; filterJobs();">📱 Safaricom &amp; M-PESA <span style="color:#93C5FD;font-size:11px;font-weight:700;margin-left:4px;">89K/mo</span></button>
         </div>
 
         <!-- Expandable Top 5 Global & Regional Job Platforms Breakdown -->
@@ -5188,7 +5188,7 @@ Reference: GVJ-DOS-2026-88192 | globalvisajobs.com`;
           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 11.5px; color: var(--text-muted);">
             <span>Min Salary: > ${a.salary === 'ANY' ? 'Any' : '$' + a.salary}</span>
             <span style="color: var(--emerald); font-weight: 700;">⚡ ${a.matches} Recent Matches</span>
-            <button style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 11px;" onclick="deleteAlert('${a.id}')">Delete</button>
+            <button style="background: none; border: none; color: #FCA5A5; font-weight: 700; cursor: pointer; font-size: 11px;" onclick="deleteAlert('${a.id}')">Delete</button>
           </div>
         </div>
       `).join('');
@@ -5407,7 +5407,7 @@ Reference: GVJ-DOS-2026-88192 | globalvisajobs.com`;
           <div style="font-size:13px;font-weight:700;color:#fff;">⚖️ ${selectedJobs.length}/3 Global Offers Selected</div>
           <div style="font-size:11px;color:var(--text-muted);">${selectedJobs.map(j => j.company + ' (' + j.country + ')').join(' vs. ')}</div>
         </div>
-        <button class="btn-secondary" style="padding:6px 12px;font-size:11.5px;color:#ef4444;border-color:rgba(239,68,68,0.4);" onclick="clearComparedWebJobs()">Clear</button>
+        <button class="btn-secondary" style="padding:6px 12px;font-size:11.5px;color:#FCA5A5;font-weight:700;border-color:rgba(252,165,165,0.4);" onclick="clearComparedWebJobs()">Clear</button>
         <button class="btn-primary" style="padding:8px 16px;font-size:12px;" onclick="openWebCompareModal()">Compare Side-by-Side &rarr;</button>
       `;
     }

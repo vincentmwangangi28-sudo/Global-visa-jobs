@@ -1,0 +1,18 @@
+# Global Visa Jobs & County Careers
+
+> Global Visa Jobs is a unified directory and platform for verified international visa-sponsored employment (UK Tier-2 Skilled Worker CoS, Canada LMIA, Germany EU Blue Card, US H-1B Cap-Exempt, Australia TSS 482) and Kenya 47 County Public Service Board official career opportunities.
+
+## Core Features & Directory Endpoints
+
+- [Verified Visa Jobs Directory](https://globalvisajobs.website/#jobs): Search thousands of audited visa-sponsored job vacancies with employer sponsorship status, salary benchmarks, and visa eligibility requirements.
+- [Points-Based Immigration Calculator](https://globalvisajobs.website/#points): Evaluate points eligibility for UK Skilled Worker Visa, Canada Express Entry (CRS), and Australia Subclass 189/190 points systems.
+- [Official Sponsor Registry](https://globalvisajobs.website/#sponsors): Search official government registries of licensed visa sponsors in the UK, Canada, Germany, and the United States.
+- [International Relocation & Cost Calculator](https://globalvisajobs.website/#relocation): Calculate relocation costs, flight allowances, mandatory healthcare surcharges (IHS), and local living cost benchmarks.
+- [Visa Fees & Government Surcharges Guide](https://globalvisajobs.website/#fees): Breakdown of statutory visa application fees, biometric fees, and immigration healthcare surcharges.
+- [Standard Occupational Classification (SOC) Codes](https://globalvisajobs.website/#soc): Map job roles to eligible SOC / NOC occupation codes, minimum salary thresholds, and shortage occupation lists.
+- [WebMCP Agent Manifest](https://globalvisajobs.website/.well-known/webmcp.json): Machine-readable Model Context Protocol (MCP) tool manifest for automated agentic browsing and structured job search.
+
+## Data Structure & Standards
+
+- Schema: JobPosting, Organization, BreadcrumbList, FAQPage JSON-LD schemas embedded on index.
+- Search Parameters: keyword (role/skill/SOC), country (UK, Canada, Germany, US, Kenya, Australia, Ireland), sponsorshipType (Tier-2, LMIA, EU Blue Card, Cap-Exempt), relocationPackage (Flights, Housing, Fast-Track).
