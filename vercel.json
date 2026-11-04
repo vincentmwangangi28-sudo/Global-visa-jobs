@@ -11,11 +11,19 @@
     { "source": "/ads.txt", "destination": "/ads.txt" },
     { "source": "/robots.txt", "destination": "/robots.txt" },
     { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
+    { "source": "/tapts87mznnme96w1njc5zeda5dedwfd.txt", "destination": "/tapts87mznnme96w1njc5zeda5dedwfd.txt" },
     { "source": "/.well-known/webmcp.json", "destination": "/.well-known/webmcp.json" }
   ],
   "headers": [
     {
       "source": "/ads.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/tapts87mznnme96w1njc5zeda5dedwfd.txt",
       "headers": [
         { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }

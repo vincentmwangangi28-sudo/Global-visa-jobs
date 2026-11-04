@@ -1,3 +1,9 @@
+User-agent: AhrefsBot
+Allow: /
+
+User-agent: AhrefsSiteAudit
+Allow: /
+
 User-agent: Mediapartners-Google
 Allow: /
 

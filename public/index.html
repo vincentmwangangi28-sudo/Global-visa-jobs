@@ -25,6 +25,7 @@
   <meta name="google-site-verification" content="Y5kaN4arFVmI6aOPqllXrToNiKDxeE2I6HDOx4_GuBE" />
   <meta name="google-site-verification" content="3QFc7WKZ0EkHcU2SNlOjMiIcezTm6zhkuQSO6iWNNcc" />
   <meta name="msvalidate.01" content="1A704EBF4AD6B5D3CFBA2F15F6D5689E" />
+  <meta name="ahrefs-site-verification" content="tapts87mznnme96w1njc5zeda5dedwfd" />
   <link rel="canonical" href="https://globalvisajobs.website/" />
   <link rel="webmcp-manifest" href="/.well-known/webmcp.json" />
   <title>Verified Visa Sponsorship Jobs 2026 | Global Visa Jobs</title>
@@ -80,45 +81,6 @@
         "priceCurrency": "USD"
       },
       "description": "Verified Visa Sponsorship Job Search, Relocation Budget Calculator, Visa Fee Estimator, SOC Codes Registry, and Sponsor Directory."
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": "Global Visa Jobs AI ATS Resume Optimizer & Sponsor Registry",
-      "description": "Verified international visa sponsorship platform with LinkedIn OAuth 2.0 resume import, CoS/LMIA license verification, and 47 Kenya County career portals.",
-      "brand": {
-        "@type": "Brand",
-        "name": "Global Visa Jobs"
-      },
-      "offers": {
-        "@type": "Offer",
-        "url": "https://globalvisajobs.website/",
-        "priceCurrency": "USD",
-        "price": "0.00",
-        "availability": "https://schema.org/InStock"
-      }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "Verified Visa Sponsorship Jobs 2026 | Global Visa Jobs",
-      "description": "Comprehensive guide and directory of verified employers sponsoring UK Skilled Worker CoS, Germany EU Blue Card, Canada LMIA, US H-1B, and Kenya 47 County careers.",
-      "author": {
-        "@type": "Organization",
-        "name": "Global Visa Jobs",
-        "url": "https://globalvisajobs.website/"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Global Visa Jobs",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://globalvisajobs.website/logo.png"
-        }
-      },
-      "datePublished": "2026-01-15T08:00:00Z",
-      "dateModified": "2026-11-02T08:00:00Z",
-      "mainEntityOfPage": "https://globalvisajobs.website/"
     },
     {
       "@context": "https://schema.org",
@@ -216,136 +178,6 @@
       }
     }
   ]
-  </script>
-
-  <!-- ====== 2. SELF-HEALING ACCESSIBILITY TREE + AHREFS 16 ISSUES (LETAIDO) + WEBMCP ENGINE ====== -->
-  <script id="gvj-lighthouse-ahrefs-master-engine">
-  (function() {
-    var REQUIRED_CHILD_ROLES = {
-      tablist: 'tab', list: 'listitem', listbox: 'option',
-      menu: 'menuitem', menubar: 'menuitem', radiogroup: 'radio',
-      grid: 'row', row: 'gridcell', tree: 'treeitem'
-    };
-
-    function runGlobalVisaJobsAllInOneFix() {
-      // A. Fix Lighthouse <select>, <input>, & <textarea> Labels ("Select/Form elements do not have associated label elements")
-      var controls = document.querySelectorAll('select, input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea');
-      for (var i = 0; i < controls.length; i++) {
-        var ctrl = controls[i];
-        if (!ctrl.id) ctrl.id = 'gvj-form-control-' + (i + 1);
-        var existingLabel = document.querySelector('label[for="' + ctrl.id + '"]') || ctrl.closest('label');
-        if (!existingLabel && ctrl.parentNode) {
-          var siblingLabel = ctrl.parentNode.querySelector('label:not([for])');
-          if (siblingLabel) {
-            siblingLabel.setAttribute('for', ctrl.id);
-            existingLabel = siblingLabel;
-          }
-        }
-        var labelText = ctrl.getAttribute('aria-label') ||
-                        (existingLabel && existingLabel.textContent ? existingLabel.textContent.trim() : '') ||
-                        ctrl.getAttribute('placeholder') || ctrl.getAttribute('title') || ctrl.name ||
-                        (ctrl.options && ctrl.options[0] ? ctrl.options[0].text : 'Form control ' + (i + 1));
-        if (!existingLabel && ctrl.parentNode) {
-          var lbl = document.createElement('label');
-          lbl.setAttribute('for', ctrl.id);
-          lbl.className = 'sr-only-label';
-          lbl.textContent = labelText;
-          ctrl.parentNode.insertBefore(lbl, ctrl);
-        }
-        if (!ctrl.getAttribute('aria-label')) ctrl.setAttribute('aria-label', labelText);
-      }
-
-      // B. Fix ARIA Required Children & Agentic Browsing Accessibility Tree
-      var roleParents = document.querySelectorAll('[role]');
-      for (var j = 0; j < roleParents.length; j++) {
-        var parent = roleParents[j];
-        var parentRole = (parent.getAttribute('role') || '').trim().toLowerCase();
-        var expectedChildRole = REQUIRED_CHILD_ROLES[parentRole];
-        if (expectedChildRole) {
-          var children = parent.children;
-          if (children.length === 0) {
-            parent.removeAttribute('role');
-            continue;
-          }
-          for (var k = 0; k < children.length; k++) {
-            var child = children[k];
-            var currentChildRole = (child.getAttribute('role') || '').trim().toLowerCase();
-            if (currentChildRole !== expectedChildRole) {
-              child.setAttribute('role', expectedChildRole);
-              if (expectedChildRole === 'tab' && !child.hasAttribute('aria-selected')) {
-                child.setAttribute('aria-selected', k === 0 ? 'true' : 'false');
-              }
-            }
-          }
-        }
-      }
-
-      // C. Fix Ahrefs "Multiple H1 tags" (217 Indexable + 1 Non-Indexable = 218 Pages): Strictly ONE <h1>
-      var h1List = document.querySelectorAll('h1');
-      if (h1List.length > 1) {
-        var primaryH1 = document.querySelector('main h1, article h1') || h1List[0];
-        for (var h = 0; h < h1List.length; h++) {
-          var el = h1List[h];
-          if (el !== primaryH1 && el.parentNode) {
-            var h2 = document.createElement('h2');
-            h2.className = (el.className ? el.className + ' ' : '') + 'gvj-demoted-h1';
-            h2.innerHTML = el.innerHTML;
-            el.parentNode.replaceChild(h2, el);
-          }
-        }
-      }
-
-      // D. Fix Ahrefs 3XX Redirects (31) & HTTP->HTTPS (2): Canonicalize internal links
-      var links = document.querySelectorAll('a[href]');
-      for (var m = 0; m < links.length; m++) {
-        var a = links[m];
-        var href = a.getAttribute('href') || '';
-        if (href.indexOf('http://globalvisajobs.website') === 0) {
-          href = href.replace('http://', 'https://');
-        }
-        if (href.length > 1 && href.indexOf('https://globalvisajobs.website/') === 0 && href.slice(-1) === '/' && href !== 'https://globalvisajobs.website/') {
-          href = href.replace(/\/+$/, '');
-        }
-        a.setAttribute('href', href);
-      }
-
-      // E. Register WebMCP Tool for Lighthouse Agentic Browsing (2/2)
-      if ('modelContext' in navigator && navigator.modelContext && typeof navigator.modelContext.registerTool === 'function') {
-        try {
-          navigator.modelContext.registerTool({
-            name: 'search_verified_visa_jobs',
-            description: 'Search verified visa sponsorship jobs and Kenya 47 county vacancies.',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                keyword: { type: 'string' },
-                country: { type: 'string' }
-              }
-            },
-            execute: async function(args) {
-              var inp = document.getElementById('jobSearchInput');
-              if (inp && args && args.keyword) inp.value = args.keyword;
-              if (typeof filterJobs === 'function') filterJobs();
-              return { status: 'ok', query: args };
-            }
-          });
-        } catch (e) {}
-      }
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', runGlobalVisaJobsAllInOneFix, { once: true });
-    } else {
-      runGlobalVisaJobsAllInOneFix();
-    }
-    window.addEventListener('load', function() {
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(runGlobalVisaJobsAllInOneFix);
-      } else {
-        setTimeout(runGlobalVisaJobsAllInOneFix, 50);
-      }
-    }, { once: true });
-  })();
   </script>
 
   <style>
@@ -889,173 +721,6 @@
       color: var(--emerald);
     }
 
-    /* Subtle Profile Reminder Toast */
-    .profile-toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      max-width: 430px;
-      width: calc(100% - 48px);
-      background: rgba(17, 24, 39, 0.96);
-      border: 1px solid rgba(16, 185, 129, 0.45);
-      border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(16, 185, 129, 0.2);
-      backdrop-filter: blur(16px);
-      z-index: 2000;
-      padding: 16px 18px;
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      transform: translateY(120%);
-      opacity: 0;
-      visibility: hidden;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, visibility 0.4s ease;
-    }
-    .profile-toast.show {
-      transform: translateY(0);
-      opacity: 1;
-      visibility: visible;
-    }
-    .toast-indicator {
-      position: absolute;
-      top: 0;
-      left: 18px;
-      right: 18px;
-      height: 3px;
-      background: linear-gradient(90deg, var(--emerald), var(--teal), var(--blue));
-      border-radius: 3px 3px 0 0;
-    }
-    .toast-icon-box {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-      box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.15);
-    }
-    .toast-body {
-      flex: 1;
-    }
-    .toast-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-white);
-      margin-bottom: 4px;
-    }
-    .toast-tag {
-      background: rgba(6, 182, 212, 0.18);
-      color: var(--teal);
-      border: 1px solid rgba(6, 182, 212, 0.35);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .toast-message {
-      font-size: 12.5px;
-      color: var(--text-muted);
-      line-height: 1.45;
-      margin-bottom: 12px;
-    }
-    .toast-message strong {
-      color: var(--emerald);
-    }
-    .toast-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-toast-primary {
-      background: var(--emerald);
-      color: #022C22;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 7px 14px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-    .btn-toast-primary:hover {
-      opacity: 0.92;
-      transform: translateY(-1px);
-    }
-    .btn-toast-dismiss {
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .btn-toast-dismiss:hover {
-      color: var(--text-white);
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .btn-linkedin-oauth {
-      background: #0A66C2;
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 12.5px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
-      box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
-    }
-    .btn-linkedin-oauth:hover {
-      background: #084e96;
-      transform: translateY(-1px);
-    }
-    .field-highlight {
-      animation: highlightPulse 2s ease-in-out;
-    }
-    @keyframes highlightPulse {
-      0% { transform: scale3d(1, 1, 1); opacity: 1; }
-      50% { transform: scale3d(1.01, 1.01, 1); opacity: 0.88; }
-      100% { transform: scale3d(1, 1, 1); opacity: 1; }
-    }
-    .toast-close-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 0 4px;
-      line-height: 1;
-      transition: color 0.2s;
-    }
-    .toast-close-btn:hover {
-      color: var(--text-white);
-    }
-    @media (max-width: 600px) {
-      .profile-toast {
-        bottom: 16px;
-        right: 16px;
-        left: 16px;
-        width: auto;
-      }
-    }
 
     /* Footer */
     footer {
@@ -1251,57 +916,7 @@
       font-weight: 800;
     }
 
-    /* Live Feed Toolbar & Pulsing Beacon */
-    .live-ingest-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 14px;
-      padding: 12px 18px;
-      margin-bottom: 18px;
-    }
-    .live-status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: var(--emerald);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .live-pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #34D399;
-      will-change: transform, opacity;
-      animation: liveBeaconPulse 2s infinite;
-    }
-    @keyframes liveBeaconPulse {
-      0% { transform: scale3d(0.92, 0.92, 1); opacity: 1; }
-      70% { transform: scale3d(1.18, 1.18, 1); opacity: 0.72; }
-      100% { transform: scale3d(0.92, 0.92, 1); opacity: 1; }
-    }
-    .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: #075985;
-      color: #ffffff;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+
 
     /* Visa Dossier Container & Paper */
     .dossier-layout {
@@ -1708,37 +1323,7 @@
         </div>
       </div>
 
-      
-      <!-- Live Global Feed Ingestion Toolbar & Quick Launch -->
-      <div class="live-ingest-bar">
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-          <div class="live-status-pill">
-            <span class="live-pulse-dot"></span>
-            <span>Live Global &amp; County Ingestion: Active</span>
-          </div>
-          <span style="font-size: 12.5px; color: var(--text-muted);">
-            <strong id="liveJobCountSpan">72</strong> verified local county &amp; visa positions indexed across 29 countries
-          </span>
-        </div>
 
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-          <label class="sr-only-label" for="sourceSelect">Job Feed Source Filter</label>
-          <select id="sourceSelect" aria-label="Job Feed Source Filter" class="input-control" style="width: auto; padding: 6px 12px; font-size: 12px;" onchange="filterJobs()">
-            <option value="ALL">All Sources (Verified + Live Feeds)</option>
-            <option value="REGISTRY">Verified Sponsor Registry</option>
-            <option value="LIVE">Live Ingested Positions Only</option>
-          </select>
-          <button class="btn-primary" style="padding: 7px 14px; font-size: 12px;" onclick="fetchLiveGlobalFeeds(this)">
-            🔄 Fetch Live Feeds
-          </button>
-          <button class="btn-download-top" style="padding: 7px 14px; font-size: 12px; border-color: rgba(245, 158, 11, 0.5);" onclick="switchTab('alerts')">
-            🔔 Set Alert
-          </button>
-          <button class="btn-download-top" style="padding: 7px 14px; font-size: 12px; border-color: rgba(56, 189, 248, 0.5);" onclick="switchTab('dossier')">
-            📑 Visa Dossier
-          </button>
-        </div>
-      </div>
 
       <!-- Jobs Grid -->
       <div class="job-grid" id="jobGridContainer"></div>
@@ -2249,30 +1834,10 @@ International Engineering Candidate
       </div>
 
       <div class="tool-container">
-        <!-- LinkedIn OAuth Integration Banner -->
-        <div id="atsLinkedInBanner" style="background: rgba(10, 102, 194, 0.12); border: 1.5px solid rgba(10, 102, 194, 0.5); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 36px; height: 36px; border-radius: 8px; background: #0A66C2; color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px;">in</div>
-            <div>
-              <div style="font-weight: 700; color: #FFF; font-size: 14px; display: flex; align-items: center; gap: 6px;">
-                <span>LinkedIn OAuth 2.0 Auto-Fill</span>
-                <span id="atsLinkedInStatusBadge" style="background: rgba(16, 185, 129, 0.2); color: var(--emerald); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 800;">SYNC READY ✓</span>
-              </div>
-              <div id="atsLinkedInDesc" style="font-size: 12px; color: var(--text-muted);">
-                Pull verified professional experience, education, and shortage skills directly into the ATS Resume Builder.
-              </div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn-primary" style="background: #0A66C2; color: #FFFFFF; padding: 8px 16px; font-size: 13px;" onclick="prepopulateAtsFromLinkedIn()">⚡ Auto-fill from LinkedIn</button>
-            <button class="btn-secondary" style="padding: 8px 14px; font-size: 13px;" onclick="openLinkedInOAuthModal()">Switch Profile</button>
-          </div>
-        </div>
-
         <div class="two-col-grid">
           <div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <label style="font-size: 13px; color: var(--text-muted); display: block;">Target Job Description & Requirements:</label>
+              <label style="font-size: 13px; color: var(--text-muted); display: block;">Target Job Description &amp; Requirements:</label>
               <select id="atsJobPresetSelect" onchange="loadJobPresetToAts()" style="background: var(--navy-dark); color: var(--teal); border: 1px solid var(--navy-light); border-radius: 6px; font-size: 11px; padding: 2px 6px;">
                 <option value="custom">-- Choose Verified Sponsor Preset --</option>
                 <option value="monzo">Monzo - Senior Android / Kotlin (UK £85k CoS)</option>
@@ -2284,7 +1849,7 @@ International Engineering Candidate
             </div>
             <textarea id="atsJobDesc" class="input-control" rows="6" placeholder="Paste job requirements here (e.g. Senior Kotlin Engineer with Coroutines, Jetpack Compose, CI/CD, Visa Sponsorship requested)..."></textarea>
             
-            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-top: 12px; margin-bottom: 6px;">Your Core Technical Skills & Summary (Imported from LinkedIn):</label>
+            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-top: 12px; margin-bottom: 6px;">Your Core Technical Skills &amp; Experience Summary:</label>
             <textarea id="atsUserSkills" class="input-control" rows="6" placeholder="List your key tools, years of experience, and project achievements..."></textarea>
             
             <button class="btn-primary" style="margin-top: 14px; width: 100%;" onclick="analyzeATSResume()">Analyze & Generate Tailored ATS Bullet Points</button>
@@ -2298,7 +1863,7 @@ International Engineering Candidate
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
               <div style="font-size: 38px; font-weight: 900; color: var(--emerald);" id="atsScoreValue">96%</div>
               <div style="font-size: 13px; color: var(--text-muted);" id="atsScoreSummary">
-                <strong>High Visa Probability Match:</strong> Your verified LinkedIn credentials contain 9 of 10 international shortage-occupation keywords.
+                <strong>ATS Keyword Alignment:</strong> Compare your professional skills against target visa job requirements to evaluate shortage keyword match rate.
               </div>
             </div>
             <div style="margin-bottom: 8px; font-size: 13px; color: var(--text-muted);">
@@ -2497,12 +2062,12 @@ International Engineering Candidate
           <div style="display: flex; flex-direction: column; gap: 12px;">
             <div>
               <label class="form-label">Candidate Full Name</label>
-              <input type="text" id="dossierCandidateName" class="input-control" value="Vincent Mwangangi" oninput="updateDossierLivePreview()">
+              <input type="text" id="dossierCandidateName" class="input-control" placeholder="Your Full Name (e.g. Jane Doe)" oninput="updateDossierLivePreview()">
             </div>
 
             <div>
               <label class="form-label">Nationality</label>
-              <input type="text" id="dossierNationality" class="input-control" value="International Applicant" oninput="updateDossierLivePreview()">
+              <input type="text" id="dossierNationality" class="input-control" placeholder="Your Nationality (e.g. Kenyan, Indian, Nigerian)" oninput="updateDossierLivePreview()">
             </div>
 
             <div>
@@ -2590,7 +2155,7 @@ International Engineering Candidate
             <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--amber); padding-bottom: 16px; margin-bottom: 20px;">
               <div>
                 <div style="font-size: 11px; text-transform: uppercase; color: var(--amber); font-weight: 800; letter-spacing: 1px;">GLOBAL VISA JOBS • IMMIGRATION COMPLIANCE DOSSIER</div>
-                <h2 style="font-size: 22px; font-weight: 800; color: #ffffff; margin: 4px 0 2px 0;" id="prevCandidateName">Vincent Mwangangi</h2>
+                <h2 style="font-size: 22px; font-weight: 800; color: #ffffff; margin: 4px 0 2px 0;" id="prevCandidateName">Candidate Name</h2>
                 <div style="font-size: 13px; color: var(--teal); font-weight: 600;" id="prevRouteSummary">Skilled Worker Visa (UK) • Target: Senior Software Engineer</div>
               </div>
               <div style="text-align: right;">
@@ -2765,17 +2330,14 @@ International Engineering Candidate
                   <input type="checkbox" id="alertChanInApp" checked> 🔔 In-App Live Toast Notification
                 </label>
                 <label style="display: flex; align-items: center; gap: 8px;">
-                  <input type="checkbox" id="alertChanEmail" checked> 📧 Simulated Email to <code>vincentmwangangi28@gmail.com</code>
+                  <input type="checkbox" id="alertChanEmail" checked> 📧 Email Summary Notification
                 </label>
               </div>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 6px;">
-              <button class="btn-primary" style="flex: 1;" onclick="createJobAlert()">
+            <div style="margin-top: 6px;">
+              <button class="btn-primary" style="width: 100%;" onclick="createJobAlert()">
                 ✓ Save Alert Rule
-              </button>
-              <button class="btn-download-top" style="flex: 1; border-color: var(--teal);" onclick="testNotificationChime()">
-                🔊 Test Notification
               </button>
             </div>
           </div>
@@ -2857,43 +2419,6 @@ International Engineering Candidate
         </div>
       </div>
 
-      <!-- LinkedIn Connect Banner / OAuth Card -->
-      <div id="linkedInConnectSection" style="margin-bottom: 18px; padding: 14px 16px; background: rgba(10, 102, 194, 0.08); border: 1px solid rgba(10, 102, 194, 0.35); border-radius: 12px;">
-        <div id="linkedInUnconnected" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 34px; height: 34px; background: #0A66C2; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 18px;">
-              in
-            </div>
-            <div>
-              <div style="font-size: 13px; font-weight: 700; color: var(--text-white);">Connect LinkedIn</div>
-              <div style="font-size: 11.5px; color: var(--text-muted);">Fast-track profile: import nationality & degree via OAuth</div>
-            </div>
-          </div>
-          <button type="button" class="btn-linkedin-oauth" onclick="openLinkedInOAuthModal()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.95 0-1.72.77-1.72 1.72s.77 1.72 1.72 1.72a1.72 1.72 0 0 0 0-3.44z"/></svg>
-            Connect LinkedIn
-          </button>
-        </div>
-
-        <div id="linkedInConnected" style="display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div id="linkedInAvatarBadge" style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #0A66C2, var(--teal)); border: 2px solid #38bdf8; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px;">
-              PS
-            </div>
-            <div>
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span id="linkedInCandidateName" style="font-size: 13.5px; font-weight: 700; color: var(--text-white);">Priya Sharma</span>
-                <span style="background: rgba(16, 185, 129, 0.2); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4); font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;">✓ Verified</span>
-              </div>
-              <div id="linkedInCandidateRole" style="font-size: 11.5px; color: var(--text-muted);">Pre-filled with verified credentials via LinkedIn OAuth</div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <button type="button" style="background: transparent; border: 1px solid rgba(10, 102, 194, 0.5); color: #38bdf8; font-size: 11px; padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="openLinkedInOAuthModal()">Re-sync</button>
-            <button type="button" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-dim); font-size: 11px; padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="disconnectLinkedIn()">Unlink</button>
-          </div>
-        </div>
-      </div>
 
       <form id="profileForm" onsubmit="saveUserProfile(event)">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
@@ -2965,101 +2490,6 @@ International Engineering Candidate
     </div>
   </div>
 
-  <!-- Simulated LinkedIn OAuth 2.0 Consent Modal -->
-  <div id="linkedInOAuthModal" class="modal-overlay" onclick="closeLinkedInOAuthModal(event)" style="z-index: 2100; display: none;">
-    <div class="modal-content" style="max-width: 480px; padding: 0; overflow: hidden; border: 1px solid rgba(10, 102, 194, 0.5); background: #101626;" onclick="event.stopPropagation()">
-      <!-- LinkedIn Brand Header -->
-      <div style="background: #0A66C2; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 8px; color: white;">
-          <div style="background: white; color: #0A66C2; font-weight: 900; font-size: 16px; width: 26px; height: 26px; border-radius: 4px; display: flex; align-items: center; justify-content: center; line-height: 1;">in</div>
-          <span style="font-weight: 700; font-size: 15px; letter-spacing: 0.2px;">LinkedIn OAuth 2.0 Authorization</span>
-        </div>
-        <button onclick="closeLinkedInOAuthModal()" style="background: transparent; border: none; color: white; font-size: 20px; cursor: pointer; line-height: 1;">&times;</button>
-      </div>
-
-      <!-- OAuth Content Body -->
-      <div style="padding: 22px 24px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color);">
-          <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--emerald), var(--teal)); display: flex; align-items: center; justify-content: center; font-size: 20px;">
-            🌐
-          </div>
-          <div>
-            <div style="font-weight: 700; font-size: 14px; color: var(--text-white);">Global Visa Jobs</div>
-            <div style="font-size: 12px; color: var(--text-muted);">requests authorization to access your professional profile</div>
-          </div>
-        </div>
-
-        <!-- Simulated Account Persona Selector -->
-        <div style="margin-bottom: 16px;">
-          <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">Select LinkedIn Profile Account to authorize:</label>
-          <select id="oauthPersonaSelect" class="input-control" style="background: #182234; font-size: 13px;">
-            <option value="priya">Priya Sharma — Cloud & AI Specialist (India, Master's Degree)</option>
-            <option value="alex">Alex Chen — Senior Systems Architect (United States, Doctorate / PhD)</option>
-            <option value="david">David Okafor — Healthcare / Senior Nurse (Nigeria, Bachelor's Degree)</option>
-            <option value="elena">Elena Santos — Full-Stack Engineer (Philippines, Bachelor's Degree)</option>
-            <option value="kwame">Kwame Mensah — Civil & Structural Engineer (Ghana, Master's Degree)</option>
-            <option value="oliver">Oliver Wright — Finance & Risk Analyst (United Kingdom, Master's Degree)</option>
-          </select>
-        </div>
-
-        <!-- Requested Scopes -->
-        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 14px; margin-bottom: 18px;">
-          <div style="font-size: 11.5px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Requested Permissions (OAuth Scopes):</div>
-          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; color: var(--text-white);">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="color: #38bdf8;">✓</span> <span><strong>r_liteprofile:</strong> Name, headline, photo & verified current role</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="color: #38bdf8;">✓</span> <span><strong>r_education:</strong> Highest degree credential & academic background</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="color: #38bdf8;">✓</span> <span><strong>r_location:</strong> Nationality & citizenship to match sponsorship visas</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Progress indicator (hidden by default) -->
-        <div id="oauthLoadingState" style="display: none; text-align: center; padding: 10px 0 14px;">
-          <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(10, 102, 194, 0.2); border-top-color: #0A66C2; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px;"></div>
-          <div id="oauthStatusText" style="font-size: 13px; color: #38bdf8; font-weight: 600;">Authenticating with LinkedIn OAuth 2.0...</div>
-        </div>
-
-        <!-- OAuth Action Buttons -->
-        <div id="oauthActionButtons" style="display: flex; gap: 10px; justify-content: flex-end;">
-          <button type="button" class="btn-toast-dismiss" style="padding: 10px 18px;" onclick="closeLinkedInOAuthModal()">Cancel</button>
-          <button type="button" class="btn-linkedin-oauth" style="padding: 10px 22px; font-size: 13px;" onclick="submitLinkedInOAuth()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64c-.95 0-1.72.77-1.72 1.72s.77 1.72 1.72 1.72a1.72 1.72 0 0 0 0-3.44z"/></svg>
-            Allow Access & Pre-fill
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Subtle Profile Reminder Toast Notification -->
-  <div id="profileReminderToast" class="profile-toast" role="alert" aria-live="polite">
-    <div class="toast-indicator"></div>
-    <div class="toast-icon-box">
-      <span>🎓</span>
-    </div>
-    <div class="toast-body">
-      <div class="toast-title">
-        <span>Complete Your Profile</span>
-        <span class="toast-tag">Better Matches</span>
-      </div>
-      <p class="toast-message">
-        Add your <strong>Nationality</strong> and <strong>Education</strong> details to get more accurate visa sponsorship and eligibility job matches.
-      </p>
-      <div class="toast-actions">
-        <button class="btn-toast-primary" onclick="openProfileModal()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          Complete Details
-        </button>
-        <button class="btn-toast-dismiss" onclick="dismissProfileToast(true)">Later</button>
-      </div>
-    </div>
-    <button class="toast-close-btn" onclick="dismissProfileToast(true)" title="Dismiss notification">&times;</button>
-  </div>
 
   <!-- Footer -->
   <footer>
@@ -4055,6 +3485,110 @@ International Engineering Candidate
         relocation: "Kuala Lumpur Relocation Grant + MDEC Fast-Track Employment Pass",
         tags: ["Go", "Kubernetes", "Geo-Spatial", "Logistics", "AI"],
         description: "Optimize real-time ride-hailing dispatch and food delivery logistics across Southeast Asia."
+      },
+      {
+        id: "job-ch-google",
+        title: "Staff Site Reliability Engineer (Global Sponsorship)",
+        company: "Google Cloud Infrastructure",
+        country: "Switzerland",
+        city: "Zurich",
+        salary: "CHF 180,000 - 210,000",
+        visaType: "Third-Country Specialist Work Permit",
+        relocation: "Full Relocation: Corporate Housing 60 Days + Flight Allowance + Tax Advisory",
+        confidence: 99,
+        description: "Google Zurich is hiring Staff SREs to architect resilient distributed infrastructure across EMEA. Full relocation, Swiss B-Permit sponsorship, and spousal work rights covered.",
+        tags: ["Go", "Kubernetes", "Linux Kernel", "Distributed Systems", "SRE"]
+      },
+      {
+        id: "job-jp-rakuten",
+        title: "Principal Cloud Architect (Fast-Track Visa)",
+        company: "Rakuten International",
+        country: "Japan",
+        city: "Tokyo",
+        salary: "¥14,000,000 - 18,500,000",
+        visaType: "Highly Skilled Professional (HSP) Visa",
+        relocation: "Full Relocation: Flight Tickets + 2 Months Tokyo Apartment + Language Concierge",
+        confidence: 98,
+        description: "Rakuten Tokyo is looking for a Principal Cloud Architect to scale global fintech infrastructure. English-speaking workplace with Japanese HSP fast-track visa sponsorship (1-year PR pathway).",
+        tags: ["AWS", "Terraform", "Fintech", "Microservices", "Cloud"]
+      },
+      {
+        id: "job-au-canva",
+        title: "Staff Distributed Systems Engineer",
+        company: "Canva Design Platform",
+        country: "Australia",
+        city: "Sydney",
+        salary: "AUD $195,000 - 235,000",
+        visaType: "TSS 482 / Subclass 186 PR Sponsorship",
+        relocation: "Full Relocation: Relocation Bonus AUD $15,000 + Flights + 4 Weeks Sydney Housing",
+        confidence: 98,
+        description: "Scale Canva's real-time collaborative rendering canvas for 170M+ monthly active creators. Direct Employer Nominated Scheme (ENS 186) permanent residency support.",
+        tags: ["Java", "Rust", "Distributed Systems", "WebAssembly", "Cloud"]
+      },
+      {
+        id: "job-ie-stripe",
+        title: "Staff Security Infrastructure Engineer",
+        company: "Stripe EMEA Hub",
+        country: "Ireland",
+        city: "Dublin",
+        salary: "€135,000 - 165,000",
+        visaType: "Critical Skills Employment Permit (CSEP)",
+        relocation: "Full Relocation: Flights + Premium Temporary Housing + Stamp 1G Spousal Support",
+        confidence: 99,
+        description: "Stripe Dublin seeks Staff Security Engineers to protect mission-critical payment rails. 2-year pathway to Irish permanent residence (Stamp 4).",
+        tags: ["Security", "Cryptography", "Go", "AWS", "Zero-Trust"]
+      },
+      {
+        id: "job-se-spotify",
+        title: "Principal Machine Learning Engineer",
+        company: "Spotify Technology AB",
+        country: "Sweden",
+        city: "Stockholm",
+        salary: "SEK 1,150,000 - 1,400,000",
+        visaType: "Swedish Work Permit (Fast-Track Certified)",
+        relocation: "Full Relocation: Dedicated Relocation Coordinator + Flights + Furnished Apartment",
+        confidence: 99,
+        description: "Lead personal recommendation algorithms reaching 600M listeners worldwide. Certified Swedish Migration Agency sponsor with 10-day decision turnaround.",
+        tags: ["Python", "PyTorch", "Recommendation Systems", "MLOps", "Big Data"]
+      },
+      {
+        id: "job-nl-booking",
+        title: "Lead Platform Engineer (Kennismigrant)",
+        company: "Booking.com HQ",
+        country: "Netherlands",
+        city: "Amsterdam",
+        salary: "€115,000 - 140,000",
+        visaType: "Dutch Highly Skilled Migrant (30% Ruling)",
+        relocation: "Full Relocation: 30% Ruling Tax Assistance + Flight Tickets + 2 Months Housing",
+        confidence: 99,
+        description: "Architect travel booking platforms processing millions of reservations daily. Eligible for the Dutch 30% tax-free facility and 2-week IND fast-track processing.",
+        tags: ["Java", "Kafka", "Docker", "Kubernetes", "High-Throughput"]
+      },
+      {
+        id: "job-ae-careem",
+        title: "Senior Android Platform Architect",
+        company: "Careem (Uber EMEA)",
+        country: "United Arab Emirates",
+        city: "Dubai",
+        salary: "AED 420,000 - 540,000 (Tax Free)",
+        visaType: "UAE 10-Year Golden Visa",
+        relocation: "Full Relocation: Tax-Free Salary + Flights + 1 Month Luxury Hotel Apartment",
+        confidence: 97,
+        description: "Build the Everything Super App for millions of consumers across MENA. Zero personal income tax and long-term UAE Golden Visa sponsorship.",
+        tags: ["Kotlin", "Jetpack Compose", "Coroutines", "Clean Architecture"]
+      },
+      {
+        id: "job-sg-grab",
+        title: "Staff Backend Infrastructure Engineer",
+        company: "Grab Platform Services",
+        country: "Singapore",
+        city: "Singapore",
+        salary: "SGD $180,000 - 225,000",
+        visaType: "Singapore Employment Pass (COMPASS Tier 1)",
+        relocation: "Full Relocation: Relocation Grant + Flights + 1 Month Service Apartment",
+        confidence: 98,
+        description: "Drive core transportation and logistics microservices in Grab's global R&D center. Scored under the COMPASS points framework with top-tier bonus points.",
+        tags: ["Golang", "Kubernetes", "gRPC", "Redis", "Distributed DB"]
       }
     ];
 
@@ -4191,248 +3725,7 @@ International Engineering Candidate
       }).join('');
     }
 
-    let hasPerformedSearch = false;
-    let toastTimeout = null;
-
-    function checkFirstSearchToast() {
-      const q = (document.getElementById('jobSearchInput')?.value || '').trim();
-      const country = document.getElementById('countrySelect')?.value || 'ALL';
-      const visaType = document.getElementById('visaTypeSelect')?.value || 'ALL';
-      const relocation = document.getElementById('relocationSelect')?.value || 'ALL';
-
-      const isSearching = q.length > 0 || country !== 'ALL' || visaType !== 'ALL' || relocation !== 'ALL';
-      const alreadyNotified = localStorage.getItem('gvj_profile_reminder_shown');
-      if (isSearching && !alreadyNotified && !hasPerformedSearch) {
-        hasPerformedSearch = true;
-        const profile = JSON.parse(localStorage.getItem('gvj_user_profile') || '{}');
-        if (!profile.nationality || !profile.education) {
-          setTimeout(() => {
-            showProfileReminderToast();
-          }, 800);
-        }
-      }
-    }
-
-    function showProfileReminderToast() {
-      const toast = document.getElementById('profileReminderToast');
-      if (!toast) return;
-      toast.classList.add('show');
-
-      if (toastTimeout) clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => {
-        dismissProfileToast(false);
-      }, 9000);
-    }
-
-    function dismissProfileToast(permanent = false) {
-      const toast = document.getElementById('profileReminderToast');
-      if (toast) toast.classList.remove('show');
-      if (permanent) {
-        localStorage.setItem('gvj_profile_reminder_shown', 'true');
-      }
-    }
-
-    const LINKEDIN_PERSONAS = {
-      priya: {
-        name: 'Priya Sharma',
-        headline: 'Senior Cloud & AI Specialist · Ex-Amazon',
-        nationality: 'India',
-        education: "Master's in Computer Science, IIT Delhi (2019-2021)",
-        occupation: 'Technology',
-        avatar: 'PS',
-        verified: true,
-        skills: 'Kotlin, Jetpack Compose, AWS Cloud Architecture, Microservices, Python, Kubernetes, CI/CD, Distributed Systems',
-        experience: 'Staff Cloud Engineer at CloudScale Tech (2022 - Present) · Architected highly available distributed systems handling 50k RPS with 99.99% uptime\nSenior Backend Engineer at Amazon (2019 - 2022) · Led AWS serverless migrations reducing latency by 35% and infrastructure overhead by $220K/yr',
-        summary: 'Cloud & AI Engineer with 6+ years specializing in distributed systems, Android/Compose platforms, and scalable microservices. Eligible for UK Skilled Worker & EU Blue Card MINT shortage fast-track.'
-      },
-      alex: {
-        name: 'Alex Chen',
-        headline: 'Senior Systems Architect & Tech Lead',
-        nationality: 'United States',
-        education: 'Ph.D. in Distributed Systems, UC Berkeley (2016-2020)',
-        occupation: 'Technology',
-        avatar: 'AC',
-        verified: true,
-        skills: 'Golang, Rust, High-Performance Computing, Terraform, Linux Kernel, SOC2 Compliance, System Design',
-        experience: 'Principal Systems Architect at HyperCore Labs (2021 - Present) · Built ultra-low latency transaction engine processing 1.2M transactions/sec\nSenior Infrastructure Engineer at Stripe (2018 - 2021) · Designed zero-trust security mesh and automated multi-region failover topology',
-        summary: 'Systems Architect with 8+ years leading core platform infrastructure and distributed ledger performance for multinational enterprise systems.'
-      },
-      david: {
-        name: 'David Okafor',
-        headline: 'Clinical Nurse Specialist & Healthcare Practitioner',
-        nationality: 'Nigeria',
-        education: "Bachelor of Science in Nursing (BSN), University of Ibadan (2016-2020)",
-        occupation: 'Healthcare',
-        avatar: 'DO',
-        verified: true,
-        skills: 'Intensive Care (ICU), Acute Patient Triage, NMC Band 5/6 Registered, BLS/ACLS Certified, Infection Control, Clinical Governance',
-        experience: 'Senior ICU Charge Nurse at Lagos Premier Hospital (2021 - Present) · Supervised 18-bed intensive care unit maintaining 100% compliance with international clinical safety standards\nStaff Nurse at Royal Crest Medical Centre (2019 - 2021) · Administered specialized emergency triage and post-operative monitoring for 600+ critical patients',
-        summary: 'Registered Nurse (BSN) with 5+ years critical care & acute clinical leadership. IELTS Academic 8.0 & CBT verified, eligible for immediate UK Health & Care Visa CoS / Ireland CSEP.'
-      },
-      elena: {
-        name: 'Elena Santos',
-        headline: 'Full-Stack Developer & Mobile Engineer',
-        nationality: 'Philippines',
-        education: "Bachelor of Science in Information Technology, De La Salle University (2018-2022)",
-        occupation: 'Technology',
-        avatar: 'ES',
-        verified: true,
-        skills: 'TypeScript, React, Jetpack Compose, Kotlin, Node.js, GraphQL, PostgreSQL, Tailwind CSS',
-        experience: 'Senior Mobile & Web Developer at AppVentures Manila (2022 - Present) · Built 4 cross-platform mobile apps with 250k+ active downloads\nFrontend Engineer at TechLogic APAC (2020 - 2022) · Refactored core web portal, improving core web vitals and user conversion by 28%',
-        summary: 'Full-Stack & Mobile Developer with 5 years crafting responsive, accessible mobile and cloud-native web applications for global startups.'
-      },
-      kwame: {
-        name: 'Kwame Mensah',
-        headline: 'Chartered Structural & Civil Engineer',
-        nationality: 'Ghana',
-        education: "Master of Science in Civil & Structural Engineering, KNUST (2017-2019)",
-        occupation: 'Engineering',
-        avatar: 'KM',
-        verified: true,
-        skills: 'AutoCAD, Revit Structure, BIM Level 2, Finite Element Analysis (FEA), Eurocodes, Project Management, Structural Inspection',
-        experience: 'Lead Structural Engineer at Volta Infrastructure Partners (2020 - Present) · Managed structural engineering for $45M multi-storey commercial complexes and transit hubs\nCivil Design Engineer at WestBridge Construction (2018 - 2020) · Designed reinforced concrete bridges and highway drainage systems adhering to British Standards',
-        summary: 'Chartered Structural Engineer with 6+ years directing high-value commercial infrastructure projects. Registered with ICE/IStructE pathway, qualified for ANZSCO 233211 / UK Shortage List.'
-      },
-      oliver: {
-        name: 'Oliver Wright',
-        headline: 'Financial Analyst & Global Risk Strategist',
-        nationality: 'United Kingdom',
-        education: "Master's in Financial Economics, London School of Economics (2018-2020)",
-        occupation: 'Finance',
-        avatar: 'OW',
-        verified: true,
-        skills: 'Financial Modeling, Algorithmic Risk Assessment, Bloomberg Terminal, Python for Finance, M&A Valuation, Basel III Compliance',
-        experience: 'Senior Quantitative Risk Analyst at Canary Wharf Capital (2021 - Present) · Engineered Monte Carlo simulation pipelines analyzing $2.4B in sovereign bond portfolios\nFinancial Modeling Associate at Deloitte UK (2019 - 2021) · Conducted commercial due diligence and DCF valuations for 14 cross-border acquisition deals',
-        summary: 'Quantitative Financial Analyst and CFA charterholder with expertise in cross-border risk modeling, regulatory capital compliance, and investment banking.'
-      }
-    };
-
-    function openLinkedInOAuthModal() {
-      const modal = document.getElementById('linkedInOAuthModal');
-      if (!modal) return;
-      const loadingState = document.getElementById('oauthLoadingState');
-      const actionButtons = document.getElementById('oauthActionButtons');
-      if (loadingState) loadingState.style.display = 'none';
-      if (actionButtons) actionButtons.style.display = 'flex';
-      modal.style.display = 'flex';
-    }
-
-    function closeLinkedInOAuthModal(e) {
-      if (e && e.target && e.target !== e.currentTarget) return;
-      const modal = document.getElementById('linkedInOAuthModal');
-      if (modal) modal.style.display = 'none';
-    }
-
-    function submitLinkedInOAuth() {
-      const loadingState = document.getElementById('oauthLoadingState');
-      const actionButtons = document.getElementById('oauthActionButtons');
-      const statusText = document.getElementById('oauthStatusText');
-      const personaKey = document.getElementById('oauthPersonaSelect')?.value || 'priya';
-      const persona = LINKEDIN_PERSONAS[personaKey] || LINKEDIN_PERSONAS.priya;
-
-      if (actionButtons) actionButtons.style.display = 'none';
-      if (loadingState) loadingState.style.display = 'block';
-
-      if (statusText) statusText.innerText = 'Step 1/3: Authenticating with LinkedIn OAuth 2.0...';
-
-      setTimeout(() => {
-        if (statusText) statusText.innerText = 'Step 2/3: Exchanging Auth Code & Verifying Profile...';
-      }, 400);
-
-      setTimeout(() => {
-        if (statusText) statusText.innerText = 'Step 3/3: Importing Degree & Nationality Credentials...';
-      }, 800);
-
-      setTimeout(() => {
-        // Pre-fill profile fields
-        const nameInput = document.getElementById('userName');
-        const headlineInput = document.getElementById('userHeadline');
-        const nationalitySelect = document.getElementById('userNationality');
-        const educationSelect = document.getElementById('userEducation');
-        const occupationSelect = document.getElementById('userOccupation');
-
-        if (nameInput) {
-          nameInput.value = persona.name;
-          nameInput.classList.remove('field-highlight');
-          void nameInput.offsetWidth;
-          nameInput.classList.add('field-highlight');
-        }
-        if (headlineInput) {
-          headlineInput.value = persona.headline;
-          headlineInput.classList.remove('field-highlight');
-          void headlineInput.offsetWidth;
-          headlineInput.classList.add('field-highlight');
-        }
-        if (nationalitySelect) {
-          nationalitySelect.value = persona.nationality;
-          nationalitySelect.classList.remove('field-highlight');
-          void nationalitySelect.offsetWidth;
-          nationalitySelect.classList.add('field-highlight');
-        }
-        if (educationSelect) {
-          educationSelect.value = persona.education;
-          educationSelect.classList.remove('field-highlight');
-          void educationSelect.offsetWidth;
-          educationSelect.classList.add('field-highlight');
-        }
-        if (occupationSelect) {
-          occupationSelect.value = persona.occupation;
-          occupationSelect.classList.remove('field-highlight');
-          void occupationSelect.offsetWidth;
-          occupationSelect.classList.add('field-highlight');
-        }
-
-        // Save connected state in localStorage
-        localStorage.setItem('gvj_linkedin_connected', 'true');
-        localStorage.setItem('gvj_linkedin_data', JSON.stringify(persona));
-
-        updateLinkedInUI(persona);
-        closeLinkedInOAuthModal();
-
-        const alertBox = document.getElementById('profileSavedAlert');
-        if (alertBox) {
-          alertBox.style.display = 'block';
-          alertBox.innerHTML = `✓ <strong>LinkedIn Connected!</strong> Imported <strong>${persona.name}</strong> (${persona.nationality}, ${persona.education}). Click "Save Profile" to apply.`;
-        }
-      }, 1200);
-    }
-
-    function disconnectLinkedIn() {
-      localStorage.removeItem('gvj_linkedin_connected');
-      localStorage.removeItem('gvj_linkedin_data');
-      updateLinkedInUI(null);
-      const alertBox = document.getElementById('profileSavedAlert');
-      if (alertBox) {
-        alertBox.style.display = 'block';
-        alertBox.innerHTML = 'LinkedIn account unlinked. You can reconnect anytime.';
-        setTimeout(() => { alertBox.style.display = 'none'; }, 3000);
-      }
-    }
-
-    function updateLinkedInUI(personaData) {
-      const unconnected = document.getElementById('linkedInUnconnected');
-      const connected = document.getElementById('linkedInConnected');
-      const candidateName = document.getElementById('linkedInCandidateName');
-      const candidateRole = document.getElementById('linkedInCandidateRole');
-      const avatarBadge = document.getElementById('linkedInAvatarBadge');
-
-      const isConnected = localStorage.getItem('gvj_linkedin_connected') === 'true';
-      const savedPersona = personaData || JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
-
-      if (isConnected && connected && unconnected) {
-        unconnected.style.display = 'none';
-        connected.style.display = 'flex';
-        if (candidateName) candidateName.innerText = savedPersona.name;
-        if (candidateRole) candidateRole.innerText = `${savedPersona.headline} · Verified via LinkedIn OAuth`;
-        if (avatarBadge) avatarBadge.innerText = savedPersona.avatar || savedPersona.name.split(' ').map(n => n[0]).join('');
-      } else if (connected && unconnected) {
-        connected.style.display = 'none';
-        unconnected.style.display = 'flex';
-      }
-    }
-
     function openProfileModal() {
-      dismissProfileToast(false);
       const modal = document.getElementById('profileModal');
       if (!modal) return;
       const profile = JSON.parse(localStorage.getItem('gvj_user_profile') || '{}');
@@ -4451,7 +3744,6 @@ International Engineering Candidate
       if (profile.occupation && document.getElementById('userOccupation')) {
         document.getElementById('userOccupation').value = profile.occupation;
       }
-      updateLinkedInUI();
       modal.style.display = 'flex';
     }
 
@@ -4568,7 +3860,6 @@ International Engineering Candidate
       }
 
       renderJobs(filtered);
-      checkFirstSearchToast();
     }
 
     // Render Sponsors
@@ -5455,7 +4746,7 @@ International Engineering Candidate`;
       alert('📋 Cover letter copied to clipboard!');
     }
 
-    // ATS Resume & LinkedIn Integration
+    // ATS Resume Optimizer & Keyword Alignment Engine
     const ATS_JOB_PRESETS = {
       monzo: {
         role: "Senior Android / Mobile Engineer (UK Skilled Worker CoS)",
@@ -5489,73 +4780,125 @@ International Engineering Candidate`;
       }
     }
 
-    function prepopulateAtsFromLinkedIn() {
-      const savedPersona = JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
+    function prepopulateAtsFromProfile() {
+      const profile = JSON.parse(localStorage.getItem('gvj_user_profile') || '{}');
       const skillsArea = document.getElementById('atsUserSkills');
       const jobDescArea = document.getElementById('atsJobDesc');
-      const bannerDesc = document.getElementById('atsLinkedInDesc');
-      const bannerBadge = document.getElementById('atsLinkedInStatusBadge');
 
-      if (skillsArea) {
-        skillsArea.value = `Candidate: ${savedPersona.name} (${savedPersona.nationality})\nEducation: ${savedPersona.education}\nHeadline: ${savedPersona.headline}\n\nCore Verified Technical Skills:\n${savedPersona.skills}\n\nVerified Professional Work Experience:\n${savedPersona.experience}\n\nProfessional Summary:\n${savedPersona.summary}`;
+      if (skillsArea && (profile.name || profile.headline)) {
+        skillsArea.value = `Candidate: ${profile.name || 'Candidate'}\nRole: ${profile.headline || ''}\nNationality: ${profile.nationality || ''}\nEducation: ${profile.education || ''}\nSpecialization: ${profile.occupation || ''}`;
       }
 
       if (jobDescArea && !jobDescArea.value.trim()) {
-        const presetKey = savedPersona.occupation === 'Healthcare' ? 'nhs' : (savedPersona.occupation === 'Engineering' ? 'shopify' : 'monzo');
         const presetSelect = document.getElementById('atsJobPresetSelect');
-        if (presetSelect) presetSelect.value = presetKey;
-        loadJobPresetToAts();
-      }
-
-      if (bannerDesc) {
-        bannerDesc.innerText = `Connected: ${savedPersona.name} · ${savedPersona.headline} (Auto-imported into ATS inputs)`;
-      }
-      if (bannerBadge) {
-        bannerBadge.innerText = 'SYNCED WITH LINKEDIN ✓';
-        bannerBadge.style.background = 'rgba(16, 185, 129, 0.25)';
+        if (presetSelect && presetSelect.value === 'custom') {
+          presetSelect.value = 'monzo';
+          loadJobPresetToAts();
+        }
       }
 
       analyzeATSResume();
     }
 
+    function extractKeywords(text) {
+      if (!text) return [];
+      const stopWords = new Set([
+        'and', 'the', 'with', 'for', 'our', 'you', 'will', 'have', 'must', 'from', 'this', 'that',
+        'your', 'are', 'about', 'across', 'their', 'into', 'over', 'more', 'also', 'such', 'than',
+        'then', 'some', 'what', 'when', 'where', 'which', 'who', 'whom', 'why', 'how', 'all', 'any',
+        'both', 'each', 'few', 'most', 'other', 'been', 'being', 'does', 'doing', 'were',
+        'very', 'just', 'should', 'would', 'could', 'years', 'experience', 'required', 'work', 'role'
+      ]);
+      const tokens = text.toLowerCase()
+        .replace(/[^a-z0-9+#.\s]/g, ' ')
+        .split(/\s+/)
+        .map(t => t.trim())
+        .filter(t => t.length >= 3 && !stopWords.has(t) && !/^\d+$/.test(t));
+      
+      const counts = {};
+      tokens.forEach(t => { counts[t] = (counts[t] || 0) + 1; });
+      return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    }
+
     function analyzeATSResume() {
       const jobText = document.getElementById('atsJobDesc')?.value || '';
       const userText = document.getElementById('atsUserSkills')?.value || '';
-      const savedPersona = JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
 
-      const scoreVal = Math.min(99, Math.max(88, 92 + Math.floor(Math.random() * 7)));
+      if (!jobText.trim() && !userText.trim()) {
+        const scoreElem = document.getElementById('atsScoreValue');
+        if (scoreElem) scoreElem.innerText = '0%';
+        const summaryElem = document.getElementById('atsScoreSummary');
+        if (summaryElem) summaryElem.innerHTML = 'Enter your target job requirements and candidate skills above to analyze keyword alignment.';
+        return;
+      }
+
+      const jobKeywords = extractKeywords(jobText).slice(0, 20);
+      const userKeywords = new Set(extractKeywords(userText));
+
+      const matched = [];
+      const missing = [];
+
+      jobKeywords.forEach(kw => {
+        if (userKeywords.has(kw) || userText.toLowerCase().includes(kw)) {
+          matched.push(kw);
+        } else {
+          missing.push(kw);
+        }
+      });
+
+      const totalTarget = Math.max(1, jobKeywords.length);
+      const scoreVal = Math.min(100, Math.round((matched.length / totalTarget) * 100));
+
       const scoreElem = document.getElementById('atsScoreValue');
       if (scoreElem) scoreElem.innerText = `${scoreVal}%`;
 
-      const bulletList = document.getElementById('atsBulletList');
-      if (bulletList) {
-        if (savedPersona.occupation === 'Healthcare') {
-          bulletList.innerHTML = `
-            <li>Delivered high-acuity critical patient triage and ICU post-operative monitoring for 600+ patients with zero adverse incidents.</li>
-            <li>Supervised an 18-bed clinical unit maintaining 100% compliance with national health authority infection control and safety audits.</li>
-            <li>Verified credential equivalence with UK NMC standards and international nursing regulatory licensing frameworks.</li>
-            <li>Qualified for expedited UK Health & Care Visa CoS allocation with priority consular turnaround.</li>
-          `;
-        } else if (savedPersona.occupation === 'Engineering') {
-          bulletList.innerHTML = `
-            <li>Directed structural design & finite element analysis (FEA) for $45M multi-storey commercial and transportation infrastructure projects.</li>
-            <li>Ensured 100% adherence to Eurocodes, British Standards, and BIM Level 2 compliance for heavy reinforced concrete structures.</li>
-            <li>Chartered engineer status fulfilling international shortage occupation skills assessment criteria for fast-track immigration.</li>
-            <li>Engineered sustainable structural retrofits reducing raw material expenditure and carbon footprint by 22%.</li>
-          `;
+      const matchBadge = document.getElementById('atsMatchBadge');
+      if (matchBadge) {
+        if (scoreVal >= 70) {
+          matchBadge.innerText = 'HIGH ATS ALIGNMENT';
+          matchBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+          matchBadge.style.color = 'var(--emerald)';
+        } else if (scoreVal >= 40) {
+          matchBadge.innerText = 'MODERATE ALIGNMENT';
+          matchBadge.style.background = 'rgba(245, 158, 11, 0.2)';
+          matchBadge.style.color = 'var(--amber)';
         } else {
-          bulletList.innerHTML = `
-            <li>Architected and scaled distributed backend & mobile client platforms using Kotlin, Jetpack Compose, and Microservices, driving a 40% latency reduction across 250k+ active sessions.</li>
-            <li>Engineered high-throughput event pipelines handling 50k+ RPS with 99.99% availability, cutting cloud infrastructure overhead by $220K/yr.</li>
-            <li>Directed international engineering pods ensuring strict compliance with UK GDPR, SOC2, and ISO 27001 standards.</li>
-            <li>Demonstrated specialized shortage competencies qualifying for UK Shortage Occupation (SOC 2136) & EU Blue Card MINT threshold exemptions.</li>
-          `;
+          matchBadge.innerText = 'NEEDS KEYWORDS';
+          matchBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+          matchBadge.style.color = '#EF4444';
         }
+      }
+
+      const keywordsContainer = document.getElementById('atsKeywordsMatched');
+      if (keywordsContainer) {
+        const matchedHtml = matched.map(kw => 
+          `<span style="background: rgba(16, 185, 129, 0.18); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.4); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">✓ ${kw}</span>`
+        ).join('');
+        const missingHtml = missing.slice(0, 8).map(kw => 
+          `<span style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.35); padding: 3px 8px; border-radius: 4px; font-size: 11px;">+ ${kw}</span>`
+        ).join('');
+        keywordsContainer.innerHTML = (matchedHtml || '<span style="color: var(--text-muted); font-size: 11px;">No direct keyword matches yet.</span>') + 
+          (missingHtml ? '<div style="width: 100%; margin-top: 6px; font-size: 11px; color: var(--text-muted);"><strong>Recommended Keywords to Add:</strong></div>' + missingHtml : '');
       }
 
       const summaryElem = document.getElementById('atsScoreSummary');
       if (summaryElem) {
-        summaryElem.innerHTML = `<strong>High Visa Probability Match (${scoreVal}%):</strong> Profile credentials match ${jobText.length > 50 ? '9 of 10' : '8 of 8'} shortage-occupation criteria for ${savedPersona.name}.`;
+        summaryElem.innerHTML = `<strong>ATS Alignment: ${scoreVal}%:</strong> Found <strong>${matched.length}</strong> of <strong>${jobKeywords.length}</strong> core keywords from target job description.`;
+      }
+
+      const bulletList = document.getElementById('atsBulletList');
+      if (bulletList) {
+        const topMatched = matched.slice(0, 4);
+        const bulletItems = [];
+        if (topMatched.length > 0) {
+          bulletItems.push(`Demonstrated proficiency in ${topMatched.join(', ')} directly fulfilling mandatory employer requirements.`);
+          bulletItems.push(`Engineered robust solutions utilizing ${topMatched.slice(0, 2).join(' and ')} driving measurable performance and scalability improvements.`);
+          bulletItems.push(`Applied industry best practices adhering to international regulatory and compliance standards.`);
+          bulletItems.push(`Specialized experience aligned with national shortage-occupation criteria for work visa eligibility.`);
+        } else {
+          bulletItems.push(`Add technical skills and project details in the skills input box above to generate tailored impact statements.`);
+        }
+        bulletList.innerHTML = bulletItems.map(b => `<li>${b}</li>`).join('');
       }
     }
 
@@ -5568,38 +4911,34 @@ International Engineering Candidate`;
     }
 
     function exportATSResumeText() {
-      const savedPersona = JSON.parse(localStorage.getItem('gvj_linkedin_data') || 'null') || LINKEDIN_PERSONAS.priya;
+      const profile = JSON.parse(localStorage.getItem('gvj_user_profile') || '{}');
+      const candidateName = profile.name || document.getElementById('userName')?.value || document.getElementById('dossierCandidateName')?.value || 'Candidate';
+      const headline = profile.headline || document.getElementById('userHeadline')?.value || 'Professional';
+      const nationality = profile.nationality || document.getElementById('userNationality')?.value || 'International Applicant';
+      const userSkills = document.getElementById('atsUserSkills')?.value || '';
       const bullets = Array.from(document.querySelectorAll('#atsBulletList li')).map(li => `  • ${li.innerText}`).join('\n');
       
       const content = `=====================================================
 GLOBAL VISA JOBS - ATS-OPTIMIZED INTERNATIONAL RESUME
 =====================================================
-CANDIDATE: ${savedPersona.name}
-NATIONALITY: ${savedPersona.nationality}
-EDUCATION: ${savedPersona.education}
-HEADLINE: ${savedPersona.headline}
-LINKEDIN ACCREDITATION: Verified OAuth 2.0 (Trust Score: 98/100)
+CANDIDATE: ${candidateName}
+NATIONALITY: ${nationality}
+HEADLINE: ${headline}
 
-PROFESSIONAL SUMMARY:
-${savedPersona.summary}
+TECHNICAL SKILLS & EXPERIENCE:
+${userSkills || 'Professional skills and achievements.'}
 
-VERIFIED TECHNICAL SKILLS:
-${savedPersona.skills}
-
-HIGH-IMPACT SHORTAGE OCCUPATION BULLET POINTS:
+RECOMMENDED ATS HIGH-IMPACT BULLET POINTS:
 ${bullets}
 
-WORK EXPERIENCE HISTORY:
-${savedPersona.experience}
-
-Generated via Global Visa Jobs AI ATS Resume Builder
+Generated via Global Visa Jobs ATS Resume Optimizer
 =====================================================`;
 
       const blob = new Blob([content], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${savedPersona.name.replace(/\s+/g, '_')}_ATS_Resume.txt`;
+      a.download = `${candidateName.replace(/\s+/g, '_')}_ATS_Resume.txt`;
       a.click();
       window.URL.revokeObjectURL(url);
     }
@@ -5647,191 +4986,10 @@ Generated via Global Visa Jobs AI ATS Resume Builder
     });
   
     // ==========================================
-    // LIVE GLOBAL INGESTION ENGINE
-    // ==========================================
-    const LIVE_FEED_CATALOG = [
-      {
-        id: "live_job_1",
-        title: "Staff Site Reliability Engineer (Global Sponsorship)",
-        company: "Google Cloud Infrastructure",
-        country: "Switzerland",
-        city: "Zurich",
-        salary: "CHF 180,000 - 210,000",
-        visaType: "Third-Country Specialist Work Permit",
-        relocation: "Full Relocation: Corporate Housing 60 Days + Flight Allowance + Tax Advisory",
-        confidence: 99,
-        description: "Google Zurich is hiring Staff SREs to architect resilient distributed infrastructure across EMEA. Full relocation, Swiss B-Permit sponsorship, and spousal work rights covered.",
-        tags: ["Go", "Kubernetes", "Linux Kernel", "Distributed Systems", "SRE"],
-        isLiveFeed: true
-      },
-      {
-        id: "live_job_2",
-        title: "Principal Cloud Architect (Fast-Track Visa)",
-        company: "Rakuten International",
-        country: "Japan",
-        city: "Tokyo",
-        salary: "¥14,000,000 - 18,500,000",
-        visaType: "Highly Skilled Professional (HSP) Visa",
-        relocation: "Full Relocation: Flight Tickets + 2 Months Tokyo Apartment + Language Concierge",
-        confidence: 98,
-        description: "Rakuten Tokyo is looking for a Principal Cloud Architect to scale global fintech infrastructure. English-speaking workplace with Japanese HSP fast-track visa sponsorship (1-year PR pathway).",
-        tags: ["AWS", "Terraform", "Fintech", "Microservices", "Cloud"],
-        isLiveFeed: true
-      },
-      {
-        id: "live_job_3",
-        title: "Staff Distributed Systems Engineer",
-        company: "Canva Design Platform",
-        country: "Australia",
-        city: "Sydney",
-        salary: "AUD $195,000 - 235,000",
-        visaType: "TSS 482 / Subclass 186 PR Sponsorship",
-        relocation: "Full Relocation: Relocation Bonus AUD $15,000 + Flights + 4 Weeks Sydney Housing",
-        confidence: 98,
-        description: "Scale Canva's real-time collaborative rendering canvas for 170M+ monthly active creators. Direct Employer Nominated Scheme (ENS 186) permanent residency support.",
-        tags: ["Java", "Rust", "Distributed Systems", "WebAssembly", "Cloud"],
-        isLiveFeed: true
-      },
-      {
-        id: "live_job_4",
-        title: "Staff Security Infrastructure Engineer",
-        company: "Stripe EMEA Hub",
-        country: "Ireland",
-        city: "Dublin",
-        salary: "€135,000 - 165,000",
-        visaType: "Critical Skills Employment Permit (CSEP)",
-        relocation: "Full Relocation: Flights + Premium Temporary Housing + Stamp 1G Spousal Support",
-        confidence: 99,
-        description: "Stripe Dublin seeks Staff Security Engineers to protect mission-critical payment rails. 2-year pathway to Irish permanent residence (Stamp 4).",
-        tags: ["Security", "Cryptography", "Go", "AWS", "Zero-Trust"],
-        isLiveFeed: true
-      },
-      {
-        id: "live_job_5",
-        title: "Principal Machine Learning Engineer",
-        company: "Spotify Technology AB",
-        country: "Sweden",
-        city: "Stockholm",
-        salary: "SEK 1,150,000 - 1,400,000",
-        visaType: "Swedish Work Permit (Fast-Track Certified)",
-        relocation: "Full Relocation: Dedicated Relocation Coordinator + Flights + Furnished Apartment",
-        confidence: 99,
-        description: "Lead personal recommendation algorithms reaching 600M listeners worldwide. Certified Swedish Migration Agency sponsor with 10-day decision turnaround.",
-        tags: ["Python", "PyTorch", "Recommendation Systems", "MLOps", "Big Data"],
-        isLiveFeed: true
-      },
-      {
-        id: "live_job_6",
-        title: "Lead Platform Engineer (Kennismigrant)",
-        company: "Booking.com HQ",
-        country: "Netherlands",
-        city: "Amsterdam",
-        salary: "€115,000 - 140,000",
-        visaType: "Dutch Highly Skilled Migrant (30% Ruling)",
-        relocation: "Full Relocation: 30% Ruling Tax Assistance + Flight Tickets + 2 Months Housing",
-        confidence: 99,
-        description: "Architect travel booking platforms processing millions of reservations daily. Eligible for the Dutch 30% tax-free facility and 2-week IND fast-track processing.",
-        tags: ["Java", "Kafka", "Docker", "Kubernetes", "High-Throughput"],
-        isLiveFeed: true
-      },
-      {
-        id: "live_job_7",
-        title: "Senior Android Platform Architect",
-        company: "Careem (Uber EMEA)",
-        country: "United Arab Emirates",
-        city: "Dubai",
-        salary: "AED 420,000 - 540,000 (Tax Free)",
-        visaType: "UAE 10-Year Golden Visa",
-        relocation: "Full Relocation: Tax-Free Salary + Flights + 1 Month Luxury Hotel Apartment",
-        confidence: 97,
-        description: "Build the Everything Super App for millions of consumers across MENA. Zero personal income tax and long-term UAE Golden Visa sponsorship.",
-        tags: ["Kotlin", "Jetpack Compose", "Coroutines", "Clean Architecture"],
-        isLiveFeed: true
-      },
-      {
-        id: "live_job_8",
-        title: "Staff Backend Infrastructure Engineer",
-        company: "Grab Platform Services",
-        country: "Singapore",
-        city: "Singapore",
-        salary: "SGD $180,000 - 225,000",
-        visaType: "Singapore Employment Pass (COMPASS Tier 1)",
-        relocation: "Full Relocation: Relocation Grant + Flights + 1 Month Service Apartment",
-        confidence: 98,
-        description: "Drive core transportation and logistics microservices in Grab's global R&D center. Scored under the COMPASS points framework with top-tier bonus points.",
-        tags: ["Golang", "Kubernetes", "gRPC", "Redis", "Distributed DB"],
-        isLiveFeed: true
-      }
-    ];
-
-    let liveFeedsIngested = false;
-
-    async function fetchLiveGlobalFeeds(btn) {
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '⏳ Ingesting Feeds...';
-      }
-
-      showNotificationToast('🔄 Connecting to Global Feeds...', 'Aggregating live visa-sponsorship job feeds from international sponsor registries & tech hubs.');
-
-      try {
-        const response = await fetch('https://www.arbeitnow.com/api/job-board-api?visa_sponsorship=true', { method: 'GET', signal: AbortSignal.timeout(3500) });
-        if (response.ok) {
-          const json = await response.json();
-          if (json && json.data && json.data.length > 0) {
-            json.data.slice(0, 5).forEach((extJob, idx) => {
-              if (!JOBS_DATA.some(j => j.id === 'ext_' + idx)) {
-                JOBS_DATA.unshift({
-                  id: 'ext_' + idx,
-                  title: extJob.title || 'Software Engineer',
-                  company: extJob.company_name || 'Global Tech Partner',
-                  country: extJob.location && extJob.location.includes('Germany') ? 'Germany' : 'United Kingdom',
-                  city: extJob.location || 'Berlin',
-                  salary: '€70,000 - €90,000',
-                  visaType: 'EU Blue Card / Skilled Worker',
-                  relocation: 'Full Relocation Assistance: Housing + CoS / Visa Filing Fees',
-                  confidence: 96,
-                  description: extJob.description ? extJob.description.replace(/<[^>]+>/g, '').substring(0, 300) + '...' : 'Verified tech position with full international visa sponsorship.',
-                  tags: extJob.tags || ['Tech', 'Cloud', 'Engineering'],
-                  isLiveFeed: true
-                });
-              }
-            });
-          }
-        }
-      } catch (e) {
-        console.log('External live API timeout; utilizing built-in guaranteed real-time live feed pool.');
-      }
-
-      let addedCount = 0;
-      LIVE_FEED_CATALOG.forEach(liveJob => {
-        if (!JOBS_DATA.some(j => j.id === liveJob.id)) {
-          JOBS_DATA.unshift(liveJob);
-          addedCount++;
-        }
-      });
-
-      liveFeedsIngested = true;
-
-      const countSpan = document.getElementById('liveJobCountSpan');
-      if (countSpan) countSpan.textContent = JOBS_DATA.length;
-
-      filterJobs();
-
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '✓ Live Feeds Synced';
-        setTimeout(() => { btn.innerHTML = '🔄 Fetch Live Feeds'; }, 3000);
-      }
-
-      showNotificationToast('⚡ Ingestion Complete', 'Successfully ingested ' + (addedCount + 5) + ' additional live global visa-sponsored positions into your feed!');
-    }
-
-    // ==========================================
     // VISA DOSSIER ENGINE
     // ==========================================
     function updateDossierLivePreview() {
-      const name = document.getElementById('dossierCandidateName')?.value || 'Vincent Mwangangi';
+      const name = document.getElementById('dossierCandidateName')?.value || 'Candidate Name';
       const nationality = document.getElementById('dossierNationality')?.value || 'International Applicant';
       const country = document.getElementById('dossierCountry')?.value || 'United Kingdom';
       const title = document.getElementById('dossierJobTitle')?.value || 'Senior Software Engineer';
@@ -5924,7 +5082,7 @@ Generated via Global Visa Jobs AI ATS Resume Builder
     }
 
     function copyDossierText() {
-      const name = document.getElementById('dossierCandidateName')?.value || 'Vincent Mwangangi';
+      const name = document.getElementById('dossierCandidateName')?.value || 'Candidate Name';
       const country = document.getElementById('dossierCountry')?.value || 'United Kingdom';
       const title = document.getElementById('dossierJobTitle')?.value || 'Senior Software Engineer';
       const salary = document.getElementById('dossierSalary')?.value || '£68,000';
@@ -6095,26 +5253,6 @@ Reference: GVJ-DOS-2026-88192 | globalvisajobs.com`;
       document.getElementById('alertKeywordsInput').value = '';
 
       showNotificationToast('🔔 Alert Created', 'Your instant alert for "' + name + '" has been saved and is actively monitoring incoming visa jobs.');
-    }
-
-    function testNotificationChime() {
-      if ('Notification' in window && Notification.permission !== 'granted') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            new Notification('Global Visa Jobs Alert Match!', {
-              body: 'New match: Senior Software Engineer at Amazon London (£95,000, Full Relocation)',
-              icon: 'https://globalvisajobs.com/logo.png'
-            });
-          }
-        });
-      } else if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Global Visa Jobs Alert Match!', {
-          body: 'New match: Staff SRE at Google Zurich (CHF 195,000, Relocation + Spousal Visa)',
-          icon: 'https://globalvisajobs.com/logo.png'
-        });
-      }
-
-      showNotificationToast('🔔 Live Match Triggered!', 'Matched: "Senior Software Engineer at NHS Trust London" (£65,000 • Skilled Worker CoS)');
     }
 
     // =========================================================================
