@@ -12,6 +12,8 @@
     { "source": "/robots.txt", "destination": "/robots.txt" },
     { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
     { "source": "/tapts87mznnme96w1njc5zeda5dedwfd.txt", "destination": "/tapts87mznnme96w1njc5zeda5dedwfd.txt" },
+    { "source": "/krdzcjx72xyxb42f89acj9md87fem8yt.txt", "destination": "/krdzcjx72xyxb42f89acj9md87fem8yt.txt" },
+    { "source": "/BingSiteAuth.xml", "destination": "/BingSiteAuth.xml" },
     { "source": "/llms.txt", "destination": "/llms.txt" },
     { "source": "/.well-known/webmcp.json", "destination": "/.well-known/webmcp.json" }
   ],
@@ -49,6 +51,20 @@
       "headers": [
         { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/krdzcjx72xyxb42f89acj9md87fem8yt.txt",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    },
+    {
+      "source": "/BingSiteAuth.xml",
+      "headers": [
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]
     },
     {
