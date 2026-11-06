@@ -462,7 +462,7 @@ object RapidApiClient {
             obj.has("date") -> obj.optString("date", "")
             obj.has("published_at") -> obj.optString("published_at", "")
             obj.has("posted_at") -> obj.optString("posted_at", "")
-            else -> "2026-07-01"
+            else -> "2026-11-05"
         }
 
         val country = when (locality.lowercase()) {
@@ -491,7 +491,7 @@ object RapidApiClient {
             industry = "Technology",
             experienceLevel = "Mid",
             applicationUrl = url,
-            datePosted = datePosted.ifEmpty { "2026-07-01" },
+            datePosted = datePosted.ifEmpty { "2026-11-05" },
             isBookmarked = false,
             isFraud = false,
             isCustomPosted = false
@@ -560,7 +560,7 @@ object RapidApiClient {
                 industry = "Technology",
                 experienceLevel = if (role.contains("Senior") || role.contains("Lead") || role.contains("Architect")) "Senior" else "Mid",
                 applicationUrl = "https://www.indeed.com/company/${company}/jobs",
-                datePosted = "2026-07-01",
+                datePosted = "2026-11-05",
                 isBookmarked = false,
                 isFraud = false,
                 isCustomPosted = false
@@ -710,7 +710,7 @@ object RapidApiClient {
 
         val datePosted = obj.optString("date_posted").ifEmpty {
             obj.optString("published_at").ifEmpty {
-                obj.optString("posted_at", "2026-07-01")
+                obj.optString("posted_at", "2026-11-05")
             }
         }
 
@@ -775,7 +775,7 @@ object RapidApiClient {
                 industry = "Technology",
                 experienceLevel = "Senior",
                 applicationUrl = "https://www.linkedin.com/jobs",
-                datePosted = "2026-07-01",
+                datePosted = "2026-11-05",
                 isBookmarked = false,
                 isFraud = false,
                 isCustomPosted = false
@@ -940,7 +940,7 @@ object RapidApiClient {
 
         val datePosted = obj.optString("postedAt").ifEmpty {
             obj.optString("datePosted").ifEmpty {
-                obj.optString("date_posted", "2026-07-01")
+                obj.optString("date_posted", "2026-11-05")
             }
         }
 
@@ -1002,7 +1002,7 @@ object RapidApiClient {
                 industry = "Technology",
                 experienceLevel = if (role.contains("Senior") || role.contains("Staff")) "Senior" else "Entry",
                 applicationUrl = "https://careers.google.com",
-                datePosted = "2026-07-01",
+                datePosted = "2026-11-05",
                 isBookmarked = false,
                 isFraud = false,
                 isCustomPosted = false

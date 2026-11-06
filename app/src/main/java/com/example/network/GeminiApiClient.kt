@@ -153,7 +153,7 @@ object GeminiApiClient {
                         industry = obj.optString("industry", "General"),
                         experienceLevel = obj.optString("experienceLevel", "Mid"),
                         applicationUrl = obj.optString("applicationUrl", "https://google.com"),
-                        datePosted = obj.optString("datePosted", "2026-06-27"),
+                        datePosted = obj.optString("datePosted", "2026-11-05"),
                         isBookmarked = false,
                         isFraud = false,
                         isCustomPosted = false
@@ -810,7 +810,7 @@ object GeminiApiClient {
                         else -> "Senior"
                     },
                     applicationUrl = "https://www.example.com/careers/apply",
-                    datePosted = "2026-06-28",
+                    datePosted = "2026-11-05",
                     isBookmarked = false,
                     isFraud = false,
                     isCustomPosted = false

@@ -19,7 +19,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Mid",
             applicationUrl = "https://www.nhs.uk/careers",
-            datePosted = "2026-08-18",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -38,7 +38,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Entry",
             applicationUrl = "https://www.gov.uk/health-care-worker-visa",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -57,7 +57,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://monzo.com/careers",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -76,7 +76,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Mid",
             applicationUrl = "https://careers.dyson.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -95,7 +95,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.revolut.com/careers",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         JobEntity(
@@ -114,7 +114,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.astrazeneca.com",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -135,7 +135,7 @@ object DefaultJobs {
             industry = "Transportation",
             experienceLevel = "Mid",
             applicationUrl = "https://www.canada.ca/en/services/jobs.html",
-            datePosted = "2026-08-17",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -154,7 +154,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.shopify.com/careers",
-            datePosted = "2026-08-18",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -173,7 +173,7 @@ object DefaultJobs {
             industry = "Finance",
             experienceLevel = "Senior",
             applicationUrl = "https://jobs.rbc.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -192,7 +192,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Mid",
             applicationUrl = "https://www.phsa.ca/careers",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         JobEntity(
@@ -211,7 +211,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://jobs.teck.com",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -232,7 +232,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.make-it-in-germany.com",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -251,7 +251,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.siemens-energy.com/global/en/company/jobs.html",
-            datePosted = "2026-08-17",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -270,7 +270,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://jobs.sap.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -289,7 +289,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.bmwgroup.jobs",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -310,7 +310,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.australia.gov.au",
-            datePosted = "2026-08-16",
+            datePosted = "2026-11-01",
             isBookmarked = false
         ),
         JobEntity(
@@ -329,7 +329,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.atlassian.com/company/careers",
-            datePosted = "2026-08-18",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -348,7 +348,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.lifeatcanva.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -367,7 +367,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Mid",
             applicationUrl = "https://monashhealth.mercury.com.au",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
 
@@ -388,7 +388,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://stripe.com/jobs",
-            datePosted = "2026-08-17",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -407,7 +407,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.google.com",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         JobEntity(
@@ -426,7 +426,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://pfizer.wd1.myworkdayjobs.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -447,7 +447,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.booking.com",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -466,7 +466,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.asml.com/en/careers",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         JobEntity(
@@ -485,7 +485,7 @@ object DefaultJobs {
             industry = "Finance",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.adyen.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -506,7 +506,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.migrationsverket.se",
-            datePosted = "2026-08-15",
+            datePosted = "2026-11-01",
             isBookmarked = false
         ),
         JobEntity(
@@ -525,7 +525,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.lifeatspotify.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -544,7 +544,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.volvogroup.com/en/careers.html",
-            datePosted = "2026-08-18",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
 
@@ -565,7 +565,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Mid",
             applicationUrl = "https://www.hse.ie/eng/staff/jobs/",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -584,7 +584,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.workday.com/en-us/company/careers.html",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
 
@@ -605,7 +605,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Mid",
             applicationUrl = "https://www.kiwihealthjobs.com/",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -624,7 +624,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.xero.com/about/careers/",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -645,7 +645,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://woven.toyota/en/careers/",
-            datePosted = "2026-08-18",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -664,7 +664,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.mercari.com",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
 
@@ -685,7 +685,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Mid",
             applicationUrl = "https://www.vestas.com/en/careers",
-            datePosted = "2026-08-16",
+            datePosted = "2026-11-01",
             isBookmarked = false
         ),
         JobEntity(
@@ -704,7 +704,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://www.novonordisk.com/careers.html",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -725,7 +725,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://www.clevelandclinicabudhabi.ae/en/careers",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -744,7 +744,7 @@ object DefaultJobs {
             industry = "Transportation",
             experienceLevel = "Senior",
             applicationUrl = "https://www.dpworld.com/careers",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
 
@@ -765,7 +765,7 @@ object DefaultJobs {
             industry = "Finance",
             experienceLevel = "Senior",
             applicationUrl = "https://www.dbs.com/careers/default.page",
-            datePosted = "2026-08-18",
+            datePosted = "2026-11-02",
             isBookmarked = false
         ),
         JobEntity(
@@ -784,7 +784,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://grab.careers",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
 
@@ -805,7 +805,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.airbus.com/en/careers",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
         JobEntity(
@@ -824,7 +824,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.doctolib.fr",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -845,7 +845,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://www.novartis.com/careers",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         JobEntity(
@@ -864,7 +864,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.google.com",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -885,7 +885,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.equinor.com/careers",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -906,7 +906,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.nokia.com/about-us/careers/",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
 
@@ -927,7 +927,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.cdprojektred.com/en/jobs",
-            datePosted = "2026-08-20",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -948,7 +948,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://jobs.glovoapp.com",
-            datePosted = "2026-08-19",
+            datePosted = "2026-11-03",
             isBookmarked = false
         ),
 
@@ -969,7 +969,7 @@ object DefaultJobs {
             industry = "Energy",
             experienceLevel = "Senior",
             applicationUrl = "https://www.neom.com/en-us/be-part-of-neom/careers",
-            datePosted = "2026-08-21",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // SWEDEN
@@ -989,7 +989,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.lifeatspotify.com/jobs",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // SWITZERLAND
@@ -1009,7 +1009,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.google.com",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // FRANCE
@@ -1029,7 +1029,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.datadoghq.com/careers",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // SINGAPORE
@@ -1049,7 +1049,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://grab.careers",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // JAPAN
@@ -1069,7 +1069,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://careers.mercari.com",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // DENMARK
@@ -1089,7 +1089,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://www.novonordisk.com/careers",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // UAE
@@ -1109,7 +1109,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.careem.com/careers",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // NETHERLANDS
@@ -1129,7 +1129,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.asml.com/careers",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // AUSTRALIA
@@ -1149,7 +1149,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.canva.com/careers",
-            datePosted = "2026-08-22",
+            datePosted = "2026-11-04",
             isBookmarked = false
         ),
         // =========================================================================
@@ -1171,7 +1171,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.safaricom.co.ke/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1190,7 +1190,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://equitygroupholdings.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1209,7 +1209,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Mid",
             applicationUrl = "https://hospitals.aku.edu/nairobi/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1228,7 +1228,7 @@ object DefaultJobs {
             industry = "Logistics",
             experienceLevel = "Senior",
             applicationUrl = "https://www.kpa.co.ke",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1247,7 +1247,7 @@ object DefaultJobs {
             industry = "Energy",
             experienceLevel = "Mid",
             applicationUrl = "https://www.kengen.co.ke/index.php/careers.html",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1266,7 +1266,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Mid",
             applicationUrl = "https://www.kemri.go.ke/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1285,7 +1285,7 @@ object DefaultJobs {
             industry = "Logistics",
             experienceLevel = "Mid",
             applicationUrl = "https://www.tatucity.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1304,7 +1304,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://www.mtrh.go.ke",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1323,7 +1323,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://konza.go.ke/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1342,7 +1342,7 @@ object DefaultJobs {
             industry = "Agriculture",
             experienceLevel = "Mid",
             applicationUrl = "https://www.ktdateas.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // =========================================================================
@@ -1365,7 +1365,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://flutterwave.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // SOUTH AFRICA
@@ -1385,7 +1385,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.standardbank.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // RWANDA
@@ -1405,7 +1405,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://irembo.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // UGANDA
@@ -1425,7 +1425,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Senior",
             applicationUrl = "https://www.mtn.co.ug/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // GHANA
@@ -1445,7 +1445,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://hubtel.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // INDIA
@@ -1465,7 +1465,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.flipkartcareers.com",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // PHILIPPINES
@@ -1485,7 +1485,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.gcash.com/careers",
-            datePosted = "2026-08-24",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // ADDITIONAL KENYAN COUNTIES (KILIFI, KAKAMEGA, MERU, KAJIADO, LAIKIPIA)
@@ -1505,7 +1505,7 @@ object DefaultJobs {
             industry = "Healthcare",
             experienceLevel = "Senior",
             applicationUrl = "https://kemri-wellcome.org/careers",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1524,7 +1524,7 @@ object DefaultJobs {
             industry = "Engineering",
             experienceLevel = "Mid",
             applicationUrl = "https://www.kengen.co.ke",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1543,7 +1543,7 @@ object DefaultJobs {
             industry = "Agriculture",
             experienceLevel = "Mid",
             applicationUrl = "https://www.kalro.org",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1562,7 +1562,7 @@ object DefaultJobs {
             industry = "Energy",
             experienceLevel = "Senior",
             applicationUrl = "https://www.epra.go.ke",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1581,7 +1581,7 @@ object DefaultJobs {
             industry = "Hospitality",
             experienceLevel = "Senior",
             applicationUrl = "https://www.kws.go.ke",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         // TANZANIA, EGYPT, BRAZIL, MALAYSIA LOCAL & REGIONAL JOBS
@@ -1601,7 +1601,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.vodacom.co.tz/careers",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1620,7 +1620,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://www.fawry.com/careers",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1639,7 +1639,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://international.nubank.com.br/careers",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         ),
         JobEntity(
@@ -1658,7 +1658,7 @@ object DefaultJobs {
             industry = "Technology",
             experienceLevel = "Senior",
             applicationUrl = "https://grab.careers",
-            datePosted = "2026-08-25",
+            datePosted = "2026-11-05",
             isBookmarked = false
         )
     )
