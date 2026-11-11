@@ -1131,6 +1131,112 @@ fun LighthouseWebVitalsAndAgenticSuiteCard(
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Render Migration & Vercel DNS Fair-Use Block Unblocker Panel
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = TealCyan.copy(alpha = 0.1f),
+                border = BorderStroke(1.5.dp, TealCyan),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Render Migration & DNS Unblock (global-visa-jobs.onrender.com)",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = TealCyan
+                        )
+                        Text(
+                            text = "RENDER READY",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = EmeraldGreen
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Fix \"Your Team exceeded our fair use limits\" on Vercel DNS: Switch nameservers away from ns1/ns2.vercel-dns.com at your registrar (or Cloudflare Free DNS), then add A @ -> 216.24.57.1 and CNAME www -> global-visa-jobs.onrender.com.",
+                        fontSize = 11.sp,
+                        color = WhiteActive,
+                        lineHeight = 15.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                val dnsGuide = """
+                                    # Render Custom Domain DNS Records (Bypass Vercel Fair-Use Block)
+                                    1. Switch Nameservers at Registrar (or Cloudflare) OFF ns1.vercel-dns.com / ns2.vercel-dns.com
+                                    2. Add Apex A Record:
+                                       Type: A | Name: @ | Value: 216.24.57.1 | TTL: 60 (DNS Only)
+                                    3. Add WWW CNAME Record:
+                                       Type: CNAME | Name: www | Value: global-visa-jobs.onrender.com | TTL: 60 (DNS Only)
+                                    4. In Render Dashboard -> Settings -> Custom Domains -> Verify globalvisajobs.website & www.globalvisajobs.website
+                                """.trimIndent()
+                                clipboardManager.setText(AnnotatedString(dnsGuide))
+                                Toast.makeText(context, "Copied Render DNS Records & Unblock Steps!", Toast.LENGTH_SHORT).show()
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = TealCyan),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(42.dp)
+                                .testTag("btn_copy_render_dns_guide")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Dns,
+                                contentDescription = "Copy Render DNS Records",
+                                tint = Color.White,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Copy Render DNS",
+                                fontSize = 11.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                clipboardManager.setText(AnnotatedString(GOOGLE_ADSENSE_CRAWLER_UNBLOCK_CONFIG))
+                                Toast.makeText(context, "Copied render.yaml + _headers Blueprint!", Toast.LENGTH_SHORT).show()
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            border = BorderStroke(1.dp, EmeraldGreen),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(42.dp)
+                                .testTag("btn_copy_render_yaml_blueprint")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CloudDone,
+                                contentDescription = "Copy render.yaml Blueprint",
+                                tint = EmeraldGreen,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Copy render.yaml",
+                                fontSize = 11.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = EmeraldGreen
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(14.dp))
 
             // Core Web Vitals Metrics Comparison Bar (FCP, LCP, TBT, CLS, SI)
