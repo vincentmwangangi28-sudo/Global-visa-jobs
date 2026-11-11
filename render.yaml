@@ -1,0 +1,98 @@
+# Render Blueprint Configuration for Global Visa Jobs (https://globalvisajobs.website)
+# Deploy automatically on Render by connecting your GitHub repository -> New -> Blueprint
+services:
+  - type: web
+    name: global-visa-jobs
+    runtime: static
+    buildCommand: echo "Static build ready for Render deployment"
+    staticPublishPath: ./public
+    pullRequestPreviewsEnabled: true
+    domains:
+      - globalvisajobs.website
+      - www.globalvisajobs.website
+    headers:
+      - path: /ads.txt
+        name: Content-Type
+        value: text/plain; charset=utf-8
+      - path: /ads.txt
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /robots.txt
+        name: Content-Type
+        value: text/plain; charset=utf-8
+      - path: /robots.txt
+        name: Cache-Control
+        value: public, max-age=86400
+      - path: /sitemap.xml
+        name: Content-Type
+        value: application/xml; charset=utf-8
+      - path: /sitemap.xml
+        name: Cache-Control
+        value: public, max-age=86400
+      - path: /llms.txt
+        name: Content-Type
+        value: text/plain; charset=utf-8
+      - path: /llms.txt
+        name: Cache-Control
+        value: public, max-age=86400
+      - path: /tapts87mznnme96w1njc5zeda5dedwfd.txt
+        name: Content-Type
+        value: text/plain; charset=utf-8
+      - path: /tapts87mznnme96w1njc5zeda5dedwfd.txt
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /krdzcjx72xyxb42f89acj9md87fem8yt.txt
+        name: Content-Type
+        value: text/plain; charset=utf-8
+      - path: /krdzcjx72xyxb42f89acj9md87fem8yt.txt
+        name: Cache-Control
+        value: public, max-age=86400
+      - path: /BingSiteAuth.xml
+        name: Content-Type
+        value: application/xml; charset=utf-8
+      - path: /BingSiteAuth.xml
+        name: Cache-Control
+        value: public, max-age=86400
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=63072000; includeSubDomains; preload
+      - path: /*
+        name: Cross-Origin-Opener-Policy
+        value: same-origin-allow-popups
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*.js
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.css
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.woff2
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.svg
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.webp
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: redirect
+        source: /home
+        destination: /
+      - type: redirect
+        source: /index
+        destination: /
+      - type: redirect
+        source: /jobs/
+        destination: /#jobs
+      - type: rewrite
+        source: /*
+        destination: /index.html

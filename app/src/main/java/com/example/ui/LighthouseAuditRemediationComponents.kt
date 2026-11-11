@@ -190,7 +190,7 @@ document.addEventListener('visibilitychange', () => {
   50% { transform: scale3d(1.15, 1.15, 1); opacity: 0.75; }
 }
 
-# 2. _headers / Cloudflare / Vercel Cache Lifetimes (Fixes 2 KiB Cache Lifetime Audit)
+# 2. _headers / Cloudflare / Render Cache Lifetimes (render.yaml - Fixes 2 KiB Cache Lifetime Audit)
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 /*.js
@@ -453,13 +453,20 @@ Sitemap: https://globalvisajobs.website/sitemap.xml
 /ads.txt  /ads.txt  200
 /*        /index.html  200
 
-# 3. vercel.json — Serve /ads.txt as static text/plain before SPA catch-all
-{
-  "rewrites": [
-    { "source": "/ads.txt", "destination": "/ads.txt" },
-    { "source": "/((?!ads\\.txt|robots\\.txt|sitemap\\.xml|assets/).*)", "destination": "/index.html" }
-  ]
-}"""
+# 3. render.yaml (Render Static Site Blueprint) — Serve /ads.txt as static text/plain before SPA catch-all
+services:
+  - type: web
+    name: global-visa-jobs
+    runtime: static
+    staticPublishPath: ./public
+    headers:
+      - path: /ads.txt
+        name: Content-Type
+        value: text/plain; charset=utf-8
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html"""
 
 const val GOOGLE_ADSENSE_CWV_SAFE_LOADER = """<!-- 1. Official AdSense Verification Meta & Script in STATIC <head> (Required by Mediapartners-Google Crawler) -->
 <meta name="google-adsense-account" content="ca-pub-1375386376692976">

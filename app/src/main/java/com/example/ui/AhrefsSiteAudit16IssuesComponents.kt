@@ -404,9 +404,9 @@ document.querySelectorAll('a[href^="https://globalvisajobs.website"], a[href^="/
         issueName = "JavaScript redirects",
         crawledCount = 1,
         rootCauseExplanation = "1 route executes a client-side window.location.replace() or router redirect on initial load, which wastes crawl budget and delays rendering.",
-        letaidoFixSummary = "Replace the client-side JS redirect with a server-side 301 rule in _redirects / vercel.json and render the canonical route directly.",
+        letaidoFixSummary = "Replace the client-side JS redirect with a server-side 301 rule in _redirects / render.yaml and render the canonical route directly.",
         productionCodeFix = """
-# Move client-side JS redirect to edge server 301 rule (_redirects / vercel.json):
+# Move client-side JS redirect to edge server 301 rule (_redirects / render.yaml):
 /home    https://globalvisajobs.website/    301
 /index   https://globalvisajobs.website/    301
         """.trimIndent()
