@@ -204,5 +204,17 @@ class ExampleUnitTest {
     assertTrue(com.example.ui.AHREFS_16_ISSUES_LETAIDO_MASTER_SCRIPT.contains("schema-ahrefs-product"))
     assertTrue(com.example.ui.LIGHTHOUSE_RUN2_FINAL_BOOSTER_SNIPPET.contains("<meta name=\"google-adsense-account\" content=\"ca-pub-1375386376692976\">"))
   }
+
+  @Test
+  fun testRenderMigrationAndLighthouse100Fixes() {
+    val fixes = com.example.ui.defaultLighthouseAuditFixes
+    assertEquals(10, fixes.size)
+    val securityFix = fixes.first { it.id == "bp_security_headers_csp_hsts_coop" }
+    assertTrue(securityFix.productionCodePatch.contains("Strict-Transport-Security"))
+    assertTrue(securityFix.productionCodePatch.contains("Cross-Origin-Opener-Policy"))
+    assertTrue(securityFix.productionCodePatch.contains("X-Frame-Options"))
+    assertTrue(com.example.ui.GOOGLE_ADSENSE_CRAWLER_UNBLOCK_CONFIG.contains("render.yaml"))
+  }
 }
+
 
